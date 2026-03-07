@@ -2,13 +2,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CARS, Réservations, Réservation } from "@/lib/data";
+import { CARS, RESERVATIONS, Reservation } from "@/lib/data";
 import { getStoredReservations, updateReservationStatus } from "@/lib/store";
 import { CheckCircle, XCircle, ArrowLeft } from "lucide-react";
 
 export default function AdminReservationsPage() {
   const router = useRouter();
-  const [réservations, setReservations] = useState<Reservation[]>([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
   const [filter, setFilter] = useState<"all" | "pending" | "confirmed" | "cancelled">("all");
 
   useEffect(() => {
@@ -16,7 +16,7 @@ export default function AdminReservationsPage() {
       router.push("/admin/login");
       return;
     }
-    // Fusionner réservations statiques (demo) + réservations stockees en localStorage
+    // Fusionner reservations statiques (demo) + reservations stockees en localStorage
     const stored = getStoredReservations();
     const storedIds = new Set(stored.map((r) => r.id));
     const merged = [...stored, ...RESERVATIONS.filter((r) => !storedIds.has(r.id))];
@@ -25,7 +25,7 @@ export default function AdminReservationsPage() {
     setReservations(merged);
   }, [router]);
 
-  const filtered = filter === "all" ? réservations : réservations.filter((r) => r.status === filter);
+  const filtered = filter === "all" ? reservations : reservations.filter((r) => r.status === filter);
 
   const changeStatus = (id: string, status: "confirmed" | "cancelled") => {
     updateReservationStatus(id, status);
@@ -61,7 +61,7 @@ export default function AdminReservationsPage() {
             >
               {s === "all" ? "Toutes" : statusLabel[s]}
               <span className="ml-2 text-xs opacity-70">
-                ({s === "all" ? réservations.length : réservations.filter((r) => r.status === s).length})
+                ({s === "all" ? reservations.length : reservations.filter((r) => r.status === s).length})
               </span>
             </button>
           ))}

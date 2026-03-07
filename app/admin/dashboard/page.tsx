@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CARS, Réservations } from "@/lib/data";
+import { CARS, RESERVATIONS } from "@/lib/data";
 import {
   Car, ClipboardList, TrendingUp, CheckCircle, Clock, XCircle,
   LogOut, LayoutDashboard, Settings, FileText, Menu, X
@@ -35,7 +35,7 @@ export default function AdminDashboard() {
 
   const navLinks = [
     { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/admin/réservations", icon: ClipboardList, label: "Réservations" },
+    { href: "/admin/réservations", icon: ClipboardList, label: "RESERVATIONS" },
     { href: "/admin/cars", icon: Car, label: "Voitures" },
     { href: "/admin/invoices", icon: FileText, label: "Factures" },
   ];
@@ -117,7 +117,7 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {[
               { label: "CA du mois", value: `${totalRevenue.toLocaleString()} DH`, icon: TrendingUp, color: "bg-[#e63946]", change: "+12%" },
-              { label: "Réservations en attente", value: pending, icon: Clock, color: "bg-yellow-500", change: `${Réservations.length} total` },
+              { label: "RESERVATIONS en attente", value: pending, icon: Clock, color: "bg-yellow-500", change: `${RESERVATIONS.length} total` },
               { label: "Voitures disponibles", value: available, icon: Car, color: "bg-green-500", change: `${rented} louées` },
               { label: "Confirmees", value: confirmed, icon: CheckCircle, color: "bg-blue-500", change: "ce mois" },
             ].map(({ label, value, icon: Icon, color, change }) => (
@@ -164,13 +164,13 @@ export default function AdminDashboard() {
             {/* Recent réservations */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between mb-5">
-                <h2 className="font-bold text-[#1a1a2e]">Réservations recentes</h2>
+                <h2 className="font-bold text-[#1a1a2e]">RESERVATIONS recentes</h2>
                 <Link href="/admin/réservations" className="text-[#e63946] text-xs font-medium hover:underline">
                   Voir tout
                 </Link>
               </div>
               <div className="space-y-3">
-                {Réservations.slice(0, 3).map((r) => {
+                {RESERVATIONS.slice(0, 3).map((r) => {
                   const car = CARS.find((c) => c.id === r.carId);
                   const statusStyle = {
                     pending: "bg-yellow-100 text-yellow-700",

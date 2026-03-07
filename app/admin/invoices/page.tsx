@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Réservations, CARS } from "@/lib/data";
+import { RESERVATIONS, CARS } from "@/lib/data";
 import { FileText, Download, ArrowLeft } from "lucide-react";
 
 export default function AdminInvoicesPage() {
@@ -14,7 +14,7 @@ export default function AdminInvoicesPage() {
     }
   }, [router]);
 
-  const confirmedReservations = Réservations.filter((r) => r.status === "confirmed");
+  const confirmedReservations = RESERVATIONS.filter((r) => r.status === "confirmed");
 
   return (
     <div className="min-h-screen bg-gray-50">
