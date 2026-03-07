@@ -7,78 +7,216 @@ import { getMergedReservations } from "@/lib/store";
 import { FileText, Download, ArrowLeft, ScrollText } from "lucide-react";
 
 function downloadInvoice(r: Reservation, car: Car | undefined, invoiceNum: string) {
+  const priceHT = Math.round(r.totalPrice / 1.2);
+  const tva = r.totalPrice - priceHT;
+  const pricePerDayHT = car ? Math.round(car.pricePerDay / 1.2) : 0;
+  const issueDate = new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
+
   const html = `<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <title>Facture ${invoiceNum}</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; color: #1a1a2e; }
-    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
-    .logo { font-size: 28px; font-weight: 900; }
-    .logo span { color: #e63946; }
-    .badge { background: #e63946; color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-    h2 { font-size: 22px; margin-bottom: 4px; }
-    .meta { color: #888; font-size: 13px; margin-bottom: 30px; }
-    .section { background: #f9f9f9; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-    .section h3 { margin: 0 0 14px; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #888; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
-    .row:last-child { border-bottom: none; }
-    .row .label { color: #666; }
-    .total-row { display: flex; justify-content: space-between; align-items: center; background: #1a1a2e; color: white; padding: 16px 20px; border-radius: 12px; margin-top: 10px; }
-    .total-row .amount { font-size: 24px; font-weight: 900; color: #e63946; }
-    .footer { text-align: center; color: #aaa; font-size: 12px; margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; }
-    @media print { body { margin: 20px; } }
+    *{box-sizing:border-box;margin:0;padding:0}
+    @page{size:A4;margin:12mm}
+    body{font-family:Arial,sans-serif;font-size:13px;color:#1a1a2e;background:#fff;padding:10px;width:190mm}
+    /* Header */
+    .header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:3px solid #e63946;margin-bottom:20px}
+    .logo{font-size:30px;font-weight:900;line-height:1}
+    .logo span{color:#e63946}
+    .logo small{display:block;font-size:11px;font-weight:400;color:#888;letter-spacing:2px;margin-top:3px}
+    .company-block{text-align:right;font-size:11px;line-height:1.8;color:#555}
+    .company-block strong{font-size:13px;color:#1a1a2e}
+    /* Invoice meta */
+    .inv-meta{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:20px}
+    .inv-title{font-size:22px;font-weight:900;color:#1a1a2e}
+    .inv-title span{display:block;font-size:12px;font-weight:400;color:#888;margin-top:3px}
+    .inv-badge{background:#e63946;color:#fff;padding:6px 16px;border-radius:6px;font-size:11px;font-weight:bold;letter-spacing:1px}
+    .inv-num{font-size:14px;font-weight:bold;text-align:right;margin-top:5px}
+    .inv-date{font-size:11px;color:#888;text-align:right}
+    /* Client + Véhicule */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+    .card{background:#f8f8f8;border-radius:10px;padding:14px 16px;border:1px solid #ebebeb}
+    .card-title{font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:1.5px;color:#999;margin-bottom:10px}
+    .card-row{display:flex;justify-content:space-between;font-size:12.5px;padding:4px 0;border-bottom:1px solid #eee}
+    .card-row:last-child{border-bottom:none}
+    .card-row .lbl{color:#777}
+    .card-row .val{font-weight:600;text-align:right;max-width:55%}
+    /* Periode */
+    .period-bar{display:flex;align-items:center;justify-content:space-between;background:#1a1a2e;color:#fff;border-radius:10px;padding:12px 18px;margin-bottom:18px;gap:10px}
+    .period-item{text-align:center;flex:1}
+    .period-item .p-label{font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:1px}
+    .period-item .p-value{font-size:14px;font-weight:bold;margin-top:3px}
+    .period-sep{font-size:22px;color:#e63946;font-weight:900}
+    /* Table de facturation */
+    .billing-table{width:100%;border-collapse:collapse;margin-bottom:16px}
+    .billing-table thead tr{background:#1a1a2e;color:#fff}
+    .billing-table thead th{padding:10px 14px;text-align:left;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.8px}
+    .billing-table thead th:last-child{text-align:right}
+    .billing-table tbody tr{border-bottom:1px solid #f0f0f0}
+    .billing-table tbody tr:hover{background:#fafafa}
+    .billing-table tbody td{padding:10px 14px;font-size:13px}
+    .billing-table tbody td:last-child{text-align:right;font-weight:600}
+    /* Totaux */
+    .totals{margin-left:auto;width:280px;margin-bottom:18px}
+    .totals-row{display:flex;justify-content:space-between;padding:7px 14px;font-size:13px;border-bottom:1px solid #f0f0f0}
+    .totals-row .t-lbl{color:#555}
+    .totals-row .t-val{font-weight:600}
+    .totals-tva{background:#fff8e1;border-radius:6px;padding:7px 14px;display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px}
+    .totals-tva .t-lbl{color:#b45309}
+    .totals-tva .t-val{font-weight:700;color:#b45309}
+    .totals-final{background:#e63946;border-radius:8px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+    .totals-final .t-lbl{color:#fff;font-size:13px;font-weight:600;letter-spacing:.5px}
+    .totals-final .t-val{color:#fff;font-size:20px;font-weight:900}
+    /* Statut paiement */
+    .payment-bar{display:flex;align-items:center;gap:10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 16px;margin-bottom:20px;font-size:12.5px}
+    .paid-badge{background:#16a34a;color:#fff;padding:3px 12px;border-radius:20px;font-weight:bold;font-size:11px}
+    /* Mentions légales */
+    .legal{background:#f8f8f8;border-radius:8px;padding:10px 14px;font-size:10px;color:#888;line-height:1.6;margin-bottom:14px}
+    /* Footer */
+    .footer{border-top:2px solid #e63946;padding-top:12px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#999}
+    .footer-ids{font-size:9.5px;color:#bbb;margin-top:4px}
+    @media print{body{padding:0}}
   </style>
 </head>
 <body>
+
+  <!-- En-tête société -->
   <div class="header">
-    <div class="logo">AUTO<span>LOC</span> <small style="font-size:13px;font-weight:400;color:#888;">Maroc</small></div>
     <div>
-      <span class="badge">FACTURE</span>
-      <div style="font-size:13px;color:#888;margin-top:6px;text-align:right;">${invoiceNum}</div>
+      <div class="logo">AUTO<span>LOC</span><small>MAROC</small></div>
+    </div>
+    <div class="company-block">
+      <strong>AutoLoc Maroc S.A.R.L</strong><br>
+      123 Boulevard Mohammed V, Casablanca<br>
+      Tél : +212 6 00 00 00 00<br>
+      Email : contact@autoloc.ma<br>
+      Site : autoloc.ma
     </div>
   </div>
 
-  <h2>Facture de location</h2>
-  <p class="meta">Émise le ${new Date().toLocaleDateString("fr-FR")} · Statut : <strong style="color:#16a34a;">Confirmée</strong></p>
-
-  <div class="section">
-    <h3>Client</h3>
-    <div class="row"><span class="label">Nom</span><span><strong>${r.clientFirstName} ${r.clientLastName}</strong></span></div>
-    <div class="row"><span class="label">Téléphone</span><span>${r.clientPhone}</span></div>
-    <div class="row"><span class="label">Email</span><span>${r.clientEmail}</span></div>
-    <div class="row"><span class="label">Permis de conduire</span><span>${r.clientLicense}</span></div>
+  <!-- Numéro et date facture -->
+  <div class="inv-meta">
+    <div>
+      <div class="inv-title">FACTURE<span>Location de véhicule</span></div>
+    </div>
+    <div>
+      <div class="inv-badge">FACTURE</div>
+      <div class="inv-num">${invoiceNum}</div>
+      <div class="inv-date">Émise le ${issueDate}</div>
+    </div>
   </div>
 
-  <div class="section">
-    <h3>Véhicule</h3>
-    <div class="row"><span class="label">Voiture</span><span><strong>${car ? `${car.brand} ${car.name}` : r.carId}</strong></span></div>
-    ${car ? `<div class="row"><span class="label">Catégorie</span><span>${car.category}</span></div>
-    <div class="row"><span class="label">Carburant</span><span>${car.fuelType}</span></div>
-    <div class="row"><span class="label">Transmission</span><span>${car.transmission}</span></div>` : ""}
+  <!-- Client + Véhicule -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Facturé à</div>
+      <div class="card-row"><span class="lbl">Nom complet</span><span class="val">${r.clientFirstName} ${r.clientLastName}</span></div>
+      <div class="card-row"><span class="lbl">Téléphone</span><span class="val">${r.clientPhone}</span></div>
+      ${r.clientEmail ? `<div class="card-row"><span class="lbl">Email</span><span class="val">${r.clientEmail}</span></div>` : ""}
+      <div class="card-row"><span class="lbl">N° Permis</span><span class="val">${r.clientLicense}</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Véhicule loué</div>
+      <div class="card-row"><span class="lbl">Modèle</span><span class="val">${car ? `${car.brand} ${car.name}` : r.carId}</span></div>
+      ${car ? `
+      <div class="card-row"><span class="lbl">Catégorie</span><span class="val">${car.category}</span></div>
+      <div class="card-row"><span class="lbl">Carburant</span><span class="val">${car.fuelType}</span></div>
+      <div class="card-row"><span class="lbl">Transmission</span><span class="val">${car.transmission}</span></div>
+      <div class="card-row"><span class="lbl">Année</span><span class="val">${car.year}</span></div>
+      ` : ""}
+    </div>
   </div>
 
-  <div class="section">
-    <h3>Location</h3>
-    <div class="row"><span class="label">Lieu de départ</span><span>${r.pickupLocation}</span></div>
-    <div class="row"><span class="label">Lieu de retour</span><span>${r.dropoffLocation}</span></div>
-    <div class="row"><span class="label">Date de départ</span><span>${r.pickupDate}</span></div>
-    <div class="row"><span class="label">Date de retour</span><span>${r.dropoffDate}</span></div>
-    <div class="row"><span class="label">Durée</span><span><strong>${r.durationDays} jour(s)</strong></span></div>
-    ${car ? `<div class="row"><span class="label">Tarif journalier</span><span>${car.pricePerDay} DH/j</span></div>` : ""}
+  <!-- Période de location -->
+  <div class="period-bar">
+    <div class="period-item">
+      <div class="p-label">Départ</div>
+      <div class="p-value">${r.pickupDate}</div>
+      <div style="font-size:10px;color:#aaa;margin-top:2px">${r.pickupLocation}</div>
+    </div>
+    <div class="period-sep">→</div>
+    <div class="period-item">
+      <div class="p-label">Retour</div>
+      <div class="p-value">${r.dropoffDate}</div>
+      <div style="font-size:10px;color:#aaa;margin-top:2px">${r.dropoffLocation}</div>
+    </div>
+    <div class="period-sep" style="color:#aaa;font-size:14px">|</div>
+    <div class="period-item">
+      <div class="p-label">Durée</div>
+      <div class="p-value">${r.durationDays} jour${r.durationDays > 1 ? "s" : ""}</div>
+    </div>
   </div>
 
-  <div class="total-row">
-    <span style="font-size:15px;font-weight:600;">TOTAL À PAYER</span>
-    <span class="amount">${r.totalPrice} DH</span>
+  <!-- Tableau de facturation -->
+  <table class="billing-table">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Qté</th>
+        <th>P.U. HT</th>
+        <th>TVA</th>
+        <th>Montant HT</th>
+        <th>Montant TTC</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <strong>Location ${car ? `${car.brand} ${car.name}` : "véhicule"}</strong><br>
+          <span style="font-size:11px;color:#888">Du ${r.pickupDate} au ${r.dropoffDate} · ${r.pickupLocation}</span>
+        </td>
+        <td>${r.durationDays} j</td>
+        <td>${pricePerDayHT} DH</td>
+        <td>20%</td>
+        <td>${priceHT} DH</td>
+        <td>${r.totalPrice} DH</td>
+      </tr>
+      <tr style="background:#fafafa">
+        <td colspan="4" style="font-size:11px;color:#aaa;padding-top:6px;padding-bottom:6px">Frais de livraison</td>
+        <td>0 DH</td><td>0 DH</td>
+      </tr>
+      <tr style="background:#fafafa">
+        <td colspan="4" style="font-size:11px;color:#aaa;padding-top:6px;padding-bottom:6px">Frais de reprise</td>
+        <td>0 DH</td><td>0 DH</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Totaux -->
+  <div class="totals">
+    <div class="totals-row"><span class="t-lbl">Sous-total HT</span><span class="t-val">${priceHT} DH</span></div>
+    <div class="totals-tva"><span class="t-lbl">TVA 20%</span><span class="t-val">+ ${tva} DH</span></div>
+    <div class="totals-final"><span class="t-lbl">NET À PAYER TTC</span><span class="t-val">${r.totalPrice} DH</span></div>
   </div>
 
+  <!-- Statut paiement -->
+  <div class="payment-bar">
+    <span class="paid-badge">✓ PAYÉ</span>
+    <span style="color:#166534;font-weight:600">Règlement reçu — Merci pour votre confiance</span>
+    <span style="margin-left:auto;color:#888;font-size:11px">Réf. ${r.id}</span>
+  </div>
+
+  <!-- Mentions légales -->
+  <div class="legal">
+    <strong>Conditions générales :</strong> La location est soumise aux conditions générales d'AutoLoc Maroc. Le locataire est responsable de tout dommage causé au véhicule pendant la période de location.
+    Le véhicule doit être restitué dans l'état initial, avec le même niveau de carburant. Toute heure supplémentaire dépassant l'heure de restitution convenue sera facturée.
+    En cas de sinistre, le locataire doit contacter immédiatement l'agence au +212 6 00 00 00 00.
+  </div>
+
+  <!-- Footer -->
   <div class="footer">
-    <p>AutoLoc Maroc · 123 Boulevard Mohammed V, Casablanca · +212 6 00 00 00 00 · contact@autoloc.ma</p>
-    <p>Merci pour votre confiance.</p>
+    <div>
+      <div><strong>AutoLoc Maroc S.A.R.L</strong> — 123 Bd Mohammed V, Casablanca</div>
+      <div class="footer-ids">ICE : 000000000000000 &nbsp;·&nbsp; RC : 000000 &nbsp;·&nbsp; Patente : 0000000 &nbsp;·&nbsp; IF : 00000000 &nbsp;·&nbsp; CNSS : 0000000</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:11px;color:#e63946;font-weight:bold">${invoiceNum}</div>
+      <div style="font-size:10px;color:#bbb">Document généré le ${issueDate}</div>
+    </div>
   </div>
+
 </body>
 </html>`;
 
@@ -86,10 +224,7 @@ function downloadInvoice(r: Reservation, car: Car | undefined, invoiceNum: strin
   const url = URL.createObjectURL(blob);
   const win = window.open(url, "_blank");
   if (win) {
-    win.onload = () => {
-      win.print();
-      URL.revokeObjectURL(url);
-    };
+    win.onload = () => { win.print(); URL.revokeObjectURL(url); };
   }
 }
 
