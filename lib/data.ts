@@ -3,6 +3,7 @@ export type Car = {
   name: string;
   brand: string;
   pricePerDay: number;
+  discount?: number; // pourcentage de réduction (ex: 20 = -20%)
   fuelType: "Essence" | "Diesel" | "Hybride" | "Electrique";
   transmission: "Automatique" | "Manuelle";
   description: string;
@@ -12,6 +13,30 @@ export type Car = {
   seats: number;
   doors: number;
   category: string;
+};
+
+export type ChargeCategory =
+  | "gazoil" | "lavage" | "vidange" | "vignette"
+  | "assurance" | "credit_bail" | "accident" | "autre";
+
+export const CHARGE_LABELS: Record<ChargeCategory, string> = {
+  gazoil: "Gazoil",
+  lavage: "Lavage",
+  vidange: "Vidange",
+  vignette: "Vignette",
+  assurance: "Assurance",
+  credit_bail: "Crédit bail (mensuel)",
+  accident: "Accident",
+  autre: "Autre",
+};
+
+export type CarCharge = {
+  id: string;
+  carId: string;
+  category: ChargeCategory;
+  amount: number;
+  date: string;
+  note?: string;
 };
 
 export type Reservation = {
@@ -56,8 +81,8 @@ export const CARS: Car[] = [
     transmission: "Manuelle",
     description: "La Dacia Sandero est la voiture économique idéale pour vos déplacements au Maroc. Fiable, spacieuse et économique en carburant, elle s'adapte parfaitement aux routes urbaines et interurbaines.",
     images: [
-      "https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=800",
-      "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=800",
+      "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800",
+      "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800",
     ],
     status: "available",
     year: 2023,
@@ -74,8 +99,8 @@ export const CARS: Car[] = [
     transmission: "Manuelle",
     description: "La Renault Clio allie style, confort et performance. Idéale pour la ville comme pour les longs trajets, cette citadine polyvalente offre une conduite agreable et une consommation maitrisee.",
     images: [
-      "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800",
-      "https://images.unsplash.com/photo-1617469767053-d3b523a0b982?w=800",
+      "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800",
+      "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800",
     ],
     status: "available",
     year: 2023,
@@ -92,8 +117,8 @@ export const CARS: Car[] = [
     transmission: "Automatique",
     description: "La Volkswagen Polo est une reference dans sa categorie. Avec sa finition impeccable, sa tenue de route exemplaire et ses technologies avancees, elle offre une expérience de conduite premium.",
     images: [
-      "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=800",
-      "https://images.unsplash.com/photo-1580274455191-1c62238fa333?w=800",
+      "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=800",
+      "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800",
     ],
     status: "available",
     year: 2024,
@@ -110,8 +135,8 @@ export const CARS: Car[] = [
     transmission: "Automatique",
     description: "Le Hyundai Tucson est un SUV moderne et spacieux, parfait pour les familles et les voyages longue distance. Sa motorisation diesel offre une excellente autonomie et ses équipements garantissent le confort optimal.",
     images: [
-      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800",
-      "https://images.unsplash.com/photo-1615214955832-c48ca7ac5b88?w=800",
+      "https://images.unsplash.com/photo-1526726538690-5cbf956ae2fd?w=800",
+      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800",
     ],
     status: "available",
     year: 2024,
@@ -129,7 +154,7 @@ export const CARS: Car[] = [
     description: "La Mercedes-Benz Classe C incarne l'excellence allemande. Luxe absolu, technologie de pointe et performances remarquables s'associent pour offrir une expérience de conduite inoubliable.",
     images: [
       "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800",
-      "https://images.unsplash.com/photo-1553440569-bcc63803a83d?w=800",
+      "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800",
     ],
     status: "available",
     year: 2024,
@@ -147,7 +172,7 @@ export const CARS: Car[] = [
     description: "La BMW Serie 3 est la reference des berlines sportives. Avec sa dynamique de conduite legendaire, son interieur raffine et ses performances exceptionnelles, elle redefinit le plaisir de conduire.",
     images: [
       "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800",
-      "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800",
+      "https://images.unsplash.com/photo-1556189250-72ba954cfc2b?w=800",
     ],
     status: "rented",
     year: 2024,
@@ -165,7 +190,7 @@ export const CARS: Car[] = [
     description: "La Toyota Yaris Hybride est le choix écologique par excellence. Sa technologie hybride vous permet de réduire votre empreinte carbone tout en profitant d'un confort et d'une fiabilité remarquables.",
     images: [
       "https://images.unsplash.com/photo-1559416523-140ddc3d238c?w=800",
-      "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=800",
+      "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800",
     ],
     status: "available",
     year: 2024,

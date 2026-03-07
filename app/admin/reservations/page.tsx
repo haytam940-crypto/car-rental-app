@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CARS, LOCATIONS, Reservation } from "@/lib/data";
 import { getMergedReservations, updateReservationStatus, saveReservation, getStoredCars } from "@/lib/store";
-import { CheckCircle, XCircle, ArrowLeft, Plus, X } from "lucide-react";
+import { CheckCircle, XCircle, ArrowLeft, Plus, X, Car, ClipboardList, FileText, BarChart2, LayoutDashboard, Globe, LogOut } from "lucide-react";
 
 const TODAY = new Date().toISOString().split("T")[0];
 
@@ -17,8 +17,17 @@ const EMPTY_FORM = {
   message: "",
 };
 
+const navLinks = [
+  { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/admin/reservations", icon: ClipboardList, label: "Réservations" },
+  { href: "/admin/cars", icon: Car, label: "Voitures" },
+  { href: "/admin/invoices", icon: FileText, label: "Factures" },
+  { href: "/admin/analytics", icon: BarChart2, label: "Analytique" },
+];
+
 export default function AdminReservationsPage() {
   const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [filter, setFilter] = useState<"all" | "pending" | "confirmed" | "cancelled">("all");
   const [modal, setModal] = useState(false);
@@ -35,8 +44,8 @@ export default function AdminReservationsPage() {
     setCars(getStoredCars());
   }, [router]);
 
+  const logout = () => { sessionStorage.removeItem("admin_token"); router.push("/admin/login"); };
   const refresh = () => setReservations(getMergedReservations());
-
   const filtered = filter === "all" ? reservations : reservations.filter((r) => r.status === filter);
 
   const changeStatus = (id: string, status: "confirmed" | "cancelled") => {
@@ -49,6 +58,8 @@ export default function AdminReservationsPage() {
     const { clientFirstName, clientLastName, clientPhone, clientLicense, carId, pickupLocation, dropoffLocation, pickupDate, dropoffDate } = form;
     if (!clientFirstName || !clientLastName || !clientPhone || !clientLicense)
       return setFormError("Veuillez remplir tous les champs client.");
+    if (form.clientEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.clientEmail))
+      return setFormError("Adresse email invalide (ex: nom@domaine.com)");
     if (!carId) return setFormError("Veuillez sélectionner une voiture.");
     if (!pickupLocation || !dropoffLocation) return setFormError("Veuillez sélectionner les lieux.");
     if (dropoffDate < pickupDate) return setFormError("La date de retour doit être après la date de départ.");
@@ -57,7 +68,7 @@ export default function AdminReservationsPage() {
     const diffDays = Math.ceil((new Date(dropoffDate).getTime() - new Date(pickupDate).getTime()) / 86400000) || 1;
     const totalPrice = diffDays * (car?.pricePerDay ?? 0);
 
-    const reservation: Reservation = {
+    saveReservation({
       id: `manual-${Date.now()}`,
       carId, clientFirstName, clientLastName, clientPhone,
       clientEmail: form.clientEmail,
@@ -69,148 +80,196 @@ export default function AdminReservationsPage() {
       status: form.status,
       message: form.message || undefined,
       createdAt: TODAY,
-    };
-
-    saveReservation(reservation);
+    });
     refresh();
     setModal(false);
     setForm(EMPTY_FORM);
   };
 
-  const statusStyle = {
-    pending: "bg-yellow-100 text-yellow-700",
-    confirmed: "bg-green-100 text-green-700",
-    cancelled: "bg-red-100 text-red-700",
+  const statusStyle: Record<string, string> = {
+    pending: "bg-yellow-500/15 text-yellow-400 border border-yellow-500/20",
+    confirmed: "bg-green-500/15 text-green-400 border border-green-500/20",
+    cancelled: "bg-red-500/15 text-red-400 border border-red-500/20",
   };
-  const statusLabel = { pending: "En attente", confirmed: "Confirmé", cancelled: "Annulé" };
+  const statusLabel: Record<string, string> = { pending: "En attente", confirmed: "Confirmé", cancelled: "Annulé" };
 
-  const inp = "w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-[#e63946]";
+  const inp = "w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-[#F5C518]/60 transition-colors placeholder-gray-600";
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-[#0d0d1a] text-white px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 text-gray-400 hover:text-white">
-            <ArrowLeft size={18} />
-            Dashboard
-          </Link>
-          <h1 className="text-lg font-bold ml-2">Réservations</h1>
-        </div>
-        <button
-          onClick={() => { setForm(EMPTY_FORM); setFormError(""); setModal(true); }}
-          className="flex items-center gap-2 bg-[#e63946] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#c1121f] transition-colors"
-        >
-          <Plus size={16} />
-          Réservation manuelle
-        </button>
-      </header>
-
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex gap-2 mb-6 flex-wrap">
-          {(["all", "pending", "confirmed", "cancelled"] as const).map((s) => (
-            <button
-              key={s}
-              onClick={() => setFilter(s)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                filter === s ? "bg-[#e63946] text-white" : "bg-white text-gray-600 border border-gray-200 hover:border-[#e63946]"
-              }`}
-            >
-              {s === "all" ? "Toutes" : statusLabel[s]}
-              <span className="ml-2 text-xs opacity-70">
-                ({s === "all" ? reservations.length : reservations.filter((r) => r.status === s).length})
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {filtered.length === 0 ? (
-          <div className="bg-white rounded-2xl p-16 text-center border border-gray-100">
-            <p className="text-gray-400">Aucune réservation trouvée</p>
-          </div>
-        ) : (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-100">
-                  <tr>
-                    {["Client", "Voiture", "Lieu départ → retour", "Dates", "Durée", "Total", "Statut", "Actions"].map((h) => (
-                      <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {filtered.map((r) => {
-                    const car = CARS.find((c) => c.id === r.carId);
-                    return (
-                      <tr key={r.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-4 py-4">
-                          <p className="font-semibold text-sm text-[#1a1a2e]">{r.clientFirstName} {r.clientLastName}</p>
-                          <p className="text-xs text-gray-400">{r.clientPhone}</p>
-                          <p className="text-xs text-gray-400">{r.clientEmail}</p>
-                        </td>
-                        <td className="px-4 py-4">
-                          <p className="text-sm font-medium text-[#1a1a2e]">{car ? `${car.brand} ${car.name}` : r.carId}</p>
-                          <p className="text-xs text-gray-400">{car?.pricePerDay} DH/j</p>
-                        </td>
-                        <td className="px-4 py-4 text-xs text-gray-500 max-w-[180px]">
-                          <p className="truncate">{r.pickupLocation}</p>
-                          <p className="truncate text-gray-400">→ {r.dropoffLocation}</p>
-                        </td>
-                        <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">
-                          <p>{r.pickupDate}</p>
-                          <p className="text-gray-400">→ {r.dropoffDate}</p>
-                        </td>
-                        <td className="px-4 py-4 text-sm text-gray-600 whitespace-nowrap">{r.durationDays}j</td>
-                        <td className="px-4 py-4">
-                          <span className="font-bold text-[#1a1a2e] whitespace-nowrap">{r.totalPrice} DH</span>
-                        </td>
-                        <td className="px-4 py-4">
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${statusStyle[r.status]}`}>
-                            {statusLabel[r.status]}
-                          </span>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="flex items-center gap-2">
-                            {r.status === "pending" && (
-                              <>
-                                <button onClick={() => changeStatus(r.id, "confirmed")} className="p-1.5 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors" title="Confirmer">
-                                  <CheckCircle size={16} />
-                                </button>
-                                <button onClick={() => changeStatus(r.id, "cancelled")} className="p-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors" title="Annuler">
-                                  <XCircle size={16} />
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+    <div className="min-h-screen bg-[#0a0a0a] flex">
+      {/* Sidebar */}
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#0d0d0d] border-r border-white/8 flex flex-col transition-transform duration-300 ${
+        sidebarOpen ? "translate-x-0" : "-translate-x-full"
+      } lg:translate-x-0 lg:static lg:flex`}>
+        <div className="p-6 border-b border-white/8 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-[#F5C518] rounded-lg flex items-center justify-center">
+              <Car size={16} className="text-black" />
+            </div>
+            <div className="text-xl font-black text-white">
+              AUTO<span className="text-[#F5C518]">LOC</span>
+              <span className="text-xs font-normal text-gray-600 ml-1 block -mt-1">Admin</span>
             </div>
           </div>
-        )}
+          <button className="lg:hidden text-gray-500 hover:text-white" onClick={() => setSidebarOpen(false)}>
+            <X size={20} />
+          </button>
+        </div>
+        <nav className="flex-1 p-4 space-y-1">
+          {navLinks.map(({ href, icon: Icon, label }) => (
+            <Link key={href} href={href}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                href === "/admin/reservations"
+                  ? "bg-[#F5C518] text-black font-bold"
+                  : "text-gray-500 hover:bg-white/5 hover:text-white"
+              }`}>
+              <Icon size={17} />{label}
+            </Link>
+          ))}
+        </nav>
+        <div className="p-4 border-t border-white/8 space-y-1">
+          <Link href="/" className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-gray-500 hover:bg-white/5 hover:text-white transition-colors">
+            <Globe size={17} />Voir le site
+          </Link>
+          <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-gray-500 hover:bg-red-500/10 hover:text-red-400 transition-colors">
+            <LogOut size={17} />Déconnexion
+          </button>
+        </div>
+      </aside>
+
+      {sidebarOpen && <div className="fixed inset-0 z-40 bg-black/60 lg:hidden" onClick={() => setSidebarOpen(false)} />}
+
+      {/* Main */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Topbar */}
+        <header className="bg-[#0d0d0d] border-b border-white/8 px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button className="lg:hidden text-gray-500 hover:text-white" onClick={() => setSidebarOpen(true)}>
+              <LayoutDashboard size={22} />
+            </button>
+            <h1 className="text-lg font-bold text-white">Réservations</h1>
+          </div>
+          <button
+            onClick={() => { setForm(EMPTY_FORM); setFormError(""); setModal(true); }}
+            className="flex items-center gap-2 bg-[#F5C518] text-black px-4 py-2 rounded-xl text-sm font-bold hover:bg-[#d4a800] transition-colors"
+          >
+            <Plus size={16} />
+            Réservation manuelle
+          </button>
+        </header>
+
+        <div className="flex-1 p-6">
+          {/* Filter tabs */}
+          <div className="flex gap-2 mb-6 flex-wrap">
+            {(["all", "pending", "confirmed", "cancelled"] as const).map((s) => (
+              <button
+                key={s}
+                onClick={() => setFilter(s)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                  filter === s
+                    ? "bg-[#F5C518] text-black font-bold"
+                    : "bg-[#111111] text-gray-400 border border-white/8 hover:border-[#F5C518]/30 hover:text-white"
+                }`}
+              >
+                {s === "all" ? "Toutes" : statusLabel[s]}
+                <span className="ml-2 text-xs opacity-70">
+                  ({s === "all" ? reservations.length : reservations.filter((r) => r.status === s).length})
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {filtered.length === 0 ? (
+            <div className="bg-[#111111] border border-white/8 rounded-2xl p-16 text-center">
+              <p className="text-gray-500">Aucune réservation trouvée</p>
+            </div>
+          ) : (
+            <div className="bg-[#111111] border border-white/8 rounded-2xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-white/5 border-b border-white/8">
+                    <tr>
+                      {["Client", "Voiture", "Lieu départ → retour", "Dates", "Durée", "Total", "Statut", "Actions"].map((h) => (
+                        <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    {filtered.map((r) => {
+                      const car = CARS.find((c) => c.id === r.carId);
+                      return (
+                        <tr key={r.id} className="hover:bg-white/3 transition-colors">
+                          <td className="px-4 py-4">
+                            <p className="font-semibold text-sm text-white">{r.clientFirstName} {r.clientLastName}</p>
+                            <p className="text-xs text-gray-500">{r.clientPhone}</p>
+                            <p className="text-xs text-gray-600">{r.clientEmail}</p>
+                          </td>
+                          <td className="px-4 py-4">
+                            <p className="text-sm font-medium text-white">{car ? `${car.brand} ${car.name}` : r.carId}</p>
+                            <p className="text-xs text-gray-500">{car?.pricePerDay} DH/j</p>
+                          </td>
+                          <td className="px-4 py-4 text-xs text-gray-500 max-w-[180px]">
+                            <p className="truncate">{r.pickupLocation}</p>
+                            <p className="truncate text-gray-600">→ {r.dropoffLocation}</p>
+                          </td>
+                          <td className="px-4 py-4 text-sm text-gray-400 whitespace-nowrap">
+                            <p>{r.pickupDate}</p>
+                            <p className="text-gray-600">→ {r.dropoffDate}</p>
+                          </td>
+                          <td className="px-4 py-4 text-sm text-gray-400 whitespace-nowrap">{r.durationDays}j</td>
+                          <td className="px-4 py-4">
+                            <span className="font-bold text-[#F5C518] whitespace-nowrap">{r.totalPrice} DH</span>
+                          </td>
+                          <td className="px-4 py-4">
+                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${statusStyle[r.status]}`}>
+                              {statusLabel[r.status]}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4">
+                            <div className="flex items-center gap-2">
+                              {r.status === "pending" && (
+                                <>
+                                  <button onClick={() => changeStatus(r.id, "confirmed")}
+                                    className="p-1.5 bg-green-500/15 text-green-400 rounded-lg hover:bg-green-500/25 transition-colors" title="Confirmer">
+                                    <CheckCircle size={16} />
+                                  </button>
+                                  <button onClick={() => changeStatus(r.id, "cancelled")}
+                                    className="p-1.5 bg-red-500/15 text-red-400 rounded-lg hover:bg-red-500/25 transition-colors" title="Annuler">
+                                    <XCircle size={16} />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Modal réservation manuelle */}
       {modal && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4">
-          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-4">
+          <div className="bg-[#111111] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-white/8">
               <div>
-                <h2 className="font-bold text-[#1a1a2e] text-lg">Nouvelle réservation manuelle</h2>
-                <p className="text-xs text-gray-400 mt-0.5">Client en agence — saisie directe dans le système</p>
+                <h2 className="font-bold text-white text-lg">Nouvelle réservation manuelle</h2>
+                <p className="text-xs text-gray-500 mt-0.5">Client en agence — saisie directe dans le système</p>
               </div>
-              <button onClick={() => setModal(false)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+              <button onClick={() => setModal(false)} className="text-gray-500 hover:text-white"><X size={20} /></button>
             </div>
 
             <div className="p-6 space-y-5">
               {/* Client */}
               <div>
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Informations client</h3>
+                <h3 className="text-[10px] font-bold text-[#F5C518] uppercase tracking-widest mb-3">Informations client</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Prénom *</label>
@@ -229,7 +288,7 @@ export default function AdminReservationsPage() {
                     <input className={inp} type="email" value={form.clientEmail} onChange={(e) => setForm({ ...form, clientEmail: e.target.value })} placeholder="email@exemple.com" />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-xs text-gray-500 mb-1">N° Permis de conduire *</label>
+                    <label className="block text-xs text-gray-500 mb-1">N° Permis *</label>
                     <input className={inp} value={form.clientLicense} onChange={(e) => setForm({ ...form, clientLicense: e.target.value })} placeholder="B-2020-XXXXXX" />
                   </div>
                 </div>
@@ -237,18 +296,18 @@ export default function AdminReservationsPage() {
 
               {/* Voiture */}
               <div>
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Véhicule</h3>
-                <select className={inp} value={form.carId} onChange={(e) => setForm({ ...form, carId: e.target.value })}>
-                  <option value="">Sélectionner une voiture...</option>
+                <h3 className="text-[10px] font-bold text-[#F5C518] uppercase tracking-widest mb-3">Véhicule</h3>
+                <select className={inp} value={form.carId} onChange={(e) => setForm({ ...form, carId: e.target.value })} style={{ colorScheme: "dark" }}>
+                  <option value="" className="bg-[#1a1a1a]">Sélectionner une voiture...</option>
                   {cars.filter((c) => c.status === "available").map((c) => (
-                    <option key={c.id} value={c.id}>{c.brand} {c.name} — {c.pricePerDay} DH/j ({c.fuelType})</option>
+                    <option key={c.id} value={c.id} className="bg-[#1a1a1a]">{c.brand} {c.name} — {c.pricePerDay} DH/j</option>
                   ))}
                 </select>
                 {form.carId && (() => {
                   const car = cars.find((c) => c.id === form.carId);
                   const days = Math.ceil((new Date(form.dropoffDate).getTime() - new Date(form.pickupDate).getTime()) / 86400000) || 1;
                   return car ? (
-                    <p className="text-xs text-[#e63946] font-semibold mt-1.5">
+                    <p className="text-xs text-[#F5C518] font-semibold mt-1.5">
                       {days} jour(s) × {car.pricePerDay} DH = <strong>{days * car.pricePerDay} DH</strong>
                     </p>
                   ) : null;
@@ -257,20 +316,20 @@ export default function AdminReservationsPage() {
 
               {/* Lieux */}
               <div>
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Lieux</h3>
+                <h3 className="text-[10px] font-bold text-[#F5C518] uppercase tracking-widest mb-3">Lieux</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Lieu de départ *</label>
-                    <select className={inp} value={form.pickupLocation} onChange={(e) => setForm({ ...form, pickupLocation: e.target.value })}>
-                      <option value="">Choisir...</option>
-                      {LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}
+                    <select className={inp} value={form.pickupLocation} onChange={(e) => setForm({ ...form, pickupLocation: e.target.value })} style={{ colorScheme: "dark" }}>
+                      <option value="" className="bg-[#1a1a1a]">Choisir...</option>
+                      {LOCATIONS.map((l) => <option key={l} value={l} className="bg-[#1a1a1a]">{l}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Lieu de retour *</label>
-                    <select className={inp} value={form.dropoffLocation} onChange={(e) => setForm({ ...form, dropoffLocation: e.target.value })}>
-                      <option value="">Choisir...</option>
-                      {LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}
+                    <select className={inp} value={form.dropoffLocation} onChange={(e) => setForm({ ...form, dropoffLocation: e.target.value })} style={{ colorScheme: "dark" }}>
+                      <option value="" className="bg-[#1a1a1a]">Choisir...</option>
+                      {LOCATIONS.map((l) => <option key={l} value={l} className="bg-[#1a1a1a]">{l}</option>)}
                     </select>
                   </div>
                 </div>
@@ -278,31 +337,31 @@ export default function AdminReservationsPage() {
 
               {/* Dates */}
               <div>
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Période de location</h3>
+                <h3 className="text-[10px] font-bold text-[#F5C518] uppercase tracking-widest mb-3">Période de location</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Date de départ *</label>
-                    <input className={inp} type="date" value={form.pickupDate} onChange={(e) => setForm({ ...form, pickupDate: e.target.value })} />
+                    <input className={inp} type="date" value={form.pickupDate} onChange={(e) => setForm({ ...form, pickupDate: e.target.value })} style={{ colorScheme: "dark" }} />
                   </div>
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Date de retour *</label>
-                    <input className={inp} type="date" min={form.pickupDate} value={form.dropoffDate} onChange={(e) => setForm({ ...form, dropoffDate: e.target.value })} />
+                    <input className={inp} type="date" min={form.pickupDate} value={form.dropoffDate} onChange={(e) => setForm({ ...form, dropoffDate: e.target.value })} style={{ colorScheme: "dark" }} />
                   </div>
                 </div>
               </div>
 
               {/* Statut */}
               <div>
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Statut initial</h3>
+                <h3 className="text-[10px] font-bold text-[#F5C518] uppercase tracking-widest mb-3">Statut initial</h3>
                 <div className="flex gap-3">
                   {(["confirmed", "pending"] as const).map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => setForm({ ...form, status: s })}
+                    <button key={s} onClick={() => setForm({ ...form, status: s })}
                       className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-colors ${
                         form.status === s
-                          ? s === "confirmed" ? "bg-green-500 text-white border-green-500" : "bg-yellow-400 text-white border-yellow-400"
-                          : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
+                          ? s === "confirmed"
+                            ? "bg-green-500/20 text-green-400 border-green-500/30"
+                            : "bg-[#F5C518]/15 text-[#F5C518] border-[#F5C518]/30"
+                          : "bg-white/5 text-gray-500 border-white/10 hover:border-white/20"
                       }`}
                     >
                       {s === "confirmed" ? "✓ Confirmée" : "⏳ En attente"}
@@ -318,15 +377,15 @@ export default function AdminReservationsPage() {
               </div>
 
               {formError && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600">{formError}</div>
+                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-sm text-red-400">{formError}</div>
               )}
             </div>
 
-            <div className="p-6 border-t border-gray-100 flex gap-3 justify-end">
-              <button onClick={() => setModal(false)} className="px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50">
+            <div className="p-6 border-t border-white/8 flex gap-3 justify-end">
+              <button onClick={() => setModal(false)} className="px-5 py-2.5 rounded-xl border border-white/10 text-sm font-medium text-gray-400 hover:bg-white/5">
                 Annuler
               </button>
-              <button onClick={handleAdd} className="px-6 py-2.5 rounded-xl bg-[#e63946] text-white text-sm font-bold hover:bg-[#c1121f] transition-colors">
+              <button onClick={handleAdd} className="px-6 py-2.5 rounded-xl bg-[#F5C518] text-black text-sm font-bold hover:bg-[#d4a800] transition-colors">
                 Enregistrer la réservation
               </button>
             </div>

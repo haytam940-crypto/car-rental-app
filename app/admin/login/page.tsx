@@ -50,7 +50,7 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
           <div className="text-3xl font-black text-white mb-1">
-            AUTO<span className="text-[#e63946]">LOC</span>
+            AUTO<span className="text-[#F5C518]">LOC</span>
           </div>
           <p className="text-gray-500 text-sm">Espace Administrateur</p>
         </div>
@@ -69,7 +69,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="votre@email.com"
                 autoComplete="username"
-                className="w-full bg-white/10 border border-white/20 text-white placeholder-gray-500 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#e63946] transition-colors"
+                className="w-full bg-white/10 border border-white/20 text-white placeholder-gray-500 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#F5C518]/60 transition-colors"
                 required
               />
             </div>
@@ -84,7 +84,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 autoComplete="current-password"
-                className="w-full bg-white/10 border border-white/20 text-white placeholder-gray-500 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#e63946] transition-colors"
+                className="w-full bg-white/10 border border-white/20 text-white placeholder-gray-500 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#F5C518]/60 transition-colors"
                 required
               />
             </div>
@@ -103,7 +103,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading || attempts >= MAX_ATTEMPTS}
-              className="w-full bg-[#e63946] text-white py-3.5 rounded-xl font-bold hover:bg-[#c1121f] transition-colors disabled:opacity-60 mt-2"
+              className="w-full w-full bg-[#F5C518] text-black py-3.5 rounded-xl font-bold hover:bg-[#d4a800] transition-colors disabled:opacity-60 mt-2"
             >
               {loading ? "Connexion..." : "Se connecter"}
             </button>

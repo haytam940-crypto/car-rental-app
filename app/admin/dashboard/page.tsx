@@ -7,8 +7,16 @@ import { getMergedReservations } from "@/lib/store";
 import { Reservation } from "@/lib/data";
 import {
   Car, ClipboardList, TrendingUp, CheckCircle, Clock,
-  LogOut, LayoutDashboard, Settings, FileText, Menu, X
+  LogOut, LayoutDashboard, FileText, Menu, X, BarChart2, Globe
 } from "lucide-react";
+
+const navLinks = [
+  { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/admin/reservations", icon: ClipboardList, label: "Réservations" },
+  { href: "/admin/cars", icon: Car, label: "Voitures" },
+  { href: "/admin/invoices", icon: FileText, label: "Factures" },
+  { href: "/admin/analytics", icon: BarChart2, label: "Analytique" },
+];
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -36,26 +44,31 @@ export default function AdminDashboard() {
     .filter((r) => r.status === "confirmed")
     .reduce((sum, r) => sum + r.totalPrice, 0);
 
-  const navLinks = [
-    { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/admin/reservations", icon: ClipboardList, label: "RESERVATIONS" },
-    { href: "/admin/cars", icon: Car, label: "Voitures" },
-    { href: "/admin/invoices", icon: FileText, label: "Factures" },
-  ];
+  const statusLabel: Record<string, string> = { pending: "En attente", confirmed: "Confirmé", cancelled: "Annulé" };
+  const statusStyle: Record<string, string> = {
+    pending: "bg-yellow-500/15 text-yellow-400 border border-yellow-500/20",
+    confirmed: "bg-green-500/15 text-green-400 border border-green-500/20",
+    cancelled: "bg-red-500/15 text-red-400 border border-red-500/20",
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-[#0a0a0a] flex">
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#0d0d1a] flex flex-col transition-transform duration-300 ${
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#0d0d0d] border-r border-white/8 flex flex-col transition-transform duration-300 ${
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       } lg:translate-x-0 lg:static lg:flex`}>
         {/* Logo */}
-        <div className="p-6 border-b border-white/10 flex items-center justify-between">
-          <div className="text-xl font-black text-white">
-            AUTO<span className="text-[#e63946]">LOC</span>
-            <span className="text-xs font-normal text-gray-500 ml-1">Admin</span>
+        <div className="p-6 border-b border-white/8 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-[#F5C518] rounded-lg flex items-center justify-center">
+              <Car size={16} className="text-black" />
+            </div>
+            <div className="text-xl font-black text-white">
+              AUTO<span className="text-[#F5C518]">LOC</span>
+              <span className="text-xs font-normal text-gray-600 ml-1 block -mt-1">Admin</span>
+            </div>
           </div>
-          <button className="lg:hidden text-gray-400" onClick={() => setSidebarOpen(false)}>
+          <button className="lg:hidden text-gray-500 hover:text-white" onClick={() => setSidebarOpen(false)}>
             <X size={20} />
           </button>
         </div>
@@ -68,49 +81,55 @@ export default function AdminDashboard() {
               href={href}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                 href === "/admin/dashboard"
-                  ? "bg-[#e63946] text-white"
-                  : "text-gray-400 hover:bg-white/5 hover:text-white"
+                  ? "bg-[#F5C518] text-black font-bold"
+                  : "text-gray-500 hover:bg-white/5 hover:text-white"
               }`}
             >
-              <Icon size={18} />
+              <Icon size={17} />
               {label}
             </Link>
           ))}
         </nav>
 
-        {/* Logout */}
-        <div className="p-4 border-t border-white/10">
+        {/* View site + Logout */}
+        <div className="p-4 border-t border-white/8 space-y-1">
+          <Link href="/" className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-gray-500 hover:bg-white/5 hover:text-white transition-colors">
+            <Globe size={17} />
+            Voir le site
+          </Link>
           <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-gray-400 hover:bg-white/5 hover:text-red-400 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-gray-500 hover:bg-red-500/10 hover:text-red-400 transition-colors"
           >
-            <LogOut size={18} />
-            Deconnexion
+            <LogOut size={17} />
+            Déconnexion
           </button>
         </div>
       </aside>
 
       {/* Overlay mobile */}
       {sidebarOpen && (
-        <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 z-40 bg-black/60 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Topbar */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <header className="bg-[#0d0d0d] border-b border-white/8 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button className="lg:hidden text-gray-500" onClick={() => setSidebarOpen(true)}>
+            <button className="lg:hidden text-gray-500 hover:text-white" onClick={() => setSidebarOpen(true)}>
               <Menu size={22} />
             </button>
             <div>
-              <h1 className="text-lg font-bold text-[#1a1a2e]">Dashboard</h1>
-              <p className="text-xs text-gray-400">{new Date().toLocaleDateString("fr-FR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
+              <h1 className="text-lg font-bold text-white">Dashboard</h1>
+              <p className="text-xs text-gray-500">
+                {new Date().toLocaleDateString("fr-FR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full">
-            <div className="w-7 h-7 bg-[#e63946] rounded-full flex items-center justify-center text-white text-xs font-bold">A</div>
-            <span className="text-sm font-medium text-[#1a1a2e] hidden sm:block">Admin</span>
+          <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
+            <div className="w-7 h-7 bg-[#F5C518] rounded-full flex items-center justify-center text-black text-xs font-black">A</div>
+            <span className="text-sm font-medium text-white hidden sm:block">Admin</span>
           </div>
         </header>
 
@@ -119,41 +138,41 @@ export default function AdminDashboard() {
           {/* KPI Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {[
-              { label: "CA du mois", value: `${totalRevenue.toLocaleString()} DH`, icon: TrendingUp, color: "bg-[#e63946]", change: `${allReservations.length} réservations` },
-              { label: "Réservations en attente", value: pending, icon: Clock, color: "bg-yellow-500", change: `${allReservations.length} total` },
-              { label: "Voitures disponibles", value: available, icon: Car, color: "bg-green-500", change: `${rented} louées` },
-              { label: "Confirmees", value: confirmed, icon: CheckCircle, color: "bg-blue-500", change: "ce mois" },
-            ].map(({ label, value, icon: Icon, color, change }) => (
-              <div key={label} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              { label: "CA confirmé", value: `${totalRevenue.toLocaleString()} DH`, icon: TrendingUp, accent: "text-[#F5C518]", bg: "bg-[#F5C518]/10 border-[#F5C518]/20", change: `${allReservations.length} réservations` },
+              { label: "En attente", value: pending, icon: Clock, accent: "text-yellow-400", bg: "bg-yellow-500/10 border-yellow-500/20", change: `${allReservations.length} total` },
+              { label: "Disponibles", value: available, icon: Car, accent: "text-green-400", bg: "bg-green-500/10 border-green-500/20", change: `${rented} louées` },
+              { label: "Confirmées", value: confirmed, icon: CheckCircle, accent: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20", change: "ce mois" },
+            ].map(({ label, value, icon: Icon, accent, bg, change }) => (
+              <div key={label} className="bg-[#111111] border border-white/8 rounded-2xl p-5">
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`w-10 h-10 ${color} rounded-xl flex items-center justify-center`}>
-                    <Icon size={20} className="text-white" />
+                  <div className={`w-10 h-10 ${bg} border rounded-xl flex items-center justify-center`}>
+                    <Icon size={20} className={accent} />
                   </div>
-                  <span className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-full">{change}</span>
+                  <span className="text-xs text-gray-600 bg-white/5 px-2 py-1 rounded-full">{change}</span>
                 </div>
-                <div className="text-2xl font-black text-[#1a1a2e] mb-1">{value}</div>
-                <div className="text-xs text-gray-400">{label}</div>
+                <div className={`text-2xl font-black mb-1 ${accent}`}>{value}</div>
+                <div className="text-xs text-gray-500">{label}</div>
               </div>
             ))}
           </div>
 
-          {/* Fleet overview */}
+          {/* Fleet + Réservations récentes */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {/* Fleet status */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <h2 className="font-bold text-[#1a1a2e] mb-5">Etat du parc</h2>
-              <div className="space-y-3">
+            <div className="bg-[#111111] border border-white/8 rounded-2xl p-6">
+              <h2 className="font-bold text-white mb-5 text-sm uppercase tracking-wider">État du parc</h2>
+              <div className="space-y-4">
                 {[
                   { label: "Disponibles", count: available, total: CARS.length, color: "bg-green-500" },
-                  { label: "Louées", count: rented, total: CARS.length, color: "bg-[#e63946]" },
-                  { label: "Maintenance", count: CARS.filter(c => c.status === "maintenance").length, total: CARS.length, color: "bg-yellow-500" },
+                  { label: "Louées", count: rented, total: CARS.length, color: "bg-[#F5C518]" },
+                  { label: "Maintenance", count: CARS.filter(c => c.status === "maintenance").length, total: CARS.length, color: "bg-red-500" },
                 ].map(({ label, count, total, color }) => (
                   <div key={label}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-600">{label}</span>
-                      <span className="font-bold text-[#1a1a2e]">{count}/{total}</span>
+                    <div className="flex justify-between text-sm mb-1.5">
+                      <span className="text-gray-400">{label}</span>
+                      <span className="font-bold text-white">{count}/{total}</span>
                     </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-2 bg-white/5 rounded-full overflow-hidden">
                       <div
                         className={`h-full ${color} rounded-full transition-all`}
                         style={{ width: `${(count / total) * 100}%` }}
@@ -165,39 +184,34 @@ export default function AdminDashboard() {
             </div>
 
             {/* Recent réservations */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div className="bg-[#111111] border border-white/8 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-5">
-                <h2 className="font-bold text-[#1a1a2e]">Réservations récentes</h2>
-                <Link href="/admin/reservations" className="text-[#e63946] text-xs font-medium hover:underline">
-                  Voir tout
+                <h2 className="font-bold text-white text-sm uppercase tracking-wider">Réservations récentes</h2>
+                <Link href="/admin/reservations" className="text-[#F5C518] text-xs font-medium hover:underline">
+                  Voir tout →
                 </Link>
               </div>
               <div className="space-y-3">
                 {allReservations.slice(0, 3).map((r) => {
                   const car = CARS.find((c) => c.id === r.carId);
-                  const statusStyle = {
-                    pending: "bg-yellow-100 text-yellow-700",
-                    confirmed: "bg-green-100 text-green-700",
-                    cancelled: "bg-red-100 text-red-700",
-                  }[r.status];
-                  const statusLabel = { pending: "En attente", confirmed: "Confirme", cancelled: "Annule" }[r.status];
                   return (
-                    <div key={r.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                    <div key={r.id} className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/8">
                       <div>
-                        <p className="font-semibold text-sm text-[#1a1a2e]">
-                          {r.clientFirstName} {r.clientLastName}
-                        </p>
-                        <p className="text-xs text-gray-400">{car?.brand} {car?.name}</p>
+                        <p className="font-semibold text-sm text-white">{r.clientFirstName} {r.clientLastName}</p>
+                        <p className="text-xs text-gray-500">{car?.brand} {car?.name}</p>
                       </div>
                       <div className="text-right">
-                        <span className={`text-xs px-2 py-1 rounded-full font-semibold ${statusStyle}`}>
-                          {statusLabel}
+                        <span className={`text-xs px-2 py-1 rounded-full font-semibold ${statusStyle[r.status]}`}>
+                          {statusLabel[r.status]}
                         </span>
-                        <p className="text-xs font-bold text-[#1a1a2e] mt-1">{r.totalPrice} DH</p>
+                        <p className="text-xs font-bold text-[#F5C518] mt-1">{r.totalPrice} DH</p>
                       </div>
                     </div>
                   );
                 })}
+                {allReservations.length === 0 && (
+                  <p className="text-gray-600 text-sm text-center py-4">Aucune réservation</p>
+                )}
               </div>
             </div>
           </div>
@@ -205,15 +219,19 @@ export default function AdminDashboard() {
           {/* Quick actions */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { href: "/admin/cars", label: "Ajouter voiture", icon: Car, color: "bg-[#1a1a2e] text-white" },
-              { href: "/admin/reservations", label: "Voir réservations", icon: ClipboardList, color: "bg-[#e63946] text-white" },
-              { href: "/admin/invoices", label: "Factures", icon: FileText, color: "bg-blue-600 text-white" },
-              { href: "/", label: "Voir le site", icon: Settings, color: "bg-gray-100 text-gray-700" },
-            ].map(({ href, label, icon: Icon, color }) => (
+              { href: "/admin/cars", label: "Ajouter voiture", icon: Car },
+              { href: "/admin/reservations", label: "Réservations", icon: ClipboardList },
+              { href: "/admin/invoices", label: "Factures", icon: FileText },
+              { href: "/admin/analytics", label: "Analytique", icon: BarChart2 },
+            ].map(({ href, label, icon: Icon }, i) => (
               <Link
                 key={href}
                 href={href}
-                className={`${color} p-5 rounded-2xl flex flex-col items-center gap-3 hover:opacity-90 transition-opacity text-center`}
+                className={`p-5 rounded-2xl border flex flex-col items-center gap-3 hover:border-[#F5C518]/40 transition-all text-center group ${
+                  i === 0
+                    ? "bg-[#F5C518] border-[#F5C518] text-black hover:bg-[#d4a800]"
+                    : "bg-[#111111] border-white/8 text-gray-400 hover:text-white"
+                }`}
               >
                 <Icon size={22} />
                 <span className="text-sm font-semibold">{label}</span>

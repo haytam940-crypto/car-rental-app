@@ -1,4 +1,4 @@
-import { Reservation, RESERVATIONS, Car, CARS } from "./data";
+import { Reservation, RESERVATIONS, Car, CARS, CarCharge } from "./data";
 
 const KEY = "autoloc_reservations";
 
@@ -53,6 +53,36 @@ export function deleteCar(id: string): void {
   if (typeof window === "undefined") return;
   const updated = getStoredCars().filter((c) => c.id !== id);
   localStorage.setItem(CARS_KEY, JSON.stringify(updated));
+}
+
+// ─── Reservations ────────────────────────────────────────────────────────────
+
+// ─── Charges ─────────────────────────────────────────────────────────────────
+
+const CHARGES_KEY = "autoloc_charges";
+
+export function getStoredCharges(): CarCharge[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(CHARGES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+export function saveCharge(charge: CarCharge): void {
+  if (typeof window === "undefined") return;
+  const existing = getStoredCharges();
+  const idx = existing.findIndex((c) => c.id === charge.id);
+  const updated = idx >= 0
+    ? existing.map((c) => (c.id === charge.id ? charge : c))
+    : [...existing, charge];
+  localStorage.setItem(CHARGES_KEY, JSON.stringify(updated));
+}
+
+export function deleteCharge(id: string): void {
+  if (typeof window === "undefined") return;
+  const updated = getStoredCharges().filter((c) => c.id !== id);
+  localStorage.setItem(CHARGES_KEY, JSON.stringify(updated));
 }
 
 // ─── Reservations ────────────────────────────────────────────────────────────

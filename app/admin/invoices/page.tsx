@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CARS, Car, Reservation } from "@/lib/data";
 import { getMergedReservations } from "@/lib/store";
-import { FileText, Download, ArrowLeft, ScrollText } from "lucide-react";
+import { FileText, Download, ArrowLeft, ScrollText, X } from "lucide-react";
 
 function downloadInvoice(r: Reservation, car: Car | undefined, invoiceNum: string) {
   const priceHT = Math.round(r.totalPrice / 1.2);
@@ -228,7 +228,21 @@ function downloadInvoice(r: Reservation, car: Car | undefined, invoiceNum: strin
   }
 }
 
-function downloadContract(r: Reservation, car: Car | undefined, contractNum: string) {
+type ContractExtras = {
+  // Conducteur 1
+  dateNaissance: string; lieuNaissance: string; adresse: string;
+  permisDelivreLe: string; permisDelivreVille: string; permisDelivrePays: string;
+  cinPasseport: string; cinDelivreLe: string; cinDelivreVille: string; cinDelivrePays: string;
+  arriveeMaroc: string; numEntree: string; matricule: string;
+  pickupTime: string; dropoffTime: string;
+  // Conducteur 2 (optionnel)
+  d2Nom: string; d2Prenom: string; d2DateNaissance: string; d2LieuNaissance: string; d2Adresse: string;
+  d2Permis: string; d2PermisDelivreLe: string; d2PermisDelivreVille: string; d2PermisDelivrePays: string;
+  d2CinPasseport: string; d2CinDelivreLe: string; d2CinDelivreVille: string; d2CinDelivrePays: string;
+  d2ArriveeMaroc: string; d2NumEntree: string; d2Telephone: string;
+};
+
+function downloadContract(r: Reservation, car: Car | undefined, contractNum: string, x: ContractExtras) {
   const totalHT = Math.round(r.totalPrice / 1.2);
   const tva = r.totalPrice - totalHT;
   const html = `<!DOCTYPE html>
@@ -296,7 +310,7 @@ function downloadContract(r: Reservation, car: Car | undefined, contractNum: str
 
   <div class="veh-header">
     <div><strong>Marque :</strong> <strong>${car ? `${car.brand} ${car.name}` : "—"}</strong></div>
-    <div><strong>Matricule :</strong> _____________________</div>
+    <div><strong>Matricule :</strong> <strong>${x.matricule || "_____________________"}</strong></div>
     <div><strong>Carburant :</strong> <strong>${car?.fuelType ?? "—"}</strong></div>
   </div>
 
@@ -307,29 +321,29 @@ function downloadContract(r: Reservation, car: Car | undefined, contractNum: str
         <div class="sec-body">
           <div class="fr"><span class="fl">Nom :</span><span class="fv">${r.clientLastName.toUpperCase()}</span></div>
           <div class="fr"><span class="fl">Prénom :</span><span class="fv">${r.clientFirstName}</span></div>
-          <div class="fr"><span class="fl">Date et Lieu de Naissance :</span><span class="fv"></span></div>
-          <div class="fr"><span class="fl">Adresse :</span><span class="fv"></span></div>
+          <div class="fr"><span class="fl">Date et Lieu de Naissance :</span><span class="fv">${x.dateNaissance}${x.lieuNaissance ? " — " + x.lieuNaissance : ""}</span></div>
+          <div class="fr"><span class="fl">Adresse :</span><span class="fv">${x.adresse}</span></div>
           <div class="fr"><span class="fl">Permis de conduire N° :</span><span class="fv">${r.clientLicense}</span></div>
-          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:5px"></span><span style="font-size:11px">À</span><span class="fv" style="flex:.6;margin:0 4px"></span><span style="font-size:11px">Pays :</span><span class="fv" style="flex:.5;margin-left:4px"></span></div>
-          <div class="fr"><span class="fl">C.I.N / Passeport N° :</span><span class="fv"></span></div>
-          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:5px"></span><span style="font-size:11px">À</span><span class="fv" style="flex:.6;margin:0 4px"></span><span style="font-size:11px">Pays :</span><span class="fv" style="flex:.5;margin-left:4px"></span></div>
-          <div class="fr"><span class="fl">Arrivée au Maroc le :</span><span class="fv" style="flex:.5;margin-right:5px"></span><span style="font-size:11px">N° Entrée :</span><span class="fv" style="margin-left:4px"></span></div>
+          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:5px">${x.permisDelivreLe}</span><span style="font-size:11px">À</span><span class="fv" style="flex:.6;margin:0 4px">${x.permisDelivreVille}</span><span style="font-size:11px">Pays :</span><span class="fv" style="flex:.5;margin-left:4px">${x.permisDelivrePays}</span></div>
+          <div class="fr"><span class="fl">C.I.N / Passeport N° :</span><span class="fv">${x.cinPasseport}</span></div>
+          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:5px">${x.cinDelivreLe}</span><span style="font-size:11px">À</span><span class="fv" style="flex:.6;margin:0 4px">${x.cinDelivreVille}</span><span style="font-size:11px">Pays :</span><span class="fv" style="flex:.5;margin-left:4px">${x.cinDelivrePays}</span></div>
+          <div class="fr"><span class="fl">Arrivée au Maroc le :</span><span class="fv" style="flex:.5;margin-right:5px">${x.arriveeMaroc}</span><span style="font-size:11px">N° Entrée :</span><span class="fv" style="margin-left:4px">${x.numEntree}</span></div>
           <div class="fr"><span class="fl">N° téléphone :</span><span class="fv">${r.clientPhone}</span></div>
         </div>
       </div>
       <div class="section">
         <div class="sec-title">Conducteur N°2 :</div>
         <div class="sec-body">
-          <div class="fr"><span class="fl">Nom :</span><span class="fv"></span></div>
-          <div class="fr"><span class="fl">Prénom :</span><span class="fv"></span></div>
-          <div class="fr"><span class="fl">Date et Lieu de Naissance :</span><span class="fv"></span></div>
-          <div class="fr"><span class="fl">Adresse :</span><span class="fv"></span></div>
-          <div class="fr"><span class="fl">Permis de conduire N° :</span><span class="fv"></span></div>
-          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:5px"></span><span style="font-size:11px">À</span><span class="fv" style="flex:.6;margin:0 4px"></span><span style="font-size:11px">Pays :</span><span class="fv" style="flex:.5;margin-left:4px"></span></div>
-          <div class="fr"><span class="fl">C.I.N / Passeport N° :</span><span class="fv"></span></div>
-          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:5px"></span><span style="font-size:11px">À</span><span class="fv" style="flex:.6;margin:0 4px"></span><span style="font-size:11px">Pays :</span><span class="fv" style="flex:.5;margin-left:4px"></span></div>
-          <div class="fr"><span class="fl">Arrivée au Maroc le :</span><span class="fv" style="flex:.5;margin-right:5px"></span><span style="font-size:11px">N° Entrée :</span><span class="fv" style="margin-left:4px"></span></div>
-          <div class="fr"><span class="fl">N° téléphone :</span><span class="fv"></span></div>
+          <div class="fr"><span class="fl">Nom :</span><span class="fv">${x.d2Nom}</span></div>
+          <div class="fr"><span class="fl">Prénom :</span><span class="fv">${x.d2Prenom}</span></div>
+          <div class="fr"><span class="fl">Date et Lieu de Naissance :</span><span class="fv">${x.d2DateNaissance}${x.d2LieuNaissance ? " — " + x.d2LieuNaissance : ""}</span></div>
+          <div class="fr"><span class="fl">Adresse :</span><span class="fv">${x.d2Adresse}</span></div>
+          <div class="fr"><span class="fl">Permis de conduire N° :</span><span class="fv">${x.d2Permis}</span></div>
+          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:5px">${x.d2PermisDelivreLe}</span><span style="font-size:11px">À</span><span class="fv" style="flex:.6;margin:0 4px">${x.d2PermisDelivreVille}</span><span style="font-size:11px">Pays :</span><span class="fv" style="flex:.5;margin-left:4px">${x.d2PermisDelivrePays}</span></div>
+          <div class="fr"><span class="fl">C.I.N / Passeport N° :</span><span class="fv">${x.d2CinPasseport}</span></div>
+          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:5px">${x.d2CinDelivreLe}</span><span style="font-size:11px">À</span><span class="fv" style="flex:.6;margin:0 4px">${x.d2CinDelivreVille}</span><span style="font-size:11px">Pays :</span><span class="fv" style="flex:.5;margin-left:4px">${x.d2CinDelivrePays}</span></div>
+          <div class="fr"><span class="fl">Arrivée au Maroc le :</span><span class="fv" style="flex:.5;margin-right:5px">${x.d2ArriveeMaroc}</span><span style="font-size:11px">N° Entrée :</span><span class="fv" style="margin-left:4px">${x.d2NumEntree}</span></div>
+          <div class="fr"><span class="fl">N° téléphone :</span><span class="fv">${x.d2Telephone}</span></div>
         </div>
       </div>
     </div>
@@ -339,7 +353,7 @@ function downloadContract(r: Reservation, car: Car | undefined, contractNum: str
         <table class="lr-table">
           <tr><th></th><th>LIVRAISON</th><th>REPRISE</th></tr>
           <tr><td>Le</td><td><strong>${r.pickupDate}</strong></td><td><strong>${r.dropoffDate}</strong></td></tr>
-          <tr><td>Heure</td><td><strong>08:30:00</strong></td><td><strong>08:30:00</strong></td></tr>
+          <tr><td>Heure</td><td><strong>${x.pickupTime}</strong></td><td><strong>${x.dropoffTime}</strong></td></tr>
           <tr><td>Lieu</td><td><strong style="font-size:10.5px">${r.pickupLocation}</strong></td><td><strong style="font-size:10.5px">${r.dropoffLocation}</strong></td></tr>
           <tr><td>Frais</td><td>0</td><td>0</td></tr>
         </table>
@@ -461,9 +475,49 @@ function downloadContract(r: Reservation, car: Car | undefined, contractNum: str
   }
 }
 
+const EMPTY_EXTRAS: ContractExtras = {
+  dateNaissance: "", lieuNaissance: "", adresse: "",
+  permisDelivreLe: "", permisDelivreVille: "", permisDelivrePays: "Maroc",
+  cinPasseport: "", cinDelivreLe: "", cinDelivreVille: "", cinDelivrePays: "Maroc",
+  arriveeMaroc: "", numEntree: "", matricule: "",
+  pickupTime: "09:00", dropoffTime: "09:00",
+  d2Nom: "", d2Prenom: "", d2DateNaissance: "", d2LieuNaissance: "", d2Adresse: "",
+  d2Permis: "", d2PermisDelivreLe: "", d2PermisDelivreVille: "", d2PermisDelivrePays: "Maroc",
+  d2CinPasseport: "", d2CinDelivreLe: "", d2CinDelivreVille: "", d2CinDelivrePays: "Maroc",
+  d2ArriveeMaroc: "", d2NumEntree: "", d2Telephone: "",
+};
+
 export default function AdminInvoicesPage() {
   const router = useRouter();
   const [confirmedReservations, setConfirmedReservations] = useState<Reservation[]>([]);
+  const [contractModal, setContractModal] = useState<{
+    open: boolean; r: Reservation | null; car: Car | undefined; contractNum: string;
+  }>({ open: false, r: null, car: undefined, contractNum: "" });
+  const [extras, setExtras] = useState<ContractExtras>(EMPTY_EXTRAS);
+
+  const openContractModal = (r: Reservation, car: Car | undefined, contractNum: string) => {
+    setExtras({ ...EMPTY_EXTRAS });
+    setContractModal({ open: true, r, car, contractNum });
+  };
+
+  const handleGenerateContract = () => {
+    if (!contractModal.r) return;
+    downloadContract(contractModal.r, contractModal.car, contractModal.contractNum, extras);
+    setContractModal({ open: false, r: null, car: undefined, contractNum: "" });
+  };
+
+  const ef = (label: string, key: keyof ContractExtras, placeholder = "") => (
+    <div>
+      <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{label}</label>
+      <input
+        type="text"
+        value={extras[key]}
+        onChange={(e) => setExtras({ ...extras, [key]: e.target.value })}
+        placeholder={placeholder}
+        className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-[#e63946]"
+      />
+    </div>
+  );
 
   useEffect(() => {
     if (!sessionStorage.getItem("admin_token")) {
@@ -517,7 +571,7 @@ export default function AdminInvoicesPage() {
                       Facture PDF
                     </button>
                     <button
-                      onClick={() => downloadContract(r, car, `CTR-${invoiceNum.replace("FAC-", "")}`)}
+                      onClick={() => openContractModal(r, car, `CTR-${invoiceNum.replace("FAC-", "")}`)}
                       className="mt-1 flex items-center gap-2 text-xs text-[#1a1a2e] hover:underline font-medium"
                     >
                       <ScrollText size={13} />
@@ -530,6 +584,122 @@ export default function AdminInvoicesPage() {
           </div>
         )}
       </div>
+
+      {/* Modal informations complémentaires contrat */}
+      {contractModal.open && contractModal.r && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4">
+          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <div>
+                <h2 className="font-bold text-[#1a1a2e] text-lg">Informations pour le contrat</h2>
+                <p className="text-sm text-gray-400 mt-0.5">{contractModal.r.clientFirstName} {contractModal.r.clientLastName} — {contractModal.contractNum}</p>
+              </div>
+              <button onClick={() => setContractModal({ open: false, r: null, car: undefined, contractNum: "" })} className="text-gray-400 hover:text-gray-600">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5">
+              {/* Infos pré-remplies (lecture seule) */}
+              <div className="bg-gray-50 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Client</p>
+                  <p className="text-sm font-bold">{contractModal.r.clientFirstName} {contractModal.r.clientLastName}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Téléphone</p>
+                  <p className="text-sm font-bold">{contractModal.r.clientPhone}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">N° Permis</p>
+                  <p className="text-sm font-bold">{contractModal.r.clientLicense}</p>
+                </div>
+              </div>
+
+              {/* Champs manquants */}
+              <div>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Identité du conducteur</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {ef("Date de naissance", "dateNaissance", "JJ/MM/AAAA")}
+                  {ef("Lieu de naissance", "lieuNaissance", "Ville")}
+                  {ef("Adresse complète", "adresse", "Rue, Ville, Pays")}
+                  {ef("CIN / Passeport N°", "cinPasseport", "AB123456")}
+                  {ef("CIN délivré le", "cinDelivreLe", "JJ/MM/AAAA")}
+                  {ef("CIN délivré à (ville)", "cinDelivreVille", "Casablanca")}
+                  {ef("CIN délivré (pays)", "cinDelivrePays", "Maroc")}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Permis de conduire</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {ef("Délivré le", "permisDelivreLe", "JJ/MM/AAAA")}
+                  {ef("Délivré à (ville)", "permisDelivreVille", "Casablanca")}
+                  {ef("Pays", "permisDelivrePays", "Maroc")}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Arrivée au Maroc (si étranger)</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {ef("Date d'arrivée au Maroc", "arriveeMaroc", "JJ/MM/AAAA")}
+                  {ef("N° d'entrée", "numEntree", "—")}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Véhicule & Horaires</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {ef("Matricule véhicule", "matricule", "12345-A-6")}
+                  {ef("Heure de départ", "pickupTime", "09:00")}
+                  {ef("Heure de retour", "dropoffTime", "09:00")}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
+                  Conducteur N°2
+                  <span className="ml-2 text-gray-400 font-normal normal-case">(optionnel)</span>
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {ef("Nom", "d2Nom", "DUPONT")}
+                  {ef("Prénom", "d2Prenom", "Jean")}
+                  {ef("Date de naissance", "d2DateNaissance", "JJ/MM/AAAA")}
+                  {ef("Lieu de naissance", "d2LieuNaissance", "Ville")}
+                  {ef("Adresse complète", "d2Adresse", "Rue, Ville, Pays")}
+                  {ef("N° téléphone", "d2Telephone", "+212 6 00 00 00 00")}
+                  {ef("Permis de conduire N°", "d2Permis", "AB123456")}
+                  {ef("Permis délivré le", "d2PermisDelivreLe", "JJ/MM/AAAA")}
+                  {ef("Permis délivré à (ville)", "d2PermisDelivreVille", "Casablanca")}
+                  {ef("Permis délivré (pays)", "d2PermisDelivrePays", "Maroc")}
+                  {ef("CIN / Passeport N°", "d2CinPasseport", "AB123456")}
+                  {ef("CIN délivré le", "d2CinDelivreLe", "JJ/MM/AAAA")}
+                  {ef("CIN délivré à (ville)", "d2CinDelivreVille", "Casablanca")}
+                  {ef("CIN délivré (pays)", "d2CinDelivrePays", "Maroc")}
+                  {ef("Arrivée au Maroc le", "d2ArriveeMaroc", "JJ/MM/AAAA")}
+                  {ef("N° d'entrée", "d2NumEntree", "—")}
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-100 flex gap-3 justify-end">
+              <button
+                onClick={() => setContractModal({ open: false, r: null, car: undefined, contractNum: "" })}
+                className="px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleGenerateContract}
+                className="px-5 py-2.5 rounded-xl bg-[#1a1a2e] text-white text-sm font-bold hover:bg-[#2d2d4e] transition-colors flex items-center gap-2"
+              >
+                <ScrollText size={15} />
+                Générer le contrat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

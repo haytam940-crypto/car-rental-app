@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, Calendar, Clock, Search, Phone } from "lucide-react";
+import { MapPin, Calendar, Search } from "lucide-react";
 import { LOCATIONS } from "@/lib/data";
 
 export default function SearchWidget({ compact = false }: { compact?: boolean }) {
@@ -12,17 +12,9 @@ export default function SearchWidget({ compact = false }: { compact?: boolean })
     pickupLocation: "",
     dropoffLocation: "",
     pickupDate: "",
-    pickupTime: "09:00",
     dropoffDate: "",
-    dropoffTime: "09:00",
   });
   const [error, setError] = useState("");
-
-  const times = Array.from({ length: 48 }, (_, i) => {
-    const h = Math.floor(i / 2).toString().padStart(2, "0");
-    const m = i % 2 === 0 ? "00" : "30";
-    return `${h}:${m}`;
-  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +27,7 @@ export default function SearchWidget({ compact = false }: { compact?: boolean })
       return;
     }
     if (form.dropoffDate < form.pickupDate) {
-      setError("La date de retour doit etre après la date de départ.");
+      setError("La date de retour doit être après la date de départ.");
       return;
     }
     setError("");
@@ -48,126 +40,90 @@ export default function SearchWidget({ compact = false }: { compact?: boolean })
     router.push(`/fleet?${params.toString()}`);
   };
 
+  const inputCls = "w-full bg-transparent text-white text-sm font-medium outline-none placeholder-gray-500";
+  const labelCls = "flex items-center gap-1.5 text-[10px] font-bold text-[#F5C518] uppercase tracking-widest mb-1.5";
+  const cellCls = "p-5 border-r border-white/8 last:border-r-0";
+
   return (
-    <form
-      onSubmit={handleSubmit}
-      className={`bg-white rounded-2xl shadow-2xl overflow-hidden ${compact ? "" : "border border-gray-100"}`}
-    >
-      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ${compact ? "" : "border-b border-gray-100"}`}>
-        {/* Pick-up Location */}
-        <div className="p-4 border-b md:border-b-0 md:border-r border-gray-100">
-          <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-            <MapPin size={12} className="text-[#e63946]" />
-            Lieu de départ
+    <form onSubmit={handleSubmit} className="bg-[#141414] border border-white/10 rounded-2xl overflow-hidden shadow-2xl shadow-black/50">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-b border-white/8">
+        <div className={cellCls}>
+          <label className={labelCls}>
+            <MapPin size={11} /> Lieu de départ
           </label>
           <select
             value={form.pickupLocation}
             onChange={(e) => setForm({ ...form, pickupLocation: e.target.value })}
-            className="w-full text-sm text-[#1a1a2e] font-medium bg-transparent outline-none cursor-pointer"
+            className="w-full bg-transparent text-white text-sm font-medium outline-none cursor-pointer"
+            style={{ colorScheme: "dark" }}
           >
-            <option value="">Choisir un lieu...</option>
+            <option value="" className="bg-[#1a1a1a]">Choisir un lieu...</option>
             {LOCATIONS.map((loc) => (
-              <option key={loc} value={loc}>{loc}</option>
+              <option key={loc} value={loc} className="bg-[#1a1a1a]">{loc}</option>
             ))}
           </select>
         </div>
 
-        {/* Drop-off Location */}
-        <div className="p-4 border-b md:border-b-0 md:border-r border-gray-100">
-          <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-            <MapPin size={12} className="text-[#e63946]" />
-            Lieu de retour
+        <div className={cellCls}>
+          <label className={labelCls}>
+            <MapPin size={11} /> Lieu de retour
           </label>
           <select
             value={form.dropoffLocation}
             onChange={(e) => setForm({ ...form, dropoffLocation: e.target.value })}
-            className="w-full text-sm text-[#1a1a2e] font-medium bg-transparent outline-none cursor-pointer"
+            className="w-full bg-transparent text-white text-sm font-medium outline-none cursor-pointer"
+            style={{ colorScheme: "dark" }}
           >
-            <option value="">Choisir un lieu...</option>
+            <option value="" className="bg-[#1a1a1a]">Choisir un lieu...</option>
             {LOCATIONS.map((loc) => (
-              <option key={loc} value={loc}>{loc}</option>
+              <option key={loc} value={loc} className="bg-[#1a1a1a]">{loc}</option>
             ))}
           </select>
         </div>
 
-        {/* Pick-up Date */}
-        <div className="p-4 border-b md:border-b-0 md:border-r border-gray-100">
-          <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-            <Calendar size={12} className="text-[#e63946]" />
-            Date de départ
+        <div className={cellCls}>
+          <label className={labelCls}>
+            <Calendar size={11} /> Date de départ
           </label>
-          <div className="flex items-center gap-2">
-            <input
-              type="date"
-              min={today}
-              value={form.pickupDate}
-              onChange={(e) => setForm({ ...form, pickupDate: e.target.value })}
-              className="flex-1 text-sm text-[#1a1a2e] font-medium bg-transparent outline-none"
-            />
-            <div className="flex items-center gap-1">
-              <Clock size={11} className="text-gray-400" />
-              <select
-                value={form.pickupTime}
-                onChange={(e) => setForm({ ...form, pickupTime: e.target.value })}
-                className="text-xs text-gray-500 bg-transparent outline-none"
-              >
-                {times.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
-          </div>
+          <input
+            type="date"
+            min={today}
+            value={form.pickupDate}
+            onChange={(e) => setForm({ ...form, pickupDate: e.target.value })}
+            className={inputCls}
+            style={{ colorScheme: "dark" }}
+          />
         </div>
 
-        {/* Drop-off Date */}
-        <div className="p-4">
-          <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-            <Calendar size={12} className="text-[#e63946]" />
-            Date de retour
+        <div className="p-5">
+          <label className={labelCls}>
+            <Calendar size={11} /> Date de retour
           </label>
-          <div className="flex items-center gap-2">
-            <input
-              type="date"
-              min={form.pickupDate || today}
-              value={form.dropoffDate}
-              onChange={(e) => setForm({ ...form, dropoffDate: e.target.value })}
-              className="flex-1 text-sm text-[#1a1a2e] font-medium bg-transparent outline-none"
-            />
-            <div className="flex items-center gap-1">
-              <Clock size={11} className="text-gray-400" />
-              <select
-                value={form.dropoffTime}
-                onChange={(e) => setForm({ ...form, dropoffTime: e.target.value })}
-                className="text-xs text-gray-500 bg-transparent outline-none"
-              >
-                {times.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
-          </div>
+          <input
+            type="date"
+            min={form.pickupDate || today}
+            value={form.dropoffDate}
+            onChange={(e) => setForm({ ...form, dropoffDate: e.target.value })}
+            className={inputCls}
+            style={{ colorScheme: "dark" }}
+          />
         </div>
       </div>
 
-      {/* Error */}
       {error && (
-        <div className="px-4 py-2 bg-red-50 text-red-600 text-xs border-b border-red-100">
+        <div className="px-5 py-2.5 bg-red-500/10 border-b border-red-500/20 text-red-400 text-xs">
           {error}
         </div>
       )}
 
-      {/* Actions */}
-      <div className="p-4 flex flex-col sm:flex-row gap-3">
+      <div className="p-4">
         <button
           type="submit"
-          className="flex-1 bg-[#e63946] text-white py-3.5 px-6 rounded-xl font-bold text-sm hover:bg-[#c1121f] transition-all flex items-center justify-center gap-2 shadow-lg shadow-red-200"
+          className="w-full yellow-btn py-4 px-6 rounded-xl font-bold text-base flex items-center justify-center gap-2"
         >
-          <Search size={16} />
-          Rechercher un véhicule
+          <Search size={18} />
+          Rechercher un véhicule disponible
         </button>
-        <a
-          href="tel:+212600000000"
-          className="flex items-center justify-center gap-2 bg-[#1a1a2e] text-white py-3.5 px-6 rounded-xl font-semibold text-sm hover:bg-[#2d2d4a] transition-colors"
-        >
-          <Phone size={16} />
-          Contact rapide
-        </a>
       </div>
     </form>
   );
