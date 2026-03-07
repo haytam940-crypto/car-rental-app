@@ -103,51 +103,51 @@ function downloadContract(r: Reservation, car: Car | undefined, contractNum: str
   <title>Contrat ${contractNum}</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Arial,sans-serif;font-size:11px;color:#000;padding:12px}
-    .page{max-width:190mm;margin:0 auto}
-    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-    .logo{font-size:20px;font-weight:900}
+    @page{size:A4;margin:10mm}
+    body{font-family:Arial,sans-serif;font-size:13px;color:#000;padding:10px;width:190mm;min-height:267mm}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+    .logo{font-size:22px;font-weight:900}
     .logo span{color:#e63946}
-    .company-info{text-align:right;font-size:9.5px;line-height:1.6}
-    h1{text-align:center;font-size:13px;text-decoration:underline;margin:6px 0 4px}
-    .intro{font-size:10px;margin-bottom:6px}
-    .veh-header{display:flex;border:1px solid #000;margin-bottom:6px}
-    .veh-header div{padding:3px 8px;border-right:1px solid #000;flex:1;font-size:10.5px}
+    .company-info{text-align:right;font-size:11px;line-height:1.7}
+    h1{text-align:center;font-size:15px;text-decoration:underline;margin:8px 0 5px;font-weight:bold}
+    .intro{font-size:11.5px;margin-bottom:8px}
+    .veh-header{display:flex;border:1px solid #000;margin-bottom:8px}
+    .veh-header div{padding:4px 10px;border-right:1px solid #000;flex:1;font-size:12px}
     .veh-header div:last-child{border-right:none}
-    .main-grid{display:flex;gap:6px;margin-bottom:6px}
+    .main-grid{display:flex;gap:8px;margin-bottom:8px}
     .col-left{flex:1.3}
     .col-right{flex:1}
-    .section{border:1px solid #000;margin-bottom:5px}
-    .sec-title{background:#eee;padding:2px 6px;font-weight:bold;font-size:10.5px;text-align:center;text-decoration:underline;border-bottom:1px solid #000}
-    .sec-body{padding:4px 6px}
-    .fr{display:flex;align-items:baseline;margin-bottom:2.5px;font-size:10px}
-    .fl{min-width:85px;font-size:9.5px}
-    .fv{font-weight:bold;border-bottom:1px solid #999;flex:1;min-height:13px;padding-bottom:1px;font-size:10px}
+    .section{border:1px solid #000;margin-bottom:6px}
+    .sec-title{background:#eee;padding:3px 8px;font-weight:bold;font-size:12px;text-align:center;text-decoration:underline;border-bottom:1px solid #000}
+    .sec-body{padding:5px 8px}
+    .fr{display:flex;align-items:baseline;margin-bottom:3px;font-size:11.5px}
+    .fl{min-width:100px;font-size:11px;color:#333}
+    .fv{font-weight:bold;font-size:12px;border-bottom:1px solid #888;flex:1;min-height:15px;padding-bottom:1px}
     .lr-table{width:100%;border-collapse:collapse}
-    .lr-table th,.lr-table td{border:1px solid #000;padding:3px 4px;text-align:center;font-size:10px}
-    .lr-table th{background:#eee;font-weight:bold}
-    .cg{display:grid;grid-template-columns:1fr 1fr;gap:2px;font-size:9.5px}
-    .ci{display:flex;align-items:center;gap:3px}
-    .cb{width:10px;height:10px;border:1px solid #000;display:inline-flex;align-items:center;justify-content:center;font-size:8px;flex-shrink:0}
+    .lr-table th,.lr-table td{border:1px solid #000;padding:4px 5px;text-align:center;font-size:12px}
+    .lr-table th{background:#eee;font-weight:bold;font-size:12px}
+    .lr-table td strong{font-size:12px}
+    .cg{display:grid;grid-template-columns:1fr 1fr;gap:3px;font-size:11px}
+    .ci{display:flex;align-items:center;gap:4px}
+    .cb{width:11px;height:11px;border:1px solid #000;display:inline-flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0}
     .pt{width:100%;border-collapse:collapse}
-    .pt td{border:1px solid #000;padding:2px 5px;font-size:10px}
-    .pt td:last-child{text-align:right;font-weight:bold;min-width:55px}
-    .diagram-wrap{border:1px solid #000;padding:6px;margin-bottom:5px}
-    .diag-inner{display:flex;align-items:center;justify-content:center;gap:8px}
-    .side-lbl{font-size:8px;display:flex;flex-direction:column;justify-content:space-between;height:75px}
-    .caution{border:1px solid #000;padding:4px 8px;font-size:10px;display:flex;align-items:center;gap:14px;margin-bottom:6px}
-    .sig-table{width:100%;border-collapse:collapse;margin-bottom:5px}
-    .sig-table td{border:1px solid #000;padding:5px;text-align:center;font-size:9.5px;height:55px;vertical-align:top;width:33%}
-    .footer{text-align:center;font-size:8.5px;margin-top:5px;border-top:1px solid #ccc;padding-top:4px;color:#444}
-    @media print{body{padding:5px}@page{margin:8mm}}
+    .pt td{border:1px solid #000;padding:3px 7px;font-size:12px}
+    .pt td:last-child{text-align:right;font-weight:bold;min-width:60px}
+    .diagram-wrap{border:1px solid #000;padding:8px;margin-bottom:7px}
+    .diag-inner{display:flex;align-items:center;justify-content:center;gap:10px}
+    .side-lbl{font-size:10px;font-weight:bold;display:flex;flex-direction:column;justify-content:space-around;height:100px;letter-spacing:1px}
+    .caution{border:1px solid #000;padding:6px 10px;font-size:12px;display:flex;align-items:center;gap:18px;margin-bottom:8px;flex-wrap:wrap}
+    .sig-table{width:100%;border-collapse:collapse;margin-bottom:6px}
+    .sig-table td{border:1px solid #000;padding:6px 8px;text-align:center;font-size:11.5px;height:65px;vertical-align:top;width:33%}
+    .footer{text-align:center;font-size:10px;margin-top:6px;border-top:1px solid #bbb;padding-top:5px;color:#333}
+    @media print{body{padding:0}}
   </style>
 </head>
 <body>
-<div class="page">
   <div class="header">
     <div>
-      <div class="logo">AUTO<span>LOC</span> <span style="font-size:10px;font-weight:400;color:#555">MAROC</span></div>
-      <div style="font-size:9px;color:#666">Location de voitures</div>
+      <div class="logo">AUTO<span>LOC</span> <span style="font-size:11px;font-weight:400;color:#555">MAROC</span></div>
+      <div style="font-size:10px;color:#666;margin-top:2px">Location de voitures</div>
     </div>
     <div class="company-info">
       123 Boulevard Mohammed V, Casablanca<br>
@@ -156,13 +156,13 @@ function downloadContract(r: Reservation, car: Car | undefined, contractNum: str
     </div>
   </div>
 
-  <h1>Contrat de location N° : &nbsp;&nbsp; ${contractNum}</h1>
+  <h1>Contrat de location N° : &nbsp;&nbsp;&nbsp; ${contractNum}</h1>
   <p class="intro">Contrat de location de voitures entre AutoLoc Maroc S.A.R.L et le preneur mentionné ci-dessous et pour le véhicule mentionné ci-dessous.</p>
 
   <div class="veh-header">
-    <div><strong>Marque :</strong> ${car ? `${car.brand} ${car.name}` : "—"}</div>
-    <div><strong>Matricule :</strong> ___________________</div>
-    <div><strong>Carburant :</strong> ${car?.fuelType ?? "—"}</div>
+    <div><strong>Marque :</strong> <strong>${car ? `${car.brand} ${car.name}` : "—"}</strong></div>
+    <div><strong>Matricule :</strong> _____________________</div>
+    <div><strong>Carburant :</strong> <strong>${car?.fuelType ?? "—"}</strong></div>
   </div>
 
   <div class="main-grid">
@@ -175,10 +175,10 @@ function downloadContract(r: Reservation, car: Car | undefined, contractNum: str
           <div class="fr"><span class="fl">Date et Lieu de Naissance :</span><span class="fv"></span></div>
           <div class="fr"><span class="fl">Adresse :</span><span class="fv"></span></div>
           <div class="fr"><span class="fl">Permis de conduire N° :</span><span class="fv">${r.clientLicense}</span></div>
-          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:4px"></span><span style="font-size:9px">À</span><span class="fv" style="flex:.6;margin:0 3px"></span><span style="font-size:9px">Pays :</span><span class="fv" style="flex:.5;margin-left:3px"></span></div>
+          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:5px"></span><span style="font-size:11px">À</span><span class="fv" style="flex:.6;margin:0 4px"></span><span style="font-size:11px">Pays :</span><span class="fv" style="flex:.5;margin-left:4px"></span></div>
           <div class="fr"><span class="fl">C.I.N / Passeport N° :</span><span class="fv"></span></div>
-          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:4px"></span><span style="font-size:9px">À</span><span class="fv" style="flex:.6;margin:0 3px"></span><span style="font-size:9px">Pays :</span><span class="fv" style="flex:.5;margin-left:3px"></span></div>
-          <div class="fr"><span class="fl">Arrivée au Maroc le :</span><span class="fv" style="flex:.5;margin-right:4px"></span><span style="font-size:9px">N° Entrée :</span><span class="fv" style="margin-left:3px"></span></div>
+          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:5px"></span><span style="font-size:11px">À</span><span class="fv" style="flex:.6;margin:0 4px"></span><span style="font-size:11px">Pays :</span><span class="fv" style="flex:.5;margin-left:4px"></span></div>
+          <div class="fr"><span class="fl">Arrivée au Maroc le :</span><span class="fv" style="flex:.5;margin-right:5px"></span><span style="font-size:11px">N° Entrée :</span><span class="fv" style="margin-left:4px"></span></div>
           <div class="fr"><span class="fl">N° téléphone :</span><span class="fv">${r.clientPhone}</span></div>
         </div>
       </div>
@@ -190,10 +190,10 @@ function downloadContract(r: Reservation, car: Car | undefined, contractNum: str
           <div class="fr"><span class="fl">Date et Lieu de Naissance :</span><span class="fv"></span></div>
           <div class="fr"><span class="fl">Adresse :</span><span class="fv"></span></div>
           <div class="fr"><span class="fl">Permis de conduire N° :</span><span class="fv"></span></div>
-          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:4px"></span><span style="font-size:9px">À</span><span class="fv" style="flex:.6;margin:0 3px"></span><span style="font-size:9px">Pays :</span><span class="fv" style="flex:.5;margin-left:3px"></span></div>
+          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:5px"></span><span style="font-size:11px">À</span><span class="fv" style="flex:.6;margin:0 4px"></span><span style="font-size:11px">Pays :</span><span class="fv" style="flex:.5;margin-left:4px"></span></div>
           <div class="fr"><span class="fl">C.I.N / Passeport N° :</span><span class="fv"></span></div>
-          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:4px"></span><span style="font-size:9px">À</span><span class="fv" style="flex:.6;margin:0 3px"></span><span style="font-size:9px">Pays :</span><span class="fv" style="flex:.5;margin-left:3px"></span></div>
-          <div class="fr"><span class="fl">Arrivée au Maroc le :</span><span class="fv" style="flex:.5;margin-right:4px"></span><span style="font-size:9px">N° Entrée :</span><span class="fv" style="margin-left:3px"></span></div>
+          <div class="fr"><span class="fl">Délivré le :</span><span class="fv" style="flex:.5;margin-right:5px"></span><span style="font-size:11px">À</span><span class="fv" style="flex:.6;margin:0 4px"></span><span style="font-size:11px">Pays :</span><span class="fv" style="flex:.5;margin-left:4px"></span></div>
+          <div class="fr"><span class="fl">Arrivée au Maroc le :</span><span class="fv" style="flex:.5;margin-right:5px"></span><span style="font-size:11px">N° Entrée :</span><span class="fv" style="margin-left:4px"></span></div>
           <div class="fr"><span class="fl">N° téléphone :</span><span class="fv"></span></div>
         </div>
       </div>
@@ -204,8 +204,8 @@ function downloadContract(r: Reservation, car: Car | undefined, contractNum: str
         <table class="lr-table">
           <tr><th></th><th>LIVRAISON</th><th>REPRISE</th></tr>
           <tr><td>Le</td><td><strong>${r.pickupDate}</strong></td><td><strong>${r.dropoffDate}</strong></td></tr>
-          <tr><td>Heure</td><td>08:30:00</td><td>08:30:00</td></tr>
-          <tr><td>Lieu</td><td style="font-size:9px">${r.pickupLocation}</td><td style="font-size:9px">${r.dropoffLocation}</td></tr>
+          <tr><td>Heure</td><td><strong>08:30:00</strong></td><td><strong>08:30:00</strong></td></tr>
+          <tr><td>Lieu</td><td><strong style="font-size:10.5px">${r.pickupLocation}</strong></td><td><strong style="font-size:10.5px">${r.dropoffLocation}</strong></td></tr>
           <tr><td>Frais</td><td>0</td><td>0</td></tr>
         </table>
       </div>
@@ -239,8 +239,8 @@ function downloadContract(r: Reservation, car: Car | undefined, contractNum: str
             <div class="ci"><div class="cb"></div> Pneumatiques très bien</div>
             <div class="ci"><div class="cb"></div></div>
           </div>
-          <div class="ci" style="margin-top:3px;font-size:9.5px"><div class="cb"></div>&nbsp;État Propreté : oui &nbsp;&nbsp; non</div>
-          <div class="ci" style="margin-top:2px;font-size:9.5px"><div class="cb"></div>&nbsp;Carburant : <span style="border-bottom:1px solid #000;display:inline-block;width:70px">&nbsp;</span></div>
+          <div class="ci" style="margin-top:4px;font-size:11px"><div class="cb"></div>&nbsp;État Propreté : oui &nbsp;&nbsp;&nbsp; non</div>
+          <div class="ci" style="margin-top:3px;font-size:11px"><div class="cb"></div>&nbsp;Carburant : <span style="border-bottom:1px solid #000;display:inline-block;width:75px">&nbsp;</span></div>
         </div>
       </div>
 
@@ -258,20 +258,41 @@ function downloadContract(r: Reservation, car: Car | undefined, contractNum: str
     </div>
   </div>
 
+  <!-- Schéma dommages -->
   <div class="diagram-wrap">
-    <div style="font-size:10px;margin-bottom:5px">Noter sur ce schéma les dommages existants :</div>
+    <div style="font-size:12px;margin-bottom:7px;font-weight:500">Noter sur ce schéma les dommages existants :</div>
     <div class="diag-inner">
       <div class="side-lbl"><span>A</span><span>R</span><span>R</span><span>I</span><span>È</span><span>R</span><span>E</span></div>
-      <svg width="240" height="95" viewBox="0 0 240 95" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="35" y="18" width="170" height="58" rx="10" stroke="#000" stroke-width="1.5"/>
-        <rect x="65" y="8" width="110" height="78" rx="8" stroke="#000" stroke-width="1"/>
-        <ellipse cx="55" cy="18" rx="13" ry="9" stroke="#000" stroke-width="1.5"/>
-        <ellipse cx="185" cy="18" rx="13" ry="9" stroke="#000" stroke-width="1.5"/>
-        <ellipse cx="55" cy="77" rx="13" ry="9" stroke="#000" stroke-width="1.5"/>
-        <ellipse cx="185" cy="77" rx="13" ry="9" stroke="#000" stroke-width="1.5"/>
-        <line x1="70" y1="18" x2="70" y2="77" stroke="#000" stroke-width="1"/>
-        <line x1="170" y1="18" x2="170" y2="77" stroke="#000" stroke-width="1"/>
-        <line x1="120" y1="18" x2="120" y2="77" stroke="#000" stroke-width="0.7" stroke-dasharray="3,2"/>
+      <svg width="320" height="110" viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg">
+        <!-- Corps principal de la voiture (vue de dessus) -->
+        <path d="M 55,10 L 265,10 Q 295,10 298,30 L 298,80 Q 295,100 265,100 L 55,100 Q 25,100 22,80 L 22,30 Q 25,10 55,10 Z"
+              fill="white" stroke="#000" stroke-width="2"/>
+        <!-- Toit / habitacle -->
+        <path d="M 90,26 L 230,26 Q 255,26 258,40 L 258,70 Q 255,84 230,84 L 90,84 Q 65,84 62,70 L 62,40 Q 65,26 90,26 Z"
+              fill="#f5f5f5" stroke="#000" stroke-width="1.2"/>
+        <!-- Pare-brise avant (droite) -->
+        <path d="M 258,40 Q 272,45 275,55 Q 272,65 258,70" fill="none" stroke="#000" stroke-width="1"/>
+        <!-- Pare-brise arrière (gauche) -->
+        <path d="M 62,40 Q 48,45 45,55 Q 48,65 62,70" fill="none" stroke="#000" stroke-width="1"/>
+        <!-- Ligne de séparation portes avant/arrière -->
+        <line x1="160" y1="26" x2="160" y2="84" stroke="#000" stroke-width="1"/>
+        <!-- Poignées de portes -->
+        <rect x="118" y="49" width="16" height="5" rx="2" fill="#ccc" stroke="#000" stroke-width="0.7"/>
+        <rect x="186" y="49" width="16" height="5" rx="2" fill="#ccc" stroke="#000" stroke-width="0.7"/>
+        <rect x="118" y="56" width="16" height="5" rx="2" fill="#ccc" stroke="#000" stroke-width="0.7"/>
+        <rect x="186" y="56" width="16" height="5" rx="2" fill="#ccc" stroke="#000" stroke-width="0.7"/>
+        <!-- Roue AV-gauche (bas-droite) -->
+        <rect x="255" y="82" width="38" height="22" rx="5" fill="#ccc" stroke="#000" stroke-width="1.5"/>
+        <rect x="261" y="86" width="26" height="14" rx="3" fill="#999" stroke="#000" stroke-width="0.8"/>
+        <!-- Roue AV-droite (haut-droite) -->
+        <rect x="255" y="6" width="38" height="22" rx="5" fill="#ccc" stroke="#000" stroke-width="1.5"/>
+        <rect x="261" y="10" width="26" height="14" rx="3" fill="#999" stroke="#000" stroke-width="0.8"/>
+        <!-- Roue AR-gauche (bas-gauche) -->
+        <rect x="27" y="82" width="38" height="22" rx="5" fill="#ccc" stroke="#000" stroke-width="1.5"/>
+        <rect x="33" y="86" width="26" height="14" rx="3" fill="#999" stroke="#000" stroke-width="0.8"/>
+        <!-- Roue AR-droite (haut-gauche) -->
+        <rect x="27" y="6" width="38" height="22" rx="5" fill="#ccc" stroke="#000" stroke-width="1.5"/>
+        <rect x="33" y="10" width="26" height="14" rx="3" fill="#999" stroke="#000" stroke-width="0.8"/>
       </svg>
       <div class="side-lbl"><span>A</span><span>V</span><span>A</span><span>N</span><span>T</span></div>
     </div>
@@ -279,8 +300,8 @@ function downloadContract(r: Reservation, car: Car | undefined, contractNum: str
 
   <div class="caution">
     <span>Caution : ………………………………… Montant : ………………………… Assurance</span>
-    <span>R.C <span style="border:1px solid #000;padding:0 5px">✕</span></span>
-    <span>Tous risque <span style="border:1px solid #000;padding:0 9px">&nbsp;</span></span>
+    <span>R.C <span style="border:1px solid #000;padding:1px 6px;font-weight:bold">✕</span></span>
+    <span>Tous risque <span style="border:1px solid #000;padding:1px 12px">&nbsp;</span></span>
   </div>
 
   <table class="sig-table">
@@ -294,7 +315,6 @@ function downloadContract(r: Reservation, car: Car | undefined, contractNum: str
   <div class="footer">
     ICE : 000000000000000 &nbsp;·&nbsp; RC : 000000 &nbsp;·&nbsp; Patente : 0000000 &nbsp;·&nbsp; IF : 00000000 &nbsp;·&nbsp; CNSS : 0000000
   </div>
-</div>
 </body>
 </html>`;
 
