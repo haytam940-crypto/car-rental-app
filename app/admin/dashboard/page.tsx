@@ -2,20 +2,25 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CARS, RESERVATIONS } from "@/lib/data";
+import { CARS } from "@/lib/data";
+import { getMergedReservations } from "@/lib/store";
+import { Reservation } from "@/lib/data";
 import {
-  Car, ClipboardList, TrendingUp, CheckCircle, Clock, XCircle,
+  Car, ClipboardList, TrendingUp, CheckCircle, Clock,
   LogOut, LayoutDashboard, Settings, FileText, Menu, X
 } from "lucide-react";
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [allReservations, setAllReservations] = useState<Reservation[]>([]);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && !sessionStorage.getItem("admin_token")) {
+    if (!sessionStorage.getItem("admin_token")) {
       router.push("/admin/login");
+      return;
     }
+    setAllReservations(getMergedReservations());
   }, [router]);
 
   const logout = () => {
@@ -25,13 +30,11 @@ export default function AdminDashboard() {
 
   const available = CARS.filter((c) => c.status === "available").length;
   const rented = CARS.filter((c) => c.status === "rented").length;
-  const pending = RESERVATIONS.filter((r) => r.status === "pending").length;
-  const confirmed = RESERVATIONS.filter((r) => r.status === "confirmed").length;
-  const totalRevenue = RESERVATIONS.filter((r) => r.status === "confirmed")
+  const pending = allReservations.filter((r) => r.status === "pending").length;
+  const confirmed = allReservations.filter((r) => r.status === "confirmed").length;
+  const totalRevenue = allReservations
+    .filter((r) => r.status === "confirmed")
     .reduce((sum, r) => sum + r.totalPrice, 0);
-  const todayRevenue = RESERVATIONS.filter(
-    (r) => r.status === "confirmed" && r.createdAt === new Date().toISOString().split("T")[0]
-  ).reduce((sum, r) => sum + r.totalPrice, 0);
 
   const navLinks = [
     { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -116,8 +119,8 @@ export default function AdminDashboard() {
           {/* KPI Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {[
-              { label: "CA du mois", value: `${totalRevenue.toLocaleString()} DH`, icon: TrendingUp, color: "bg-[#e63946]", change: "+12%" },
-              { label: "RESERVATIONS en attente", value: pending, icon: Clock, color: "bg-yellow-500", change: `${RESERVATIONS.length} total` },
+              { label: "CA du mois", value: `${totalRevenue.toLocaleString()} DH`, icon: TrendingUp, color: "bg-[#e63946]", change: `${allReservations.length} réservations` },
+              { label: "Réservations en attente", value: pending, icon: Clock, color: "bg-yellow-500", change: `${allReservations.length} total` },
               { label: "Voitures disponibles", value: available, icon: Car, color: "bg-green-500", change: `${rented} louées` },
               { label: "Confirmees", value: confirmed, icon: CheckCircle, color: "bg-blue-500", change: "ce mois" },
             ].map(({ label, value, icon: Icon, color, change }) => (
@@ -164,13 +167,13 @@ export default function AdminDashboard() {
             {/* Recent réservations */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between mb-5">
-                <h2 className="font-bold text-[#1a1a2e]">RESERVATIONS recentes</h2>
+                <h2 className="font-bold text-[#1a1a2e]">Réservations récentes</h2>
                 <Link href="/admin/reservations" className="text-[#e63946] text-xs font-medium hover:underline">
                   Voir tout
                 </Link>
               </div>
               <div className="space-y-3">
-                {RESERVATIONS.slice(0, 3).map((r) => {
+                {allReservations.slice(0, 3).map((r) => {
                   const car = CARS.find((c) => c.id === r.carId);
                   const statusStyle = {
                     pending: "bg-yellow-100 text-yellow-700",

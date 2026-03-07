@@ -1,8 +1,9 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { RESERVATIONS, CARS, Car, Reservation } from "@/lib/data";
+import { CARS, Car, Reservation } from "@/lib/data";
+import { getMergedReservations } from "@/lib/store";
 import { FileText, Download, ArrowLeft } from "lucide-react";
 
 function downloadInvoice(r: Reservation, car: Car | undefined, invoiceNum: string) {
@@ -94,14 +95,15 @@ function downloadInvoice(r: Reservation, car: Car | undefined, invoiceNum: strin
 
 export default function AdminInvoicesPage() {
   const router = useRouter();
+  const [confirmedReservations, setConfirmedReservations] = useState<Reservation[]>([]);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && !sessionStorage.getItem("admin_token")) {
+    if (!sessionStorage.getItem("admin_token")) {
       router.push("/admin/login");
+      return;
     }
+    setConfirmedReservations(getMergedReservations().filter((r) => r.status === "confirmed"));
   }, [router]);
-
-  const confirmedReservations = RESERVATIONS.filter((r) => r.status === "confirmed");
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CARS, RESERVATIONS, Reservation } from "@/lib/data";
-import { getStoredReservations, updateReservationStatus } from "@/lib/store";
+import { CARS, Reservation } from "@/lib/data";
+import { getMergedReservations, updateReservationStatus } from "@/lib/store";
 import { CheckCircle, XCircle, ArrowLeft } from "lucide-react";
 
 export default function AdminReservationsPage() {
@@ -16,13 +16,7 @@ export default function AdminReservationsPage() {
       router.push("/admin/login");
       return;
     }
-    // Fusionner reservations statiques (demo) + reservations stockees en localStorage
-    const stored = getStoredReservations();
-    const storedIds = new Set(stored.map((r) => r.id));
-    const merged = [...stored, ...RESERVATIONS.filter((r) => !storedIds.has(r.id))];
-    // Trier par date de creation (plus recente en premier)
-    merged.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-    setReservations(merged);
+    setReservations(getMergedReservations());
   }, [router]);
 
   const filtered = filter === "all" ? reservations : reservations.filter((r) => r.status === filter);
