@@ -1,4 +1,4 @@
-import { Reservation, RESERVATIONS } from "./data";
+import { Reservation, RESERVATIONS, Car, CARS } from "./data";
 
 const KEY = "autoloc_reservations";
 
@@ -24,6 +24,38 @@ export function saveReservation(reservation: Reservation): void {
   const existing = getStoredReservations();
   localStorage.setItem(KEY, JSON.stringify([...existing, reservation]));
 }
+
+// ─── Cars ────────────────────────────────────────────────────────────────────
+
+const CARS_KEY = "autoloc_cars";
+
+export function getStoredCars(): Car[] {
+  if (typeof window === "undefined") return CARS;
+  try {
+    const raw = localStorage.getItem(CARS_KEY);
+    return raw ? JSON.parse(raw) : CARS;
+  } catch {
+    return CARS;
+  }
+}
+
+export function saveCar(car: Car): void {
+  if (typeof window === "undefined") return;
+  const existing = getStoredCars();
+  const idx = existing.findIndex((c) => c.id === car.id);
+  const updated = idx >= 0
+    ? existing.map((c) => (c.id === car.id ? car : c))
+    : [...existing, car];
+  localStorage.setItem(CARS_KEY, JSON.stringify(updated));
+}
+
+export function deleteCar(id: string): void {
+  if (typeof window === "undefined") return;
+  const updated = getStoredCars().filter((c) => c.id !== id);
+  localStorage.setItem(CARS_KEY, JSON.stringify(updated));
+}
+
+// ─── Reservations ────────────────────────────────────────────────────────────
 
 export function updateReservationStatus(
   id: string,
