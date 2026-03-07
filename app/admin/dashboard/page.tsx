@@ -35,7 +35,7 @@ export default function AdminDashboard() {
 
   const navLinks = [
     { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/admin/réservations", icon: ClipboardList, label: "RESERVATIONS" },
+    { href: "/admin/reservations", icon: ClipboardList, label: "RESERVATIONS" },
     { href: "/admin/cars", icon: Car, label: "Voitures" },
     { href: "/admin/invoices", icon: FileText, label: "Factures" },
   ];
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="font-bold text-[#1a1a2e]">RESERVATIONS recentes</h2>
-                <Link href="/admin/réservations" className="text-[#e63946] text-xs font-medium hover:underline">
+                <Link href="/admin/reservations" className="text-[#e63946] text-xs font-medium hover:underline">
                   Voir tout
                 </Link>
               </div>
@@ -203,7 +203,7 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { href: "/admin/cars", label: "Ajouter voiture", icon: Car, color: "bg-[#1a1a2e] text-white" },
-              { href: "/admin/réservations", label: "Voir réservations", icon: ClipboardList, color: "bg-[#e63946] text-white" },
+              { href: "/admin/reservations", label: "Voir réservations", icon: ClipboardList, color: "bg-[#e63946] text-white" },
               { href: "/admin/invoices", label: "Factures", icon: FileText, color: "bg-blue-600 text-white" },
               { href: "/", label: "Voir le site", icon: Settings, color: "bg-gray-100 text-gray-700" },
             ].map(({ href, label, icon: Icon, color }) => (
