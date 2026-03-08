@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useSiteTheme } from "@/contexts/SiteThemeContext";
 
 const SLIDES = [
   {
@@ -19,6 +20,8 @@ const SLIDES = [
 const INTERVAL = 2000; // ms between slides
 
 export default function HeroSlider() {
+  const { theme } = useSiteTheme();
+  const isLight = theme === "light";
   const [current, setCurrent] = useState(0);
   const [prev, setPrev] = useState<number | null>(null);
   const [transitioning, setTransitioning] = useState(false);
@@ -56,10 +59,26 @@ export default function HeroSlider() {
         />
       ))}
 
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/80 to-black/40" style={{ zIndex: 2 }} />
+      {/* Overlay — adapte selon le thème */}
+      <div
+        className="absolute inset-0"
+        style={{
+          zIndex: 2,
+          background: isLight
+            ? "linear-gradient(to right, rgba(248,250,252,0.92) 0%, rgba(248,250,252,0.70) 60%, rgba(248,250,252,0.25) 100%)"
+            : "linear-gradient(to right, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.80) 60%, rgba(0,0,0,0.40) 100%)",
+        }}
+      />
       {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#0a0a0a] to-transparent" style={{ zIndex: 2 }} />
+      <div
+        className="absolute bottom-0 left-0 right-0 h-40"
+        style={{
+          zIndex: 2,
+          background: isLight
+            ? "linear-gradient(to top, #f8fafc 0%, transparent 100%)"
+            : "linear-gradient(to top, #0a0a0a 0%, transparent 100%)",
+        }}
+      />
 
       {/* Slide label + dots */}
       <div className="absolute bottom-44 left-0 right-0 flex flex-col items-center gap-3" style={{ zIndex: 10 }}>
