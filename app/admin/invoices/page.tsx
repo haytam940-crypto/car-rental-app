@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CARS, Car, Reservation } from "@/lib/data";
 import { getMergedReservations } from "@/lib/store";
-import { FileText, Download, ArrowLeft, ScrollText, X } from "lucide-react";
+import { FileText, Download, ArrowLeft, ScrollText, X, LayoutDashboard, ClipboardList, Car as CarIcon, BarChart2, Mountain, Calendar, Tag } from "lucide-react";
 
 function downloadInvoice(r: Reservation, car: Car | undefined, invoiceNum: string) {
   const deliveryFee = r.deliveryFee ?? 0;
@@ -535,14 +535,14 @@ export default function AdminInvoicesPage() {
 
   const pathname = "/admin/invoices";
   const NAV = [
-    { href: "/admin/dashboard", label: "Dashboard" },
-    { href: "/admin/reservations", label: "Réservations" },
-    { href: "/admin/cars", label: "Véhicules" },
-    { href: "/admin/analytics", label: "Analytique" },
-    { href: "/admin/invoices", label: "Factures" },
-    { href: "/admin/excursions", label: "Excursions" },
-    { href: "/admin/planning",    label: "Planning" },
-    { href: "/admin/promotions",  label: "Promotions" },
+    { href: "/admin/dashboard",   icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/admin/reservations",icon: ClipboardList,   label: "Réservations" },
+    { href: "/admin/cars",        icon: CarIcon,         label: "Voitures" },
+    { href: "/admin/invoices",    icon: FileText,        label: "Factures" },
+    { href: "/admin/analytics",   icon: BarChart2,       label: "Analytique" },
+    { href: "/admin/excursions",  icon: Mountain,        label: "Excursions" },
+    { href: "/admin/planning",    icon: Calendar,        label: "Planning" },
+    { href: "/admin/promotions",  icon: Tag,             label: "Promotions" },
   ];
 
   return (
@@ -554,7 +554,7 @@ export default function AdminInvoicesPage() {
           <p className="text-[10px] text-gray-600 uppercase tracking-widest mt-0.5">Administration</p>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-1">
-          {NAV.map(({ href, label }) => (
+          {NAV.map(({ href, icon: Icon, label }) => (
             <Link key={href} href={href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                 pathname === href
@@ -562,6 +562,7 @@ export default function AdminInvoicesPage() {
                   : "text-gray-400 hover:text-white hover:bg-white/5"
               }`}
             >
+              <Icon size={16} />
               {label}
             </Link>
           ))}
