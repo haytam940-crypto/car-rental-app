@@ -70,6 +70,67 @@
    FIN ADMIN LIGHT THEME
 ───────────────────────────────────────────────────── */
 
+/* ─────────────────────────────────────────────────────
+   SITE PUBLIC LIGHT THEME
+   Activé via [data-site-theme="light"] — contrôlé par l'admin
+   uniquement. Aucun toggle visible pour les visiteurs.
+───────────────────────────────────────────────────── */
+[data-site-theme="light"] body,
+[data-site-theme="light"] { background-color: #ffffff; color: #0f172a; }
+
+/* Backgrounds */
+[data-site-theme="light"] .bg-\[\#0a0a0a\]   { background-color: #ffffff !important; }
+[data-site-theme="light"] .bg-\[\#111111\]   { background-color: #f8fafc !important; }
+[data-site-theme="light"] .bg-\[\#141414\]   { background-color: #f1f5f9 !important; }
+[data-site-theme="light"] .bg-\[\#1a1a1a\]   { background-color: #e2e8f0 !important; }
+[data-site-theme="light"] .bg-\[\#0d0d0d\]   { background-color: #ffffff !important; }
+[data-site-theme="light"] .bg-white\/5       { background-color: rgba(0,0,0,0.04) !important; }
+[data-site-theme="light"] .bg-white\/10      { background-color: rgba(0,0,0,0.07) !important; }
+[data-site-theme="light"] .hover\:bg-white\/5:hover  { background-color: rgba(0,0,0,0.05) !important; }
+[data-site-theme="light"] .hover\:bg-white\/10:hover { background-color: rgba(0,0,0,0.08) !important; }
+
+/* Textes */
+[data-site-theme="light"] .text-white        { color: #0f172a !important; }
+[data-site-theme="light"] .text-gray-400     { color: #475569 !important; }
+[data-site-theme="light"] .text-gray-500     { color: #64748b !important; }
+[data-site-theme="light"] .text-gray-600     { color: #94a3b8 !important; }
+[data-site-theme="light"] .hover\:text-white:hover { color: #0f172a !important; }
+
+/* Bordures */
+[data-site-theme="light"] .border-white\/8   { border-color: rgba(0,0,0,0.08) !important; }
+[data-site-theme="light"] .border-white\/10  { border-color: rgba(0,0,0,0.10) !important; }
+[data-site-theme="light"] .border-white\/20  { border-color: rgba(0,0,0,0.18) !important; }
+[data-site-theme="light"] .border-y          { border-color: rgba(0,0,0,0.08) !important; }
+
+/* card-dark */
+[data-site-theme="light"] .card-dark {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+[data-site-theme="light"] .card-dark:hover {
+  border-color: #D4A96A !important;
+  box-shadow: 0 8px 32px rgba(212,169,106,0.15) !important;
+}
+
+/* Inputs & formulaires */
+[data-site-theme="light"] input,
+[data-site-theme="light"] select,
+[data-site-theme="light"] textarea { color: #0f172a !important; color-scheme: light; }
+[data-site-theme="light"] .placeholder-gray-600::placeholder { color: #94a3b8 !important; }
+[data-site-theme="light"] .placeholder-gray-500::placeholder { color: #64748b !important; }
+
+/* Nav desktop (bg du conteneur) */
+[data-site-theme="light"] .bg-white\/\[0\.04\]  { background-color: rgba(0,0,0,0.04) !important; }
+[data-site-theme="light"] .border-white\/\[0\.06\] { border-color: rgba(0,0,0,0.06) !important; }
+
+/* Scrollbar */
+[data-site-theme="light"] ::-webkit-scrollbar-track { background: #f1f5f9; }
+[data-site-theme="light"] ::-webkit-scrollbar-thumb { background: #D4A96A; }
+
+/* ─────────────────────────────────────────────────────
+   FIN SITE PUBLIC LIGHT THEME
+───────────────────────────────────────────────────── */
+
 :root {
   --yellow: #D4A96A;
   --yellow-dark: #b8894e;

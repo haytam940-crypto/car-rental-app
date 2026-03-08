@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Phone, ChevronDown, Car, MapPin, Mountain, Users, Info, Mail } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useSiteTheme } from "@/contexts/SiteThemeContext";
 import { LANGUAGES } from "@/lib/i18n";
 import PromoBar from "./PromoBar";
 
@@ -18,6 +19,8 @@ const NAV_ICONS: Record<string, React.ElementType> = {
 
 export default function Header() {
   const { lang, setLang, t } = useLanguage();
+  const { theme } = useSiteTheme();
+  const isLight = theme === "light";
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -54,13 +57,15 @@ export default function Header() {
       <header
         className={`fixed left-0 right-0 z-50 transition-all duration-500 ${promoVisible ? "top-11" : "top-0"}`}
         style={scrolled ? {
-          background: "rgba(10,10,10,0.92)",
+          background: isLight ? "rgba(255,255,255,0.95)" : "rgba(10,10,10,0.92)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-          boxShadow: "0 4px 32px rgba(0,0,0,0.4)",
+          borderBottom: isLight ? "1px solid rgba(0,0,0,0.08)" : "1px solid rgba(255,255,255,0.06)",
+          boxShadow: isLight ? "0 4px 32px rgba(0,0,0,0.08)" : "0 4px 32px rgba(0,0,0,0.4)",
         } : {
-          background: "linear-gradient(to bottom, rgba(10,10,10,0.7) 0%, transparent 100%)",
+          background: isLight
+            ? "linear-gradient(to bottom, rgba(255,255,255,0.85) 0%, transparent 100%)"
+            : "linear-gradient(to bottom, rgba(10,10,10,0.7) 0%, transparent 100%)",
         }}
       >
         {/* Main bar */}
@@ -178,7 +183,7 @@ export default function Header() {
       {/* ── Mobile drawer ── */}
       <div
         className={`fixed top-0 right-0 bottom-0 z-[46] w-[300px] flex flex-col transition-transform duration-300 ease-out ${open ? "translate-x-0" : "translate-x-full"}`}
-        style={{ background: "#0d0d0d", borderLeft: "1px solid rgba(255,255,255,0.06)" }}
+        style={{ background: isLight ? "#ffffff" : "#0d0d0d", borderLeft: isLight ? "1px solid rgba(0,0,0,0.08)" : "1px solid rgba(255,255,255,0.06)" }}
       >
         {/* Drawer header */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-white/6">
