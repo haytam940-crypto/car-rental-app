@@ -196,12 +196,12 @@ export default function AdminExcursionsPage() {
   const [confirmDeleteExc, setConfirmDeleteExc] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!sessionStorage.getItem("admin_token")) { router.push("/admin/login"); return; }
+    
     setBookings(getMergedExcursionBookings());
     setExcursions(getMergedExcursions());
   }, [router]);
 
-  const logout        = () => { sessionStorage.removeItem("admin_token"); router.push("/admin/login"); };
+  const logout        = () => { fetch("/api/auth/logout", { method: "POST" }).then(() => router.push("/admin/login")); };
   const refreshB      = () => setBookings(getMergedExcursionBookings());
   const refreshExc    = () => setExcursions(getMergedExcursions());
   const resetFilters  = () => { setSearch(""); setExcFilter(""); setDateFrom(""); setDateTo(""); setStatusFilter("all"); };

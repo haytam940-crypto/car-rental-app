@@ -38,12 +38,12 @@ export default function AdminPlanningPage() {
   const [month, setMonth] = useState(now.getMonth());
 
   useEffect(() => {
-    if (!sessionStorage.getItem("admin_token")) { router.push("/admin/login"); return; }
+    
     setCars(getStoredCars());
     setReservations(getMergedReservations());
   }, [router]);
 
-  const logout = () => { sessionStorage.removeItem("admin_token"); router.push("/admin/login"); };
+  const logout = () => { fetch("/api/auth/logout", { method: "POST" }).then(() => router.push("/admin/login")); };
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);

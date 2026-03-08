@@ -36,15 +36,11 @@ export default function AnalyticsPage() {
   const [selectedCar, setSelectedCar] = useState<string>("all");
 
   useEffect(() => {
-    if (!sessionStorage.getItem("admin_token")) {
-      router.push("/admin/login");
-      return;
-    }
     setCars(getStoredCars());
     setCharges(getStoredCharges());
   }, [router]);
 
-  const logout = () => { sessionStorage.removeItem("admin_token"); router.push("/admin/login"); };
+  const logout = () => { fetch("/api/auth/logout", { method: "POST" }).then(() => router.push("/admin/login")); };
 
   const reservations = getMergedReservations().filter((r) => r.status === "confirmed");
   const caBrutByCar = (carId: string) => reservations.filter((r) => r.carId === carId).reduce((s, r) => s + r.totalPrice, 0);

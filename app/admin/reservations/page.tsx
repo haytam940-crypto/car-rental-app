@@ -43,15 +43,11 @@ export default function AdminReservationsPage() {
   const [cars, setCars] = useState(CARS);
 
   useEffect(() => {
-    if (!sessionStorage.getItem("admin_token")) {
-      router.push("/admin/login");
-      return;
-    }
     setReservations(getMergedReservations());
     setCars(getStoredCars());
   }, [router]);
 
-  const logout = () => { sessionStorage.removeItem("admin_token"); router.push("/admin/login"); };
+  const logout = () => { fetch("/api/auth/logout", { method: "POST" }).then(() => router.push("/admin/login")); };
   const refresh = () => setReservations(getMergedReservations());
   const resetFilters = () => { setSearch(""); setCarFilter(""); setDateFrom(""); setDateTo(""); setFilter("all"); };
   const hasFilters = !!(search || carFilter || dateFrom || dateTo || filter !== "all");

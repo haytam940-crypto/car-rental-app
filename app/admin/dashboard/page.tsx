@@ -27,16 +27,11 @@ export default function AdminDashboard() {
   const [allReservations, setAllReservations] = useState<Reservation[]>([]);
 
   useEffect(() => {
-    if (!sessionStorage.getItem("admin_token")) {
-      router.push("/admin/login");
-      return;
-    }
     setAllReservations(getMergedReservations());
   }, [router]);
 
   const logout = () => {
-    sessionStorage.removeItem("admin_token");
-    router.push("/admin/login");
+    fetch("/api/auth/logout", { method: "POST" }).then(() => router.push("/admin/login"));
   };
 
   const available = CARS.filter((c) => c.status === "available").length;

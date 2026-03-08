@@ -62,12 +62,12 @@ export default function AdminCarsPage() {
   const [chargeForm, setChargeForm] = useState(EMPTY_CHARGE);
 
   useEffect(() => {
-    if (!sessionStorage.getItem("admin_token")) { router.push("/admin/login"); return; }
+    
     setCars(getStoredCars());
     setCharges(getStoredCharges());
   }, [router]);
 
-  const logout = () => { sessionStorage.removeItem("admin_token"); router.push("/admin/login"); };
+  const logout = () => { fetch("/api/auth/logout", { method: "POST" }).then(() => router.push("/admin/login")); };
   const refreshCharges = () => setCharges(getStoredCharges());
 
   const handleAddCharge = () => {

@@ -57,11 +57,11 @@ export default function AdminPromotions() {
   const [formError, setFormError] = useState("");
 
   useEffect(() => {
-    if (!sessionStorage.getItem("admin_token")) { router.push("/admin/login"); return; }
+    
     setPromos(getStoredPromotions());
   }, [router]);
 
-  const logout = () => { sessionStorage.removeItem("admin_token"); router.push("/admin/login"); };
+  const logout = () => { fetch("/api/auth/logout", { method: "POST" }).then(() => router.push("/admin/login")); };
 
   const inp = "bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-[#D4A96A]/60 transition-colors placeholder-gray-600 w-full";
 

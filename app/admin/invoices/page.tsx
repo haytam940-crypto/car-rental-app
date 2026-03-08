@@ -530,10 +530,6 @@ export default function AdminInvoicesPage() {
   );
 
   useEffect(() => {
-    if (!sessionStorage.getItem("admin_token")) {
-      router.push("/admin/login");
-      return;
-    }
     setConfirmedReservations(getMergedReservations().filter((r) => r.status === "confirmed"));
   }, [router]);
 
@@ -575,7 +571,7 @@ export default function AdminInvoicesPage() {
             Voir le site
           </Link>
           <button
-            onClick={() => { sessionStorage.removeItem("admin_token"); router.push("/admin/login"); }}
+            onClick={() => { fetch("/api/auth/logout", { method: "POST" }).then(() => router.push("/admin/login")); }}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-400 hover:text-red-400 hover:bg-white/5"
           >
             Déconnexion

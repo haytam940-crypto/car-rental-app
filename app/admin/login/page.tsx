@@ -2,17 +2,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-// Credentials lus depuis variables d'environnement — jamais hardcodés
-const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? "";
-const ADMIN_PASS = process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? "";
-
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  // Compteur de tentatives — protection brute force basique côté client
+  const [error, setError]       = useState("");
+  const [loading, setLoading]   = useState(false);
   const [attempts, setAttempts] = useState(0);
   const MAX_ATTEMPTS = 5;
 
@@ -20,25 +15,31 @@ export default function AdminLoginPage() {
     e.preventDefault();
 
     if (attempts >= MAX_ATTEMPTS) {
-      setError("Trop de tentatives. Veuillez patienter avant de reessayer.");
+      setError("Trop de tentatives. Veuillez patienter avant de réessayer.");
       return;
     }
 
     setLoading(true);
     setError("");
 
-    // Délai artificiel pour ralentir le brute force
-    await new Promise((r) => setTimeout(r, 800 + Math.random() * 400));
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (email === ADMIN_EMAIL && password === ADMIN_PASS) {
-      // Stocker un token opaque (pas "true") pour rendre le forgeage moins trivial
-      const token = btoa(`${Date.now()}-${Math.random()}`);
-      sessionStorage.setItem("admin_token", token);
-      router.push("/admin/dashboard");
-    } else {
-      setAttempts((n) => n + 1);
-      // Message générique — ne pas révéler si c'est l'email ou le mot de passe qui est faux
-      setError("Identifiants incorrects.");
+      if (res.ok) {
+        router.push("/admin/dashboard");
+        router.refresh();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setAttempts((n) => n + 1);
+        setError(data.error ?? "Identifiants incorrects.");
+        setLoading(false);
+      }
+    } catch {
+      setError("Erreur réseau. Veuillez réessayer.");
       setLoading(false);
     }
   };
@@ -103,7 +104,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading || attempts >= MAX_ATTEMPTS}
-              className="w-full w-full bg-[#D4A96A] text-black py-3.5 rounded-xl font-bold hover:bg-[#b8894e] transition-colors disabled:opacity-60 mt-2"
+              className="w-full bg-[#D4A96A] text-black py-3.5 rounded-xl font-bold hover:bg-[#b8894e] transition-colors disabled:opacity-60 mt-2"
             >
               {loading ? "Connexion..." : "Se connecter"}
             </button>
