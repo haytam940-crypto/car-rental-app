@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CARS, LOCATIONS, Reservation } from "@/lib/data";
 import { getMergedReservations, updateReservationStatus, saveReservation, getStoredCars } from "@/lib/store";
-import { CheckCircle, XCircle, ArrowLeft, Plus, X, Car, ClipboardList, FileText, BarChart2, LayoutDashboard, Globe, LogOut } from "lucide-react";
+import { CheckCircle, XCircle, ArrowLeft, Plus, X, Car, ClipboardList, FileText, BarChart2, LayoutDashboard, Globe, LogOut, Mountain, Calendar, Search, Filter, RotateCcw, Tag, MapPin } from "lucide-react";
 
 const TODAY = new Date().toISOString().split("T")[0];
 
@@ -23,6 +23,9 @@ const navLinks = [
   { href: "/admin/cars", icon: Car, label: "Voitures" },
   { href: "/admin/invoices", icon: FileText, label: "Factures" },
   { href: "/admin/analytics", icon: BarChart2, label: "Analytique" },
+  { href: "/admin/excursions", icon: Mountain, label: "Excursions" },
+  { href: "/admin/planning",   icon: Calendar, label: "Planning" },
+  { href: "/admin/promotions", icon: Tag, label: "Promotions" },
 ];
 
 export default function AdminReservationsPage() {
@@ -30,6 +33,10 @@ export default function AdminReservationsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [filter, setFilter] = useState<"all" | "pending" | "confirmed" | "cancelled">("all");
+  const [search, setSearch] = useState("");
+  const [carFilter, setCarFilter] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState("");
@@ -46,7 +53,20 @@ export default function AdminReservationsPage() {
 
   const logout = () => { sessionStorage.removeItem("admin_token"); router.push("/admin/login"); };
   const refresh = () => setReservations(getMergedReservations());
-  const filtered = filter === "all" ? reservations : reservations.filter((r) => r.status === filter);
+  const resetFilters = () => { setSearch(""); setCarFilter(""); setDateFrom(""); setDateTo(""); setFilter("all"); };
+  const hasFilters = !!(search || carFilter || dateFrom || dateTo || filter !== "all");
+
+  const filtered = reservations.filter(r => {
+    if (filter !== "all" && r.status !== filter) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      if (!`${r.clientFirstName} ${r.clientLastName} ${r.clientPhone} ${r.clientEmail} ${r.clientLicense}`.toLowerCase().includes(q)) return false;
+    }
+    if (carFilter && r.carId !== carFilter) return false;
+    if (dateFrom && r.dropoffDate < dateFrom) return false;
+    if (dateTo && r.pickupDate > dateTo) return false;
+    return true;
+  });
 
   const changeStatus = (id: string, status: "confirmed" | "cancelled") => {
     updateReservationStatus(id, status);
@@ -87,13 +107,14 @@ export default function AdminReservationsPage() {
   };
 
   const statusStyle: Record<string, string> = {
-    pending: "bg-yellow-500/15 text-yellow-400 border border-yellow-500/20",
+    pending: "bg-[#D4A96A]/15 text-[#D4A96A] border border-[#D4A96A]/20",
     confirmed: "bg-green-500/15 text-green-400 border border-green-500/20",
     cancelled: "bg-red-500/15 text-red-400 border border-red-500/20",
   };
   const statusLabel: Record<string, string> = { pending: "En attente", confirmed: "Confirmé", cancelled: "Annulé" };
 
-  const inp = "w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-[#F5C518]/60 transition-colors placeholder-gray-600";
+  const inp = "w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-[#D4A96A]/60 transition-colors placeholder-gray-600";
+  const filterInp = "bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[#D4A96A]/60 transition-colors placeholder-gray-600";
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex">
@@ -103,11 +124,11 @@ export default function AdminReservationsPage() {
       } lg:translate-x-0 lg:static lg:flex`}>
         <div className="p-6 border-b border-white/8 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#F5C518] rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-[#D4A96A] rounded-lg flex items-center justify-center">
               <Car size={16} className="text-black" />
             </div>
             <div className="text-xl font-black text-white">
-              AUTO<span className="text-[#F5C518]">LOC</span>
+              ESON<span className="text-[#D4A96A]"> MAROC</span>
               <span className="text-xs font-normal text-gray-600 ml-1 block -mt-1">Admin</span>
             </div>
           </div>
@@ -120,7 +141,7 @@ export default function AdminReservationsPage() {
             <Link key={href} href={href}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                 href === "/admin/reservations"
-                  ? "bg-[#F5C518] text-black font-bold"
+                  ? "bg-[#D4A96A] text-black font-bold"
                   : "text-gray-500 hover:bg-white/5 hover:text-white"
               }`}>
               <Icon size={17} />{label}
@@ -151,24 +172,61 @@ export default function AdminReservationsPage() {
           </div>
           <button
             onClick={() => { setForm(EMPTY_FORM); setFormError(""); setModal(true); }}
-            className="flex items-center gap-2 bg-[#F5C518] text-black px-4 py-2 rounded-xl text-sm font-bold hover:bg-[#d4a800] transition-colors"
+            className="flex items-center gap-2 bg-[#D4A96A] text-black px-4 py-2 rounded-xl text-sm font-bold hover:bg-[#b8894e] transition-colors"
           >
             <Plus size={16} />
             Réservation manuelle
           </button>
         </header>
 
-        <div className="flex-1 p-6">
-          {/* Filter tabs */}
-          <div className="flex gap-2 mb-6 flex-wrap">
+        <div className="flex-1 p-6 space-y-5">
+          {/* ── Filter bar ── */}
+          <div className="bg-[#111] border border-white/8 rounded-2xl p-4 space-y-3">
+            <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-widest">
+              <Filter size={12} />Filtres de recherche
+              {hasFilters && (
+                <button onClick={resetFilters} className="ml-auto flex items-center gap-1 text-[#D4A96A] hover:text-[#b8894e] transition-colors font-semibold">
+                  <RotateCcw size={11} />Réinitialiser
+                </button>
+              )}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="relative">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                <input
+                  className={filterInp + " pl-8 w-full"}
+                  placeholder="Nom, téléphone, email, permis..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
+              </div>
+              <select className={filterInp + " w-full"} value={carFilter} onChange={e => setCarFilter(e.target.value)} style={{ colorScheme: "dark" }}>
+                <option value="" className="bg-[#1a1a1a]">Toutes les voitures</option>
+                {cars.map(c => <option key={c.id} value={c.id} className="bg-[#1a1a1a]">{c.brand} {c.name}</option>)}
+              </select>
+              <div className="flex items-center gap-2">
+                <input className={filterInp + " flex-1"} type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} style={{ colorScheme: "dark" }} title="Période — du" />
+                <span className="text-gray-600 text-xs shrink-0">→</span>
+                <input className={filterInp + " flex-1"} type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} style={{ colorScheme: "dark" }} title="Période — au" />
+              </div>
+            </div>
+            {hasFilters && (
+              <p className="text-xs text-gray-500">
+                <span className="text-[#D4A96A] font-semibold">{filtered.length}</span> résultat(s) sur {reservations.length}
+              </p>
+            )}
+          </div>
+
+          {/* Status counts */}
+          <div className="flex gap-2 flex-wrap">
             {(["all", "pending", "confirmed", "cancelled"] as const).map((s) => (
               <button
                 key={s}
                 onClick={() => setFilter(s)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                   filter === s
-                    ? "bg-[#F5C518] text-black font-bold"
-                    : "bg-[#111111] text-gray-400 border border-white/8 hover:border-[#F5C518]/30 hover:text-white"
+                    ? "bg-[#D4A96A] text-black font-bold"
+                    : "bg-[#111111] text-gray-400 border border-white/8 hover:border-[#D4A96A]/30 hover:text-white"
                 }`}
               >
                 {s === "all" ? "Toutes" : statusLabel[s]}
@@ -182,6 +240,7 @@ export default function AdminReservationsPage() {
           {filtered.length === 0 ? (
             <div className="bg-[#111111] border border-white/8 rounded-2xl p-16 text-center">
               <p className="text-gray-500">Aucune réservation trouvée</p>
+              {hasFilters && <button onClick={resetFilters} className="mt-3 text-[#D4A96A] text-sm hover:underline">Effacer les filtres</button>}
             </div>
           ) : (
             <div className="bg-[#111111] border border-white/8 rounded-2xl overflow-hidden">
@@ -215,12 +274,18 @@ export default function AdminReservationsPage() {
                             <p className="truncate text-gray-600">→ {r.dropoffLocation}</p>
                           </td>
                           <td className="px-4 py-4 text-sm text-gray-400 whitespace-nowrap">
-                            <p>{r.pickupDate}</p>
-                            <p className="text-gray-600">→ {r.dropoffDate}</p>
+                            <p>{r.pickupDate}{r.pickupTime && <span className="text-gray-600 ml-1">{r.pickupTime}</span>}</p>
+                            <p className="text-gray-600">→ {r.dropoffDate}{r.dropoffTime && <span className="ml-1">{r.dropoffTime}</span>}</p>
                           </td>
                           <td className="px-4 py-4 text-sm text-gray-400 whitespace-nowrap">{r.durationDays}j</td>
                           <td className="px-4 py-4">
-                            <span className="font-bold text-[#F5C518] whitespace-nowrap">{r.totalPrice} DH</span>
+                            <span className="font-bold text-[#D4A96A] whitespace-nowrap">{r.totalPrice} DH HT</span>
+                            {((r.deliveryFee ?? 0) > 0 || (r.recoveryFee ?? 0) > 0) && (
+                              <p className="text-[10px] text-gray-600 mt-0.5">
+                                {(r.deliveryFee ?? 0) > 0 && <span>Livr. {r.deliveryFee} DH </span>}
+                                {(r.recoveryFee ?? 0) > 0 && <span>Récup. {r.recoveryFee} DH</span>}
+                              </p>
+                            )}
                           </td>
                           <td className="px-4 py-4">
                             <span className={`px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${statusStyle[r.status]}`}>
@@ -269,7 +334,7 @@ export default function AdminReservationsPage() {
             <div className="p-6 space-y-5">
               {/* Client */}
               <div>
-                <h3 className="text-[10px] font-bold text-[#F5C518] uppercase tracking-widest mb-3">Informations client</h3>
+                <h3 className="text-[10px] font-bold text-[#D4A96A] uppercase tracking-widest mb-3">Informations client</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Prénom *</label>
@@ -296,7 +361,7 @@ export default function AdminReservationsPage() {
 
               {/* Voiture */}
               <div>
-                <h3 className="text-[10px] font-bold text-[#F5C518] uppercase tracking-widest mb-3">Véhicule</h3>
+                <h3 className="text-[10px] font-bold text-[#D4A96A] uppercase tracking-widest mb-3">Véhicule</h3>
                 <select className={inp} value={form.carId} onChange={(e) => setForm({ ...form, carId: e.target.value })} style={{ colorScheme: "dark" }}>
                   <option value="" className="bg-[#1a1a1a]">Sélectionner une voiture...</option>
                   {cars.filter((c) => c.status === "available").map((c) => (
@@ -307,7 +372,7 @@ export default function AdminReservationsPage() {
                   const car = cars.find((c) => c.id === form.carId);
                   const days = Math.ceil((new Date(form.dropoffDate).getTime() - new Date(form.pickupDate).getTime()) / 86400000) || 1;
                   return car ? (
-                    <p className="text-xs text-[#F5C518] font-semibold mt-1.5">
+                    <p className="text-xs text-[#D4A96A] font-semibold mt-1.5">
                       {days} jour(s) × {car.pricePerDay} DH = <strong>{days * car.pricePerDay} DH</strong>
                     </p>
                   ) : null;
@@ -316,7 +381,7 @@ export default function AdminReservationsPage() {
 
               {/* Lieux */}
               <div>
-                <h3 className="text-[10px] font-bold text-[#F5C518] uppercase tracking-widest mb-3">Lieux</h3>
+                <h3 className="text-[10px] font-bold text-[#D4A96A] uppercase tracking-widest mb-3">Lieux</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Lieu de départ *</label>
@@ -337,7 +402,7 @@ export default function AdminReservationsPage() {
 
               {/* Dates */}
               <div>
-                <h3 className="text-[10px] font-bold text-[#F5C518] uppercase tracking-widest mb-3">Période de location</h3>
+                <h3 className="text-[10px] font-bold text-[#D4A96A] uppercase tracking-widest mb-3">Période de location</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Date de départ *</label>
@@ -352,7 +417,7 @@ export default function AdminReservationsPage() {
 
               {/* Statut */}
               <div>
-                <h3 className="text-[10px] font-bold text-[#F5C518] uppercase tracking-widest mb-3">Statut initial</h3>
+                <h3 className="text-[10px] font-bold text-[#D4A96A] uppercase tracking-widest mb-3">Statut initial</h3>
                 <div className="flex gap-3">
                   {(["confirmed", "pending"] as const).map((s) => (
                     <button key={s} onClick={() => setForm({ ...form, status: s })}
@@ -360,7 +425,7 @@ export default function AdminReservationsPage() {
                         form.status === s
                           ? s === "confirmed"
                             ? "bg-green-500/20 text-green-400 border-green-500/30"
-                            : "bg-[#F5C518]/15 text-[#F5C518] border-[#F5C518]/30"
+                            : "bg-[#D4A96A]/15 text-[#D4A96A] border-[#D4A96A]/30"
                           : "bg-white/5 text-gray-500 border-white/10 hover:border-white/20"
                       }`}
                     >
@@ -385,7 +450,7 @@ export default function AdminReservationsPage() {
               <button onClick={() => setModal(false)} className="px-5 py-2.5 rounded-xl border border-white/10 text-sm font-medium text-gray-400 hover:bg-white/5">
                 Annuler
               </button>
-              <button onClick={handleAdd} className="px-6 py-2.5 rounded-xl bg-[#F5C518] text-black text-sm font-bold hover:bg-[#d4a800] transition-colors">
+              <button onClick={handleAdd} className="px-6 py-2.5 rounded-xl bg-[#D4A96A] text-black text-sm font-bold hover:bg-[#b8894e] transition-colors">
                 Enregistrer la réservation
               </button>
             </div>

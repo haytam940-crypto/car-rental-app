@@ -51,8 +51,12 @@ export type Reservation = {
   dropoffLocation: string;
   pickupDate: string;
   dropoffDate: string;
+  pickupTime?: string;
+  dropoffTime?: string;
   durationDays: number;
-  totalPrice: number;
+  totalPrice: number; // prix location HT
+  deliveryFee?: number;
+  recoveryFee?: number;
   status: "pending" | "confirmed" | "cancelled";
   message?: string;
   createdAt: string;
@@ -69,6 +73,25 @@ export const LOCATIONS = [
   "Tanger | Aéroport Ibn Batouta",
   "Tanger | Centre Ville",
   "Fes | Centre Ville",
+];
+
+export type DeliveryFeeEntry = {
+  location: string;
+  deliveryFee: number;   // frais pour livrer le véhicule à ce lieu
+  recoveryFee: number;   // frais pour récupérer le véhicule depuis ce lieu
+};
+
+export const DEFAULT_DELIVERY_FEES: DeliveryFeeEntry[] = [
+  { location: "Casablanca | Aéroport Mohammed V", deliveryFee: 200, recoveryFee: 200 },
+  { location: "Casablanca | Centre Ville",        deliveryFee: 180, recoveryFee: 180 },
+  { location: "Rabat | Centre Ville",             deliveryFee: 220, recoveryFee: 220 },
+  { location: "Marrakech | Aéroport Menara",      deliveryFee: 100, recoveryFee: 100 },
+  { location: "Marrakech | Gueliz",               deliveryFee: 90,  recoveryFee: 90  },
+  { location: "Agadir | Aéroport Al Massira",     deliveryFee: 150, recoveryFee: 150 },
+  { location: "Agadir | Centre Ville",            deliveryFee: 140, recoveryFee: 140 },
+  { location: "Tanger | Aéroport Ibn Batouta",    deliveryFee: 350, recoveryFee: 350 },
+  { location: "Tanger | Centre Ville",            deliveryFee: 330, recoveryFee: 330 },
+  { location: "Fes | Centre Ville",               deliveryFee: 280, recoveryFee: 280 },
 ];
 
 export const CARS: Car[] = [
@@ -306,3 +329,170 @@ export function getCarById(id: string): Car | undefined {
 export function getReservationById(id: string): Reservation | undefined {
   return RESERVATIONS.find((r) => r.id === id);
 }
+
+// ─── Excursions ───────────────────────────────────────────────────────────────
+
+export type Excursion = {
+  id: string;
+  title: string;
+  description: string;
+  duration: string;
+  pricePerPerson: number;
+  maxParticipants: number;
+  includes: string[];
+  image: string;
+  destination: string;
+  difficulty: "Facile" | "Modéré" | "Difficile";
+  category: "Désert" | "Montagne" | "Côte" | "Ville" | "Circuit";
+};
+
+export type ExcursionBooking = {
+  id: string;
+  excursionId: string;
+  clientFirstName: string;
+  clientLastName: string;
+  clientPhone: string;
+  clientEmail: string;
+  participants: number;
+  date: string;
+  totalPrice: number;
+  status: "pending" | "confirmed" | "cancelled";
+  message?: string;
+  createdAt: string;
+};
+
+export const EXCURSIONS: Excursion[] = [
+  {
+    id: "e1",
+    title: "Nuit dans le Désert de Merzouga",
+    description: "Vivez une expérience inoubliable dans les dunes dorées de l'Erg Chebbi. Chevauchée en dromadaires au coucher du soleil, nuit en bivouac sous les étoiles et lever de soleil magique.",
+    duration: "2 jours / 1 nuit",
+    pricePerPerson: 850,
+    maxParticipants: 12,
+    includes: ["Transport A/R depuis Ouarzazate", "Nuit en bivouac", "Dîner & petit-déjeuner", "Balade à dromadaire", "Guide touristique"],
+    image: "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800",
+    destination: "Merzouga",
+    difficulty: "Facile",
+    category: "Désert",
+  },
+  {
+    id: "e2",
+    title: "Vallée de l'Ourika & Cascades",
+    description: "Découvrez la magnifique vallée de l'Ourika au pied du Haut Atlas. Randonnée jusqu'aux cascades, visite d'un village berbère et déjeuner traditionnel en montagne.",
+    duration: "1 jour",
+    pricePerPerson: 350,
+    maxParticipants: 15,
+    includes: ["Transport depuis Marrakech", "Guide certifié", "Déjeuner traditionnel", "Visite village berbère"],
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800",
+    destination: "Vallée de l'Ourika",
+    difficulty: "Modéré",
+    category: "Montagne",
+  },
+  {
+    id: "e3",
+    title: "Aït Benhaddou & Gorges du Dadès",
+    description: "Circuit entre Aït Benhaddou, ksar classé à l'UNESCO, et les majestueuses gorges du Dadès. Un voyage au cœur du Maroc ancestral avec des panoramas à couper le souffle.",
+    duration: "1 jour",
+    pricePerPerson: 450,
+    maxParticipants: 10,
+    includes: ["Transport inclus", "Guide spécialisé", "Entrée sites UNESCO", "Déjeuner panoramique"],
+    image: "https://images.unsplash.com/photo-1518684079-3c830dcef090?w=800",
+    destination: "Aït Benhaddou",
+    difficulty: "Facile",
+    category: "Circuit",
+  },
+  {
+    id: "e4",
+    title: "Cap Spartel & Grottes d'Hercule",
+    description: "Excursion au Cap Spartel, point de rencontre de l'Atlantique et de la Méditerranée, puis visite des mystérieuses Grottes d'Hercule avec leur ouverture en forme d'Afrique.",
+    duration: "1 jour",
+    pricePerPerson: 280,
+    maxParticipants: 20,
+    includes: ["Transport depuis Tanger", "Guide local", "Entrée grottes", "Thé à la menthe offert"],
+    image: "https://images.unsplash.com/photo-1547394765-185e1e68f34e?w=800",
+    destination: "Tanger",
+    difficulty: "Facile",
+    category: "Côte",
+  },
+  {
+    id: "e5",
+    title: "Marrakech : Médina & Souks",
+    description: "Plongez dans l'effervescence de la médina de Marrakech. Visite guidée des souks, de la Medersa Ben Youssef, du Musée de Marrakech et de la mythique place Jemaa el-Fna.",
+    duration: "1 jour",
+    pricePerPerson: 300,
+    maxParticipants: 15,
+    includes: ["Guide professionnel", "Entrées musées", "Dégustation produits locaux", "Thé à la menthe"],
+    image: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=800",
+    destination: "Marrakech",
+    difficulty: "Facile",
+    category: "Ville",
+  },
+  {
+    id: "e6",
+    title: "Circuit des Kasbahs & Vallée du Drâa",
+    description: "Deux jours à travers les paysages époustouflants de la vallée du Drâa. Kasbahs millénaires, palmeraies luxuriantes, villages de pisé et panoramas grandioses vous attendent.",
+    duration: "2 jours / 1 nuit",
+    pricePerPerson: 780,
+    maxParticipants: 8,
+    includes: ["Transport 4x4", "Hébergement riad", "Tous repas inclus", "Guide local", "Visite des kasbahs"],
+    image: "https://images.unsplash.com/photo-1569948956094-fe18e4b98b0d?w=800",
+    destination: "Vallée du Drâa",
+    difficulty: "Modéré",
+    category: "Circuit",
+  },
+];
+
+// ─── Promotions ───────────────────────────────────────────────────────────────
+
+export type Promotion = {
+  id: string;
+  name: string;
+  description: string;
+  discountPercent: number;
+  startDate: string; // YYYY-MM-DD
+  endDate: string;   // YYYY-MM-DD
+  applyTo: "cars" | "excursions" | "all";
+  active: boolean;
+};
+
+export const EXCURSION_BOOKINGS: ExcursionBooking[] = [
+  {
+    id: "eb1",
+    excursionId: "e1",
+    clientFirstName: "Sophie",
+    clientLastName: "Martin",
+    clientPhone: "+33 6 12 34 56 78",
+    clientEmail: "sophie.martin@email.com",
+    participants: 2,
+    date: "2026-03-20",
+    totalPrice: 1700,
+    status: "confirmed",
+    createdAt: "2026-03-06",
+  },
+  {
+    id: "eb2",
+    excursionId: "e2",
+    clientFirstName: "Ahmed",
+    clientLastName: "Khalil",
+    clientPhone: "+212 6 55 44 33 22",
+    clientEmail: "ahmed@email.com",
+    participants: 4,
+    date: "2026-03-15",
+    totalPrice: 1400,
+    status: "pending",
+    createdAt: "2026-03-06",
+  },
+  {
+    id: "eb3",
+    excursionId: "e5",
+    clientFirstName: "Emma",
+    clientLastName: "Dupont",
+    clientPhone: "+33 7 98 76 54 32",
+    clientEmail: "emma.dupont@email.com",
+    participants: 3,
+    date: "2026-03-12",
+    totalPrice: 900,
+    status: "pending",
+    createdAt: "2026-03-07",
+  },
+];

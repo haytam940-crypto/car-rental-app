@@ -73,7 +73,7 @@ export default function HeroSlider() {
               onClick={() => goTo(i)}
               className={`rounded-full transition-all duration-300 ${
                 i === current
-                  ? "w-6 h-2 bg-[#F5C518]"
+                  ? "w-6 h-2 bg-[#D4A96A]"
                   : "w-2 h-2 bg-white/30 hover:bg-white/60"
               }`}
             />

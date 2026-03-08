@@ -9,6 +9,7 @@ import MIcon from "@/components/MIcon";
 import { getStoredCars } from "@/lib/store";
 import { CARS } from "@/lib/data";
 import { SlidersHorizontal, X, Search } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const CATEGORIES = ["Tous", "Économique", "Citadine", "Compacte", "SUV", "Luxe"];
 const FUELS = ["Tous", "Essence", "Diesel", "Hybride", "Electrique"];
@@ -16,6 +17,7 @@ const TRANSMISSIONS = ["Toutes", "Automatique", "Manuelle"];
 
 function FleetContent() {
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
   const [cars, setCars] = useState(CARS);
   useEffect(() => { setCars(getStoredCars()); }, []);
 
@@ -59,8 +61,8 @@ function FleetContent() {
   const filterBtnCls = (active: boolean) =>
     `px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
       active
-        ? "bg-[#F5C518] text-black"
-        : "bg-white/5 text-gray-400 border border-white/10 hover:border-[#F5C518]/40 hover:text-white"
+        ? "bg-[#D4A96A] text-black"
+        : "bg-white/5 text-gray-400 border border-white/10 hover:border-[#D4A96A]/40 hover:text-white"
     }`;
 
   return (
@@ -75,14 +77,14 @@ function FleetContent() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/80 via-[#0a0a0a]/60 to-[#0a0a0a]" />
         <div className="relative z-10 max-w-7xl mx-auto px-4">
-          <p className="text-[#F5C518] text-xs font-bold uppercase tracking-widest mb-3">Notre flotte</p>
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-3">Toutes nos voitures</h1>
+          <p className="text-[#D4A96A] text-xs font-bold uppercase tracking-widest mb-3">{t("fleet.title")}</p>
+          <h1 className="text-4xl md:text-5xl font-black text-white mb-3">{t("fleet.sub")}</h1>
           <p className="text-gray-400">
-            {cars.filter((c) => c.status === "available").length} véhicules disponibles
+            {cars.filter((c) => c.status === "available").length} {t("fleet.available")}
           </p>
 
           {urlFrom && urlTo && (
-            <div className="inline-flex items-center gap-2 mt-5 bg-[#F5C518]/10 border border-[#F5C518]/30 text-[#F5C518] px-4 py-2 rounded-full text-sm font-medium">
+            <div className="inline-flex items-center gap-2 mt-5 bg-[#D4A96A]/10 border border-[#D4A96A]/30 text-[#D4A96A] px-4 py-2 rounded-full text-sm font-medium">
               <MIcon name="calendar_month" size={15} />
               {urlFrom} → {urlTo}
               {urlPickup && <span className="text-gray-400 ml-1">· {urlPickup.split(" | ")[0]}</span>}
@@ -98,9 +100,9 @@ function FleetContent() {
           <aside className="hidden lg:block w-60 shrink-0">
             <div className="bg-[#111111] border border-white/8 rounded-2xl p-6 sticky top-28">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="font-bold text-white text-sm uppercase tracking-widest">Filtres</h3>
-                <button onClick={resetFilters} className="text-xs text-[#F5C518] hover:underline">
-                  Réinitialiser
+                <h3 className="font-bold text-white text-sm uppercase tracking-widest">{t("fleet.filters")}</h3>
+                <button onClick={resetFilters} className="text-xs text-[#D4A96A] hover:underline">
+                  {t("fleet.resetFilters")}
                 </button>
               </div>
 
@@ -134,13 +136,13 @@ function FleetContent() {
               <div className="mb-6">
                 <div className="flex justify-between mb-2">
                   <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Prix max/jour</p>
-                  <span className="text-sm font-bold text-[#F5C518]">{maxPrice} DH</span>
+                  <span className="text-sm font-bold text-[#D4A96A]">{maxPrice} DH</span>
                 </div>
                 <input
                   type="range" min={200} max={1000} step={50}
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
-                  className="w-full accent-[#F5C518]"
+                  className="w-full accent-[#D4A96A]"
                 />
                 <div className="flex justify-between text-xs text-gray-600 mt-1">
                   <span>200 DH</span>
@@ -153,9 +155,9 @@ function FleetContent() {
                   type="checkbox"
                   checked={availableOnly}
                   onChange={(e) => setAvailableOnly(e.target.checked)}
-                  className="w-4 h-4 accent-[#F5C518]"
+                  className="w-4 h-4 accent-[#D4A96A]"
                 />
-                <span className="text-sm text-gray-400">Disponibles uniquement</span>
+                <span className="text-sm text-gray-400">{t("fleet.availableOnly")}</span>
               </label>
             </div>
           </aside>
@@ -164,13 +166,13 @@ function FleetContent() {
           <div className="flex-1">
             {/* Mobile top bar */}
             <div className="flex justify-between items-center mb-6">
-              <p className="text-gray-500 text-sm">{filtered.length} véhicule(s)</p>
+              <p className="text-gray-500 text-sm">{filtered.length} {t("fleet.results")}</p>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="lg:hidden flex items-center gap-2 bg-white/5 border border-white/10 text-white px-4 py-2 rounded-xl text-sm font-medium hover:border-[#F5C518]/40 transition-colors"
+                className="lg:hidden flex items-center gap-2 bg-white/5 border border-white/10 text-white px-4 py-2 rounded-xl text-sm font-medium hover:border-[#D4A96A]/40 transition-colors"
               >
-                <SlidersHorizontal size={15} className="text-[#F5C518]" />
-                Filtres
+                <SlidersHorizontal size={15} className="text-[#D4A96A]" />
+                {t("fleet.filters")}
               </button>
             </div>
 
@@ -180,10 +182,10 @@ function FleetContent() {
                 <div className="w-20 h-20 bg-white/5 border border-white/8 rounded-full flex items-center justify-center mx-auto mb-5">
                   <Search size={32} className="text-gray-600" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Aucun véhicule trouvé</h3>
-                <p className="text-gray-500 mb-6">Essayez de modifier vos filtres</p>
+                <h3 className="text-xl font-bold text-white mb-2">{t("fleet.noResults")}</h3>
+                <p className="text-gray-500 mb-6">{t("fleet.noResultsSub")}</p>
                 <button onClick={resetFilters} className="yellow-btn px-6 py-3 rounded-xl font-semibold">
-                  Voir tous les véhicules
+                  {t("home.featured.seeAll")}
                 </button>
               </div>
             ) : (
@@ -205,7 +207,7 @@ function FleetContent() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-6">
-              <h3 className="font-bold text-white">Filtres</h3>
+              <h3 className="font-bold text-white">{t("fleet.filters")}</h3>
               <button onClick={() => setShowFilters(false)} className="text-gray-400 hover:text-white">
                 <X size={20} />
               </button>
@@ -239,15 +241,15 @@ function FleetContent() {
                 type="checkbox"
                 checked={availableOnly}
                 onChange={(e) => setAvailableOnly(e.target.checked)}
-                className="w-4 h-4 accent-[#F5C518]"
+                className="w-4 h-4 accent-[#D4A96A]"
               />
-              <span className="text-sm text-gray-400">Disponibles uniquement</span>
+              <span className="text-sm text-gray-400">{t("fleet.availableOnly")}</span>
             </label>
             <button
               onClick={() => { resetFilters(); setShowFilters(false); }}
-              className="w-full mt-6 border border-white/10 py-2 rounded-xl text-sm text-gray-400 hover:border-[#F5C518]/40 hover:text-white transition-colors"
+              className="w-full mt-6 border border-white/10 py-2 rounded-xl text-sm text-gray-400 hover:border-[#D4A96A]/40 hover:text-white transition-colors"
             >
-              Réinitialiser
+              {t("fleet.resetFilters")}
             </button>
           </div>
         </div>

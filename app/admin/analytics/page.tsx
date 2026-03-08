@@ -4,12 +4,12 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Car, CarCharge, CHARGE_LABELS, ChargeCategory } from "@/lib/data";
 import { getStoredCars, getStoredCharges, getMergedReservations } from "@/lib/store";
-import { ArrowLeft, TrendingUp, Wallet, Receipt, Car as CarIcon, ClipboardList, FileText, BarChart2, LayoutDashboard, Globe, LogOut, X } from "lucide-react";
+import { ArrowLeft, TrendingUp, Wallet, Receipt, Car as CarIcon, ClipboardList, FileText, BarChart2, LayoutDashboard, Globe, LogOut, X, Mountain, Calendar, Tag, MapPin } from "lucide-react";
 
 const CHARGE_COLORS: Record<ChargeCategory, string> = {
   gazoil:      "bg-orange-500/15 text-orange-400 border-orange-500/20",
   lavage:      "bg-blue-500/15 text-blue-400 border-blue-500/20",
-  vidange:     "bg-yellow-500/15 text-yellow-400 border-yellow-500/20",
+  vidange:     "bg-[#D4A96A]/15 text-[#D4A96A] border-[#D4A96A]/20",
   vignette:    "bg-purple-500/15 text-purple-400 border-purple-500/20",
   assurance:   "bg-green-500/15 text-green-400 border-green-500/20",
   credit_bail: "bg-indigo-500/15 text-indigo-400 border-indigo-500/20",
@@ -23,6 +23,9 @@ const navLinks = [
   { href: "/admin/cars", icon: CarIcon, label: "Voitures" },
   { href: "/admin/invoices", icon: FileText, label: "Factures" },
   { href: "/admin/analytics", icon: BarChart2, label: "Analytique" },
+  { href: "/admin/excursions", icon: Mountain, label: "Excursions" },
+  { href: "/admin/planning",   icon: Calendar, label: "Planning" },
+  { href: "/admin/promotions", icon: Tag, label: "Promotions" },
 ];
 
 export default function AnalyticsPage() {
@@ -65,11 +68,11 @@ export default function AnalyticsPage() {
       } lg:translate-x-0 lg:static lg:flex`}>
         <div className="p-6 border-b border-white/8 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#F5C518] rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-[#D4A96A] rounded-lg flex items-center justify-center">
               <CarIcon size={16} className="text-black" />
             </div>
             <div className="text-xl font-black text-white">
-              AUTO<span className="text-[#F5C518]">LOC</span>
+              ESON<span className="text-[#D4A96A]"> MAROC</span>
               <span className="text-xs font-normal text-gray-600 ml-1 block -mt-1">Admin</span>
             </div>
           </div>
@@ -82,7 +85,7 @@ export default function AnalyticsPage() {
             <Link key={href} href={href}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                 href === "/admin/analytics"
-                  ? "bg-[#F5C518] text-black font-bold"
+                  ? "bg-[#D4A96A] text-black font-bold"
                   : "text-gray-500 hover:bg-white/5 hover:text-white"
               }`}>
               <Icon size={17} />{label}
@@ -114,7 +117,7 @@ export default function AnalyticsPage() {
           <select
             value={selectedCar}
             onChange={(e) => setSelectedCar(e.target.value)}
-            className="bg-white/5 border border-white/10 text-white rounded-xl px-3 py-1.5 text-sm outline-none focus:border-[#F5C518]/60"
+            className="bg-white/5 border border-white/10 text-white rounded-xl px-3 py-1.5 text-sm outline-none focus:border-[#D4A96A]/60"
             style={{ colorScheme: "dark" }}
           >
             <option value="all" className="bg-[#1a1a1a]">Toutes les voitures</option>
@@ -180,7 +183,7 @@ export default function AnalyticsPage() {
                         <img src={car.images[0]} alt={car.name} className="w-full h-full object-cover" />
                       </div>
                       <div>
-                        <p className="text-xs text-[#F5C518] font-semibold uppercase tracking-wider">{car.brand}</p>
+                        <p className="text-xs text-[#D4A96A] font-semibold uppercase tracking-wider">{car.brand}</p>
                         <h3 className="font-bold text-white">{car.name}</h3>
                       </div>
                     </div>
@@ -205,7 +208,7 @@ export default function AnalyticsPage() {
                   <div className="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Charges par catégorie */}
                     <div>
-                      <p className="text-[10px] font-bold text-[#F5C518] uppercase tracking-widest mb-3">Charges par catégorie</p>
+                      <p className="text-[10px] font-bold text-[#D4A96A] uppercase tracking-widest mb-3">Charges par catégorie</p>
                       {Object.keys(catMap).length === 0 ? (
                         <p className="text-sm text-gray-600">Aucune charge enregistrée</p>
                       ) : (
@@ -217,7 +220,7 @@ export default function AnalyticsPage() {
                               </span>
                               <div className="flex-1 bg-white/5 rounded-full h-1.5 overflow-hidden">
                                 <div
-                                  className="h-full bg-[#F5C518] rounded-full"
+                                  className="h-full bg-[#D4A96A] rounded-full"
                                   style={{ width: totalChg > 0 ? `${(amt / totalChg) * 100}%` : "0%" }}
                                 />
                               </div>
@@ -232,7 +235,7 @@ export default function AnalyticsPage() {
 
                     {/* Historique */}
                     <div>
-                      <p className="text-[10px] font-bold text-[#F5C518] uppercase tracking-widest mb-3">Historique des charges</p>
+                      <p className="text-[10px] font-bold text-[#D4A96A] uppercase tracking-widest mb-3">Historique des charges</p>
                       {carCharges.length === 0 ? (
                         <p className="text-sm text-gray-600">Aucune charge</p>
                       ) : (
@@ -246,7 +249,7 @@ export default function AnalyticsPage() {
                                 {charge.note && <span className="text-gray-600 text-xs">{charge.note}</span>}
                               </div>
                               <div className="text-right">
-                                <span className="font-bold text-[#F5C518]">{charge.amount.toLocaleString("fr-FR")} DH</span>
+                                <span className="font-bold text-[#D4A96A]">{charge.amount.toLocaleString("fr-FR")} DH</span>
                                 <span className="text-xs text-gray-600 ml-2">{new Date(charge.date).toLocaleDateString("fr-FR")}</span>
                               </div>
                             </div>
@@ -263,7 +266,7 @@ export default function AnalyticsPage() {
           {/* Récap global */}
           {selectedCar === "all" && charges.length > 0 && (
             <div className="mt-6 bg-[#111111] border border-white/8 rounded-2xl p-6">
-              <p className="text-sm font-bold text-white mb-4 uppercase tracking-wider text-[10px] text-[#F5C518]">Récapitulatif global des charges</p>
+              <p className="text-sm font-bold text-white mb-4 uppercase tracking-wider text-[10px] text-[#D4A96A]">Récapitulatif global des charges</p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {(Object.keys(CHARGE_LABELS) as ChargeCategory[]).map((cat) => {
                   const total = charges.filter((c) => c.category === cat).reduce((s, c) => s + c.amount, 0);

@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --yellow: #F5C518;
-  --yellow-dark: #d4a800;
+  --yellow: #D4A96A;
+  --yellow-dark: #b8894e;
   --black: #0a0a0a;
   --dark: #111111;
   --dark2: #1a1a1a;
@@ -20,7 +20,7 @@ html { scroll-behavior: smooth; }
 
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: #111; }
-::-webkit-scrollbar-thumb { background: #F5C518; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #D4A96A; border-radius: 3px; }
 
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(24px); }
@@ -35,13 +35,13 @@ html { scroll-behavior: smooth; }
 
 @layer components {
   .yellow-btn {
-    background: #F5C518;
+    background: #D4A96A;
     color: #0a0a0a;
     font-weight: 700;
     transition: background 0.2s, transform 0.15s;
   }
   .yellow-btn:hover {
-    background: #d4a800;
+    background: #b8894e;
     transform: translateY(-1px);
   }
 
@@ -52,8 +52,8 @@ html { scroll-behavior: smooth; }
     transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
   }
   .card-dark:hover {
-    border-color: #F5C518;
-    box-shadow: 0 8px 32px rgba(245,197,24,0.12);
+    border-color: #D4A96A;
+    box-shadow: 0 8px 32px rgba(212,169,106,0.12);
     transform: translateY(-3px);
   }
 }

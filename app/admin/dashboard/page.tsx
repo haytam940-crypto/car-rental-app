@@ -7,7 +7,7 @@ import { getMergedReservations } from "@/lib/store";
 import { Reservation } from "@/lib/data";
 import {
   Car, ClipboardList, TrendingUp, CheckCircle, Clock,
-  LogOut, LayoutDashboard, FileText, Menu, X, BarChart2, Globe
+  LogOut, LayoutDashboard, FileText, Menu, X, BarChart2, Globe, Mountain, Calendar, Tag, MapPin
 } from "lucide-react";
 
 const navLinks = [
@@ -16,6 +16,9 @@ const navLinks = [
   { href: "/admin/cars", icon: Car, label: "Voitures" },
   { href: "/admin/invoices", icon: FileText, label: "Factures" },
   { href: "/admin/analytics", icon: BarChart2, label: "Analytique" },
+  { href: "/admin/excursions", icon: Mountain, label: "Excursions" },
+  { href: "/admin/planning",   icon: Calendar, label: "Planning" },
+  { href: "/admin/promotions", icon: Tag, label: "Promotions" },
 ];
 
 export default function AdminDashboard() {
@@ -46,7 +49,7 @@ export default function AdminDashboard() {
 
   const statusLabel: Record<string, string> = { pending: "En attente", confirmed: "Confirmé", cancelled: "Annulé" };
   const statusStyle: Record<string, string> = {
-    pending: "bg-yellow-500/15 text-yellow-400 border border-yellow-500/20",
+    pending: "bg-[#D4A96A]/15 text-[#D4A96A] border border-[#D4A96A]/20",
     confirmed: "bg-green-500/15 text-green-400 border border-green-500/20",
     cancelled: "bg-red-500/15 text-red-400 border border-red-500/20",
   };
@@ -60,11 +63,11 @@ export default function AdminDashboard() {
         {/* Logo */}
         <div className="p-6 border-b border-white/8 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#F5C518] rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-[#D4A96A] rounded-lg flex items-center justify-center">
               <Car size={16} className="text-black" />
             </div>
             <div className="text-xl font-black text-white">
-              AUTO<span className="text-[#F5C518]">LOC</span>
+              ESON<span className="text-[#D4A96A]"> MAROC</span>
               <span className="text-xs font-normal text-gray-600 ml-1 block -mt-1">Admin</span>
             </div>
           </div>
@@ -81,7 +84,7 @@ export default function AdminDashboard() {
               href={href}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                 href === "/admin/dashboard"
-                  ? "bg-[#F5C518] text-black font-bold"
+                  ? "bg-[#D4A96A] text-black font-bold"
                   : "text-gray-500 hover:bg-white/5 hover:text-white"
               }`}
             >
@@ -128,7 +131,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
-            <div className="w-7 h-7 bg-[#F5C518] rounded-full flex items-center justify-center text-black text-xs font-black">A</div>
+            <div className="w-7 h-7 bg-[#D4A96A] rounded-full flex items-center justify-center text-black text-xs font-black">A</div>
             <span className="text-sm font-medium text-white hidden sm:block">Admin</span>
           </div>
         </header>
@@ -138,8 +141,8 @@ export default function AdminDashboard() {
           {/* KPI Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {[
-              { label: "CA confirmé", value: `${totalRevenue.toLocaleString()} DH`, icon: TrendingUp, accent: "text-[#F5C518]", bg: "bg-[#F5C518]/10 border-[#F5C518]/20", change: `${allReservations.length} réservations` },
-              { label: "En attente", value: pending, icon: Clock, accent: "text-yellow-400", bg: "bg-yellow-500/10 border-yellow-500/20", change: `${allReservations.length} total` },
+              { label: "CA confirmé", value: `${totalRevenue.toLocaleString()} DH`, icon: TrendingUp, accent: "text-[#D4A96A]", bg: "bg-[#D4A96A]/10 border-[#D4A96A]/20", change: `${allReservations.length} réservations` },
+              { label: "En attente", value: pending, icon: Clock, accent: "text-[#D4A96A]", bg: "bg-[#D4A96A]/10 border-[#D4A96A]/20", change: `${allReservations.length} total` },
               { label: "Disponibles", value: available, icon: Car, accent: "text-green-400", bg: "bg-green-500/10 border-green-500/20", change: `${rented} louées` },
               { label: "Confirmées", value: confirmed, icon: CheckCircle, accent: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20", change: "ce mois" },
             ].map(({ label, value, icon: Icon, accent, bg, change }) => (
@@ -164,7 +167,7 @@ export default function AdminDashboard() {
               <div className="space-y-4">
                 {[
                   { label: "Disponibles", count: available, total: CARS.length, color: "bg-green-500" },
-                  { label: "Louées", count: rented, total: CARS.length, color: "bg-[#F5C518]" },
+                  { label: "Louées", count: rented, total: CARS.length, color: "bg-[#D4A96A]" },
                   { label: "Maintenance", count: CARS.filter(c => c.status === "maintenance").length, total: CARS.length, color: "bg-red-500" },
                 ].map(({ label, count, total, color }) => (
                   <div key={label}>
@@ -187,7 +190,7 @@ export default function AdminDashboard() {
             <div className="bg-[#111111] border border-white/8 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="font-bold text-white text-sm uppercase tracking-wider">Réservations récentes</h2>
-                <Link href="/admin/reservations" className="text-[#F5C518] text-xs font-medium hover:underline">
+                <Link href="/admin/reservations" className="text-[#D4A96A] text-xs font-medium hover:underline">
                   Voir tout →
                 </Link>
               </div>
@@ -204,7 +207,7 @@ export default function AdminDashboard() {
                         <span className={`text-xs px-2 py-1 rounded-full font-semibold ${statusStyle[r.status]}`}>
                           {statusLabel[r.status]}
                         </span>
-                        <p className="text-xs font-bold text-[#F5C518] mt-1">{r.totalPrice} DH</p>
+                        <p className="text-xs font-bold text-[#D4A96A] mt-1">{r.totalPrice} DH</p>
                       </div>
                     </div>
                   );
@@ -227,9 +230,9 @@ export default function AdminDashboard() {
               <Link
                 key={href}
                 href={href}
-                className={`p-5 rounded-2xl border flex flex-col items-center gap-3 hover:border-[#F5C518]/40 transition-all text-center group ${
+                className={`p-5 rounded-2xl border flex flex-col items-center gap-3 hover:border-[#D4A96A]/40 transition-all text-center group ${
                   i === 0
-                    ? "bg-[#F5C518] border-[#F5C518] text-black hover:bg-[#d4a800]"
+                    ? "bg-[#D4A96A] border-[#D4A96A] text-black hover:bg-[#b8894e]"
                     : "bg-[#111111] border-white/8 text-gray-400 hover:text-white"
                 }`}
               >

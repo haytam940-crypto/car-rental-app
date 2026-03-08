@@ -7,9 +7,13 @@ import { getMergedReservations } from "@/lib/store";
 import { FileText, Download, ArrowLeft, ScrollText, X } from "lucide-react";
 
 function downloadInvoice(r: Reservation, car: Car | undefined, invoiceNum: string) {
-  const priceHT = Math.round(r.totalPrice / 1.2);
-  const tva = r.totalPrice - priceHT;
-  const pricePerDayHT = car ? Math.round(car.pricePerDay / 1.2) : 0;
+  const deliveryFee = r.deliveryFee ?? 0;
+  const recoveryFee = r.recoveryFee ?? 0;
+  const locationHT = r.totalPrice - deliveryFee - recoveryFee; // prix location seul
+  const priceHT = r.totalPrice; // total HT (location + frais)
+  const tva = Math.round(priceHT * 0.2);
+  const totalTTC = priceHT + tva;
+  const pricePerDayHT = car ? car.pricePerDay : 0;
   const issueDate = new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
 
   const html = `<!DOCTYPE html>
@@ -85,14 +89,14 @@ function downloadInvoice(r: Reservation, car: Car | undefined, invoiceNum: strin
   <!-- En-tête société -->
   <div class="header">
     <div>
-      <div class="logo">AUTO<span>LOC</span><small>MAROC</small></div>
+      <div class="logo">ESON<span> MAROC</span></div>
     </div>
     <div class="company-block">
-      <strong>AutoLoc Maroc S.A.R.L</strong><br>
-      123 Boulevard Mohammed V, Casablanca<br>
-      Tél : +212 6 00 00 00 00<br>
-      Email : contact@autoloc.ma<br>
-      Site : autoloc.ma
+      <strong>Eson Maroc S.A.R.L</strong><br>
+      Av. Mohamed VI, en face de la RAM, Ouarzazate<br>
+      Tél : +212.524.89.05.62 — GSM : +212.666.89.08.99<br>
+      Email : contact@eson-maroc.com<br>
+      Site : eson-maroc.com
     </div>
   </div>
 
@@ -133,13 +137,13 @@ function downloadInvoice(r: Reservation, car: Car | undefined, invoiceNum: strin
   <div class="period-bar">
     <div class="period-item">
       <div class="p-label">Départ</div>
-      <div class="p-value">${r.pickupDate}</div>
+      <div class="p-value">${r.pickupDate}${r.pickupTime ? ` · ${r.pickupTime}` : ""}</div>
       <div style="font-size:10px;color:#aaa;margin-top:2px">${r.pickupLocation}</div>
     </div>
     <div class="period-sep">→</div>
     <div class="period-item">
       <div class="p-label">Retour</div>
-      <div class="p-value">${r.dropoffDate}</div>
+      <div class="p-value">${r.dropoffDate}${r.dropoffTime ? ` · ${r.dropoffTime}` : ""}</div>
       <div style="font-size:10px;color:#aaa;margin-top:2px">${r.dropoffLocation}</div>
     </div>
     <div class="period-sep" style="color:#aaa;font-size:14px">|</div>
@@ -165,30 +169,34 @@ function downloadInvoice(r: Reservation, car: Car | undefined, invoiceNum: strin
       <tr>
         <td>
           <strong>Location ${car ? `${car.brand} ${car.name}` : "véhicule"}</strong><br>
-          <span style="font-size:11px;color:#888">Du ${r.pickupDate} au ${r.dropoffDate} · ${r.pickupLocation}</span>
+          <span style="font-size:11px;color:#888">Du ${r.pickupDate}${r.pickupTime ? ` (${r.pickupTime})` : ""} au ${r.dropoffDate}${r.dropoffTime ? ` (${r.dropoffTime})` : ""} · ${r.pickupLocation}</span>
         </td>
         <td>${r.durationDays} j</td>
         <td>${pricePerDayHT} DH</td>
         <td>20%</td>
-        <td>${priceHT} DH</td>
-        <td>${r.totalPrice} DH</td>
+        <td>${locationHT} DH</td>
+        <td>${Math.round(locationHT * 1.2)} DH</td>
       </tr>
       <tr style="background:#fafafa">
         <td colspan="4" style="font-size:11px;color:#aaa;padding-top:6px;padding-bottom:6px">Frais de livraison</td>
-        <td>0 DH</td><td>0 DH</td>
+        <td>${deliveryFee} DH</td><td>${deliveryFee} DH</td>
       </tr>
       <tr style="background:#fafafa">
         <td colspan="4" style="font-size:11px;color:#aaa;padding-top:6px;padding-bottom:6px">Frais de reprise</td>
-        <td>0 DH</td><td>0 DH</td>
+        <td>${recoveryFee} DH</td><td>${recoveryFee} DH</td>
       </tr>
     </tbody>
   </table>
 
   <!-- Totaux -->
   <div class="totals">
-    <div class="totals-row"><span class="t-lbl">Sous-total HT</span><span class="t-val">${priceHT} DH</span></div>
+    <div class="totals-row"><span class="t-lbl">Location HT</span><span class="t-val">${locationHT} DH</span></div>
+    ${deliveryFee > 0 ? `<div class="totals-row"><span class="t-lbl">Frais livraison</span><span class="t-val">${deliveryFee} DH</span></div>` : ""}
+    ${recoveryFee > 0 ? `<div class="totals-row"><span class="t-lbl">Frais récupération</span><span class="t-val">${recoveryFee} DH</span></div>` : ""}
+    <div class="totals-row" style="font-weight:700"><span class="t-lbl">Sous-total HT</span><span class="t-val">${priceHT} DH</span></div>
     <div class="totals-tva"><span class="t-lbl">TVA 20%</span><span class="t-val">+ ${tva} DH</span></div>
-    <div class="totals-final"><span class="t-lbl">NET À PAYER TTC</span><span class="t-val">${r.totalPrice} DH</span></div>
+    <div class="totals-final"><span class="t-lbl">NET À PAYER HT</span><span class="t-val">${priceHT} DH</span></div>
+    <div style="text-align:right;font-size:11px;color:#888;margin-top:5px;padding-right:4px">Montant TTC (TVA 20% incluse) : <strong>${totalTTC} DH</strong></div>
   </div>
 
   <!-- Statut paiement -->
@@ -200,15 +208,15 @@ function downloadInvoice(r: Reservation, car: Car | undefined, invoiceNum: strin
 
   <!-- Mentions légales -->
   <div class="legal">
-    <strong>Conditions générales :</strong> La location est soumise aux conditions générales d'AutoLoc Maroc. Le locataire est responsable de tout dommage causé au véhicule pendant la période de location.
+    <strong>Conditions générales :</strong> La location est soumise aux conditions générales d'Eson Maroc. Le locataire est responsable de tout dommage causé au véhicule pendant la période de location.
     Le véhicule doit être restitué dans l'état initial, avec le même niveau de carburant. Toute heure supplémentaire dépassant l'heure de restitution convenue sera facturée.
-    En cas de sinistre, le locataire doit contacter immédiatement l'agence au +212 6 00 00 00 00.
+    En cas de sinistre, le locataire doit contacter immédiatement l'agence au +212.524.89.05.62.
   </div>
 
   <!-- Footer -->
   <div class="footer">
     <div>
-      <div><strong>AutoLoc Maroc S.A.R.L</strong> — 123 Bd Mohammed V, Casablanca</div>
+      <div><strong>Eson Maroc S.A.R.L</strong> — Av. Mohamed VI, en face de la RAM, Ouarzazate</div>
       <div class="footer-ids">ICE : 000000000000000 &nbsp;·&nbsp; RC : 000000 &nbsp;·&nbsp; Patente : 0000000 &nbsp;·&nbsp; IF : 00000000 &nbsp;·&nbsp; CNSS : 0000000</div>
     </div>
     <div style="text-align:right">
@@ -243,8 +251,9 @@ type ContractExtras = {
 };
 
 function downloadContract(r: Reservation, car: Car | undefined, contractNum: string, x: ContractExtras) {
-  const totalHT = Math.round(r.totalPrice / 1.2);
-  const tva = r.totalPrice - totalHT;
+  const totalHT = r.totalPrice; // totalPrice est déjà HT
+  const tva = Math.round(totalHT * 0.2);
+  const totalTTC = totalHT + tva;
   const html = `<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -295,18 +304,18 @@ function downloadContract(r: Reservation, car: Car | undefined, contractNum: str
 <body>
   <div class="header">
     <div>
-      <div class="logo">AUTO<span>LOC</span> <span style="font-size:11px;font-weight:400;color:#555">MAROC</span></div>
+      <div class="logo">ESON<span> MAROC</span></div>
       <div style="font-size:10px;color:#666;margin-top:2px">Location de voitures</div>
     </div>
     <div class="company-info">
-      123 Boulevard Mohammed V, Casablanca<br>
-      GSM : +212 6 00 00 00 00<br>
-      E-mail : contact@autoloc.ma &nbsp;·&nbsp; autoloc.ma
+      Av. Mohamed VI, en face de la RAM, Ouarzazate<br>
+      Tél : +212.524.89.05.62 — GSM : +212.666.89.08.99<br>
+      E-mail : contact@eson-maroc.com &nbsp;·&nbsp; eson-maroc.com
     </div>
   </div>
 
   <h1>Contrat de location N° : &nbsp;&nbsp;&nbsp; ${contractNum}</h1>
-  <p class="intro">Contrat de location de voitures entre AutoLoc Maroc S.A.R.L et le preneur mentionné ci-dessous et pour le véhicule mentionné ci-dessous.</p>
+  <p class="intro">Contrat de location de voitures entre Eson Maroc S.A.R.L et le preneur mentionné ci-dessous et pour le véhicule mentionné ci-dessous.</p>
 
   <div class="veh-header">
     <div><strong>Marque :</strong> <strong>${car ? `${car.brand} ${car.name}` : "—"}</strong></div>
@@ -397,11 +406,12 @@ function downloadContract(r: Reservation, car: Car | undefined, contractNum: str
         <table class="pt">
           <tr><td>N° de jours</td><td>${r.durationDays}</td></tr>
           <tr><td>Prix / Jour</td><td>${car?.pricePerDay ?? 0} DH</td></tr>
-          <tr><td>Frais Livraison</td><td>0 DH</td></tr>
-          <tr><td>Frais Reprise</td><td>0 DH</td></tr>
+          <tr><td>Frais Livraison</td><td>${r.deliveryFee ?? 0} DH</td></tr>
+          <tr><td>Frais Reprise</td><td>${r.recoveryFee ?? 0} DH</td></tr>
           <tr><td>Total HT</td><td>${totalHT} DH</td></tr>
           <tr><td>TVA 20%</td><td>${tva} DH</td></tr>
-          <tr style="background:#eee"><td><strong>Net à payer TTC</strong></td><td><strong>${r.totalPrice} DH</strong></td></tr>
+          <tr style="background:#eee"><td><strong>Net à payer HT</strong></td><td><strong>${totalHT} DH</strong></td></tr>
+          <tr><td style="font-size:10px;color:#888">Montant TTC</td><td style="font-size:10px;color:#888">${totalTTC} DH</td></tr>
         </table>
       </div>
     </div>
@@ -514,7 +524,7 @@ export default function AdminInvoicesPage() {
         value={extras[key]}
         onChange={(e) => setExtras({ ...extras, [key]: e.target.value })}
         placeholder={placeholder}
-        className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-[#e63946]"
+        className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-600 outline-none focus:border-[#D4A96A]/60"
       />
     </div>
   );
@@ -527,92 +537,136 @@ export default function AdminInvoicesPage() {
     setConfirmedReservations(getMergedReservations().filter((r) => r.status === "confirmed"));
   }, [router]);
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-[#0d0d1a] text-white px-6 py-4 flex items-center gap-4">
-        <Link href="/admin/dashboard" className="flex items-center gap-2 text-gray-400 hover:text-white">
-          <ArrowLeft size={18} />
-          Dashboard
-        </Link>
-        <h1 className="text-lg font-bold ml-2">Factures</h1>
-      </header>
+  const pathname = "/admin/invoices";
+  const NAV = [
+    { href: "/admin/dashboard", label: "Dashboard" },
+    { href: "/admin/reservations", label: "Réservations" },
+    { href: "/admin/cars", label: "Véhicules" },
+    { href: "/admin/analytics", label: "Analytique" },
+    { href: "/admin/invoices", label: "Factures" },
+    { href: "/admin/excursions", label: "Excursions" },
+    { href: "/admin/planning",    label: "Planning" },
+    { href: "/admin/promotions",  label: "Promotions" },
+  ];
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {confirmedReservations.length === 0 ? (
-          <div className="text-center py-20">
-            <FileText size={48} className="text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-bold text-gray-400">Aucune facture disponible</h3>
-            <p className="text-gray-400 text-sm mt-2">Les factures sont generees après confirmation des réservations</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {confirmedReservations.map((r, i) => {
-              const car = CARS.find((c) => c.id === r.carId);
-              const invoiceNum = `FAC-2026-${String(i + 1).padStart(4, "0")}`;
-              return (
-                <div key={r.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between gap-4 flex-wrap">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-[#e63946]/10 rounded-xl flex items-center justify-center">
-                      <FileText size={22} className="text-[#e63946]" />
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] flex">
+      {/* Sidebar */}
+      <aside className="w-60 shrink-0 bg-[#0d0d0d] border-r border-white/8 flex flex-col min-h-screen">
+        <div className="px-6 py-5 border-b border-white/8">
+          <Link href="/" className="text-xl font-black text-white">ESON<span className="text-[#D4A96A]"> MAROC</span></Link>
+          <p className="text-[10px] text-gray-600 uppercase tracking-widest mt-0.5">Administration</p>
+        </div>
+        <nav className="flex-1 px-3 py-4 space-y-1">
+          {NAV.map(({ href, label }) => (
+            <Link key={href} href={href}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                pathname === href
+                  ? "bg-[#D4A96A]/10 text-[#D4A96A]"
+                  : "text-gray-400 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
+        </nav>
+        <div className="px-3 py-4 border-t border-white/8 space-y-1">
+          <Link href="/" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-400 hover:text-white hover:bg-white/5">
+            Voir le site
+          </Link>
+          <button
+            onClick={() => { sessionStorage.removeItem("admin_token"); router.push("/admin/login"); }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-400 hover:text-red-400 hover:bg-white/5"
+          >
+            Déconnexion
+          </button>
+        </div>
+      </aside>
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col">
+        <header className="bg-[#0d0d0d] border-b border-white/8 px-8 py-5 flex items-center gap-3">
+          <FileText size={20} className="text-[#D4A96A]" />
+          <h1 className="text-lg font-bold text-white">Factures & Contrats</h1>
+        </header>
+
+        <div className="max-w-4xl mx-auto w-full px-6 py-8">
+          {confirmedReservations.length === 0 ? (
+            <div className="text-center py-20">
+              <FileText size={48} className="text-gray-700 mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-gray-400">Aucune facture disponible</h3>
+              <p className="text-gray-600 text-sm mt-2">Les factures sont générées après confirmation des réservations</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {confirmedReservations.map((r, i) => {
+                const car = CARS.find((c) => c.id === r.carId);
+                const invoiceNum = `FAC-2026-${String(i + 1).padStart(4, "0")}`;
+                return (
+                  <div key={r.id} className="bg-[#111111] border border-white/8 rounded-2xl p-6 flex items-center justify-between gap-4 flex-wrap">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-[#D4A96A]/10 rounded-xl flex items-center justify-center">
+                        <FileText size={22} className="text-[#D4A96A]" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-white">{invoiceNum}</p>
+                        <p className="text-sm text-gray-400">{r.clientFirstName} {r.clientLastName} — {car?.brand} {car?.name}</p>
+                        <p className="text-xs text-gray-600">{r.pickupDate} → {r.dropoffDate} ({r.durationDays}j)</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-bold text-[#1a1a2e]">{invoiceNum}</p>
-                      <p className="text-sm text-gray-500">{r.clientFirstName} {r.clientLastName} — {car?.brand} {car?.name}</p>
-                      <p className="text-xs text-gray-400">{r.pickupDate} → {r.dropoffDate} ({r.durationDays}j)</p>
+                    <div className="text-right">
+                      <p className="text-xl font-black text-[#D4A96A]">{r.totalPrice} DH</p>
+                      <button
+                        onClick={() => downloadInvoice(r, car, invoiceNum)}
+                        className="mt-2 flex items-center gap-2 text-xs text-[#D4A96A] hover:underline font-medium ml-auto"
+                      >
+                        <Download size={13} />
+                        Facture PDF
+                      </button>
+                      <button
+                        onClick={() => openContractModal(r, car, `CTR-${invoiceNum.replace("FAC-", "")}`)}
+                        className="mt-1 flex items-center gap-2 text-xs text-gray-400 hover:text-white hover:underline font-medium ml-auto"
+                      >
+                        <ScrollText size={13} />
+                        Contrat PDF
+                      </button>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xl font-black text-[#1a1a2e]">{r.totalPrice} DH</p>
-                    <button
-                      onClick={() => downloadInvoice(r, car, invoiceNum)}
-                      className="mt-2 flex items-center gap-2 text-xs text-[#e63946] hover:underline font-medium"
-                    >
-                      <Download size={13} />
-                      Facture PDF
-                    </button>
-                    <button
-                      onClick={() => openContractModal(r, car, `CTR-${invoiceNum.replace("FAC-", "")}`)}
-                      className="mt-1 flex items-center gap-2 text-xs text-[#1a1a2e] hover:underline font-medium"
-                    >
-                      <ScrollText size={13} />
-                      Contrat PDF
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Modal informations complémentaires contrat */}
       {contractModal.open && contractModal.r && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4">
-          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-4">
+          <div className="bg-[#111111] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-white/8">
               <div>
-                <h2 className="font-bold text-[#1a1a2e] text-lg">Informations pour le contrat</h2>
-                <p className="text-sm text-gray-400 mt-0.5">{contractModal.r.clientFirstName} {contractModal.r.clientLastName} — {contractModal.contractNum}</p>
+                <h2 className="font-bold text-white text-lg">Informations pour le contrat</h2>
+                <p className="text-sm text-gray-500 mt-0.5">{contractModal.r.clientFirstName} {contractModal.r.clientLastName} — {contractModal.contractNum}</p>
               </div>
-              <button onClick={() => setContractModal({ open: false, r: null, car: undefined, contractNum: "" })} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => setContractModal({ open: false, r: null, car: undefined, contractNum: "" })} className="text-gray-500 hover:text-white">
                 <X size={20} />
               </button>
             </div>
 
             <div className="p-6 space-y-5">
               {/* Infos pré-remplies (lecture seule) */}
-              <div className="bg-gray-50 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="bg-[#1a1a1a] rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Client</p>
-                  <p className="text-sm font-bold">{contractModal.r.clientFirstName} {contractModal.r.clientLastName}</p>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Client</p>
+                  <p className="text-sm font-bold text-white">{contractModal.r.clientFirstName} {contractModal.r.clientLastName}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Téléphone</p>
-                  <p className="text-sm font-bold">{contractModal.r.clientPhone}</p>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Téléphone</p>
+                  <p className="text-sm font-bold text-white">{contractModal.r.clientPhone}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">N° Permis</p>
-                  <p className="text-sm font-bold">{contractModal.r.clientLicense}</p>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">N° Permis</p>
+                  <p className="text-sm font-bold text-white">{contractModal.r.clientLicense}</p>
                 </div>
               </div>
 
@@ -659,7 +713,7 @@ export default function AdminInvoicesPage() {
               <div>
                 <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
                   Conducteur N°2
-                  <span className="ml-2 text-gray-400 font-normal normal-case">(optionnel)</span>
+                  <span className="ml-2 text-gray-600 font-normal normal-case">(optionnel)</span>
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {ef("Nom", "d2Nom", "DUPONT")}
@@ -682,16 +736,16 @@ export default function AdminInvoicesPage() {
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-100 flex gap-3 justify-end">
+            <div className="p-6 border-t border-white/8 flex gap-3 justify-end">
               <button
                 onClick={() => setContractModal({ open: false, r: null, car: undefined, contractNum: "" })}
-                className="px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50"
+                className="px-5 py-2.5 rounded-xl border border-white/10 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5"
               >
                 Annuler
               </button>
               <button
                 onClick={handleGenerateContract}
-                className="px-5 py-2.5 rounded-xl bg-[#1a1a2e] text-white text-sm font-bold hover:bg-[#2d2d4e] transition-colors flex items-center gap-2"
+                className="px-5 py-2.5 rounded-xl bg-[#D4A96A] text-black text-sm font-bold hover:bg-[#b8894e] transition-colors flex items-center gap-2"
               >
                 <ScrollText size={15} />
                 Générer le contrat

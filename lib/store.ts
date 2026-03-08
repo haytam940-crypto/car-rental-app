@@ -1,4 +1,4 @@
-import { Reservation, RESERVATIONS, Car, CARS, CarCharge } from "./data";
+import { Reservation, RESERVATIONS, Car, CARS, CarCharge, ExcursionBooking, EXCURSION_BOOKINGS, Excursion, EXCURSIONS, Promotion, DeliveryFeeEntry, DEFAULT_DELIVERY_FEES } from "./data";
 
 const KEY = "autoloc_reservations";
 
@@ -86,6 +86,154 @@ export function deleteCharge(id: string): void {
 }
 
 // ─── Reservations ────────────────────────────────────────────────────────────
+
+// ─── Excursion Bookings ───────────────────────────────────────────────────────
+
+const EXCURSION_BOOKINGS_KEY = "eson_excursion_bookings";
+
+export function getStoredExcursionBookings(): ExcursionBooking[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(EXCURSION_BOOKINGS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+export function getMergedExcursionBookings(): ExcursionBooking[] {
+  const stored = getStoredExcursionBookings();
+  const storedIds = new Set(stored.map((b) => b.id));
+  const merged = [...stored, ...EXCURSION_BOOKINGS.filter((b) => !storedIds.has(b.id))];
+  return merged.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function saveExcursionBooking(booking: ExcursionBooking): void {
+  if (typeof window === "undefined") return;
+  const existing = getStoredExcursionBookings();
+  localStorage.setItem(EXCURSION_BOOKINGS_KEY, JSON.stringify([...existing, booking]));
+}
+
+export function updateExcursionBookingStatus(
+  id: string,
+  status: "confirmed" | "cancelled"
+): void {
+  if (typeof window === "undefined") return;
+  const stored = getStoredExcursionBookings();
+  const storedIds = new Set(stored.map((b) => b.id));
+  if (storedIds.has(id)) {
+    const updated = stored.map((b) => (b.id === id ? { ...b, status } : b));
+    localStorage.setItem(EXCURSION_BOOKINGS_KEY, JSON.stringify(updated));
+  } else {
+    const staticB = EXCURSION_BOOKINGS.find((b) => b.id === id);
+    if (staticB) {
+      localStorage.setItem(EXCURSION_BOOKINGS_KEY, JSON.stringify([...stored, { ...staticB, status }]));
+    }
+  }
+}
+
+// ─── Excursion Packages (CRUD) ────────────────────────────────────────────────
+
+const CUSTOM_EXCURSIONS_KEY = "eson_custom_excursions";
+const DELETED_EXCURSIONS_KEY = "eson_deleted_excursions";
+
+function getDeletedExcursionIds(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = localStorage.getItem(DELETED_EXCURSIONS_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch { return new Set(); }
+}
+
+export function getCustomExcursions(): Excursion[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(CUSTOM_EXCURSIONS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+export function getMergedExcursions(): Excursion[] {
+  const custom = getCustomExcursions();
+  const customIds = new Set(custom.map(e => e.id));
+  const deletedIds = getDeletedExcursionIds();
+  return [
+    ...custom,
+    ...EXCURSIONS.filter(e => !customIds.has(e.id) && !deletedIds.has(e.id)),
+  ];
+}
+
+export function saveExcursion(exc: Excursion): void {
+  if (typeof window === "undefined") return;
+  const existing = getCustomExcursions();
+  const idx = existing.findIndex(e => e.id === exc.id);
+  const updated = idx >= 0
+    ? existing.map(e => e.id === exc.id ? exc : e)
+    : [...existing, exc];
+  localStorage.setItem(CUSTOM_EXCURSIONS_KEY, JSON.stringify(updated));
+}
+
+export function deleteExcursion(id: string): void {
+  if (typeof window === "undefined") return;
+  const updatedCustom = getCustomExcursions().filter(e => e.id !== id);
+  localStorage.setItem(CUSTOM_EXCURSIONS_KEY, JSON.stringify(updatedCustom));
+  if (EXCURSIONS.some(e => e.id === id)) {
+    const deleted = getDeletedExcursionIds();
+    deleted.add(id);
+    localStorage.setItem(DELETED_EXCURSIONS_KEY, JSON.stringify([...deleted]));
+  }
+}
+
+// ─── Promotions ───────────────────────────────────────────────────────────────
+
+const PROMOTIONS_KEY = "eson_promotions";
+
+export function getStoredPromotions(): Promotion[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(PROMOTIONS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+export function savePromotion(promo: Promotion): void {
+  if (typeof window === "undefined") return;
+  const existing = getStoredPromotions();
+  const idx = existing.findIndex(p => p.id === promo.id);
+  const updated = idx >= 0
+    ? existing.map(p => p.id === promo.id ? promo : p)
+    : [...existing, promo];
+  localStorage.setItem(PROMOTIONS_KEY, JSON.stringify(updated));
+}
+
+export function deletePromotion(id: string): void {
+  if (typeof window === "undefined") return;
+  const updated = getStoredPromotions().filter(p => p.id !== id);
+  localStorage.setItem(PROMOTIONS_KEY, JSON.stringify(updated));
+}
+
+export function getActivePromotion(today?: string): Promotion | null {
+  const date = today || new Date().toISOString().split("T")[0];
+  const promos = getStoredPromotions();
+  return promos.find(p => p.active && p.startDate <= date && p.endDate >= date) ?? null;
+}
+
+// ─── Delivery Fees Grid ───────────────────────────────────────────────────────
+
+const DELIVERY_FEES_KEY = "eson_delivery_fees";
+
+export function getDeliveryFees(): DeliveryFeeEntry[] {
+  if (typeof window === "undefined") return DEFAULT_DELIVERY_FEES;
+  try {
+    const raw = localStorage.getItem(DELIVERY_FEES_KEY);
+    return raw ? JSON.parse(raw) : DEFAULT_DELIVERY_FEES;
+  } catch { return DEFAULT_DELIVERY_FEES; }
+}
+
+export function saveDeliveryFees(fees: DeliveryFeeEntry[]): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(DELIVERY_FEES_KEY, JSON.stringify(fees));
+}
+
+// ─── Reservations status ──────────────────────────────────────────────────────
 
 export function updateReservationStatus(
   id: string,

@@ -3,9 +3,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { MapPin, Calendar, Search } from "lucide-react";
 import { LOCATIONS } from "@/lib/data";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function SearchWidget({ compact = false }: { compact?: boolean }) {
   const router = useRouter();
+  const { t } = useLanguage();
   const today = new Date().toISOString().split("T")[0];
 
   const [form, setForm] = useState({
@@ -19,15 +21,15 @@ export default function SearchWidget({ compact = false }: { compact?: boolean })
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.pickupLocation || !form.dropoffLocation) {
-      setError("Veuillez sélectionner les lieux de prise en charge et de retour.");
+      setError(t("search.err.location"));
       return;
     }
     if (!form.pickupDate || !form.dropoffDate) {
-      setError("Veuillez sélectionner les dates.");
+      setError(t("search.err.dates"));
       return;
     }
     if (form.dropoffDate < form.pickupDate) {
-      setError("La date de retour doit être après la date de départ.");
+      setError(t("search.err.dateOrder"));
       return;
     }
     setError("");
@@ -41,7 +43,7 @@ export default function SearchWidget({ compact = false }: { compact?: boolean })
   };
 
   const inputCls = "w-full bg-transparent text-white text-sm font-medium outline-none placeholder-gray-500";
-  const labelCls = "flex items-center gap-1.5 text-[10px] font-bold text-[#F5C518] uppercase tracking-widest mb-1.5";
+  const labelCls = "flex items-center gap-1.5 text-[10px] font-bold text-[#D4A96A] uppercase tracking-widest mb-1.5";
   const cellCls = "p-5 border-r border-white/8 last:border-r-0";
 
   return (
@@ -49,7 +51,7 @@ export default function SearchWidget({ compact = false }: { compact?: boolean })
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-b border-white/8">
         <div className={cellCls}>
           <label className={labelCls}>
-            <MapPin size={11} /> Lieu de départ
+            <MapPin size={11} /> {t("search.pickupLocation")}
           </label>
           <select
             value={form.pickupLocation}
@@ -57,7 +59,7 @@ export default function SearchWidget({ compact = false }: { compact?: boolean })
             className="w-full bg-transparent text-white text-sm font-medium outline-none cursor-pointer"
             style={{ colorScheme: "dark" }}
           >
-            <option value="" className="bg-[#1a1a1a]">Choisir un lieu...</option>
+            <option value="" className="bg-[#1a1a1a]">{t("search.chooseLoc")}</option>
             {LOCATIONS.map((loc) => (
               <option key={loc} value={loc} className="bg-[#1a1a1a]">{loc}</option>
             ))}
@@ -66,7 +68,7 @@ export default function SearchWidget({ compact = false }: { compact?: boolean })
 
         <div className={cellCls}>
           <label className={labelCls}>
-            <MapPin size={11} /> Lieu de retour
+            <MapPin size={11} /> {t("search.dropoffLocation")}
           </label>
           <select
             value={form.dropoffLocation}
@@ -74,7 +76,7 @@ export default function SearchWidget({ compact = false }: { compact?: boolean })
             className="w-full bg-transparent text-white text-sm font-medium outline-none cursor-pointer"
             style={{ colorScheme: "dark" }}
           >
-            <option value="" className="bg-[#1a1a1a]">Choisir un lieu...</option>
+            <option value="" className="bg-[#1a1a1a]">{t("search.chooseLoc")}</option>
             {LOCATIONS.map((loc) => (
               <option key={loc} value={loc} className="bg-[#1a1a1a]">{loc}</option>
             ))}
@@ -83,7 +85,7 @@ export default function SearchWidget({ compact = false }: { compact?: boolean })
 
         <div className={cellCls}>
           <label className={labelCls}>
-            <Calendar size={11} /> Date de départ
+            <Calendar size={11} /> {t("search.pickupDate")}
           </label>
           <input
             type="date"
@@ -97,7 +99,7 @@ export default function SearchWidget({ compact = false }: { compact?: boolean })
 
         <div className="p-5">
           <label className={labelCls}>
-            <Calendar size={11} /> Date de retour
+            <Calendar size={11} /> {t("search.dropoffDate")}
           </label>
           <input
             type="date"
@@ -122,7 +124,7 @@ export default function SearchWidget({ compact = false }: { compact?: boolean })
           className="w-full yellow-btn py-4 px-6 rounded-xl font-bold text-base flex items-center justify-center gap-2"
         >
           <Search size={18} />
-          Rechercher un véhicule disponible
+          {t("search.submit")}
         </button>
       </div>
     </form>
