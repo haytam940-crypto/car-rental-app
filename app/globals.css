@@ -1,5 +1,75 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────
+   ADMIN LIGHT THEME
+   Activé via [data-admin-theme="light"] sur le wrapper.
+   Ne touche PAS les pages publiques du site.
+───────────────────────────────────────────────────── */
+
+/* Backgrounds principaux */
+[data-admin-theme="light"] .bg-\[\#0a0a0a\]  { background-color: #f8fafc !important; }
+[data-admin-theme="light"] .bg-\[\#0d0d0d\]  { background-color: #ffffff !important; }
+[data-admin-theme="light"] .bg-\[\#0d0d1a\]  { background-color: #f1f5f9 !important; }
+[data-admin-theme="light"] .bg-\[\#111111\]  { background-color: #f1f5f9 !important; }
+[data-admin-theme="light"] .bg-\[\#141414\]  { background-color: #ffffff !important; }
+[data-admin-theme="light"] .bg-\[\#1a1a1a\]  { background-color: #e2e8f0 !important; }
+[data-admin-theme="light"] .bg-\[\#222222\]  { background-color: #cbd5e1 !important; }
+
+/* Backgrounds semi-transparents */
+[data-admin-theme="light"] .bg-white\/5      { background-color: rgba(0,0,0,0.04)  !important; }
+[data-admin-theme="light"] .bg-white\/8      { background-color: rgba(0,0,0,0.06)  !important; }
+[data-admin-theme="light"] .bg-white\/10     { background-color: rgba(0,0,0,0.07)  !important; }
+[data-admin-theme="light"] .bg-white\/20     { background-color: rgba(0,0,0,0.12)  !important; }
+
+/* Hover backgrounds */
+[data-admin-theme="light"] .hover\:bg-white\/5:hover  { background-color: rgba(0,0,0,0.05) !important; }
+[data-admin-theme="light"] .hover\:bg-white\/10:hover { background-color: rgba(0,0,0,0.08) !important; }
+
+/* Textes */
+[data-admin-theme="light"] .text-white        { color: #0f172a !important; }
+[data-admin-theme="light"] .text-gray-400     { color: #475569 !important; }
+[data-admin-theme="light"] .text-gray-500     { color: #64748b !important; }
+[data-admin-theme="light"] .text-gray-600     { color: #94a3b8 !important; }
+
+/* Hover textes */
+[data-admin-theme="light"] .hover\:text-white:hover      { color: #0f172a !important; }
+[data-admin-theme="light"] .hover\:text-red-400:hover    { color: #dc2626 !important; }
+
+/* Bordures */
+[data-admin-theme="light"] .border-white\/8  { border-color: rgba(0,0,0,0.08) !important; }
+[data-admin-theme="light"] .border-white\/10 { border-color: rgba(0,0,0,0.10) !important; }
+[data-admin-theme="light"] .border-white\/20 { border-color: rgba(0,0,0,0.18) !important; }
+
+/* Placeholders inputs */
+[data-admin-theme="light"] .placeholder-gray-500::placeholder { color: #94a3b8 !important; }
+[data-admin-theme="light"] .placeholder-gray-600::placeholder { color: #94a3b8 !important; }
+
+/* Inputs & selects */
+[data-admin-theme="light"] select { color-scheme: light; }
+[data-admin-theme="light"] input,
+[data-admin-theme="light"] select,
+[data-admin-theme="light"] textarea { color: #0f172a !important; }
+
+/* card-dark en mode light */
+[data-admin-theme="light"] .card-dark {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+[data-admin-theme="light"] .card-dark:hover {
+  border-color: #D4A96A !important;
+}
+
+/* Backdrop blur (sidebar login) */
+[data-admin-theme="light"] .backdrop-blur-sm { backdrop-filter: none !important; }
+
+/* Scrollbar admin light */
+[data-admin-theme="light"] ::-webkit-scrollbar-track { background: #f1f5f9; }
+[data-admin-theme="light"] ::-webkit-scrollbar-thumb { background: #D4A96A; }
+
+/* ─────────────────────────────────────────────────────
+   FIN ADMIN LIGHT THEME
+───────────────────────────────────────────────────── */
+
 :root {
   --yellow: #D4A96A;
   --yellow-dark: #b8894e;
