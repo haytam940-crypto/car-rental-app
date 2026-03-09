@@ -41,9 +41,10 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       // Redirections 301 depuis l'ancien site PHP → nouveau site
-      { source: "/circuit.php",   destination: "/excursions", permanent: true },
-      { source: "/partenaire.php", destination: "/partenaires", permanent: true },
-      { source: "/contact.php",   destination: "/contact",    permanent: true },
+      { source: "/circuit.php",     destination: "/excursions", permanent: true },
+      { source: "/partenaire.php",  destination: "/partenaires", permanent: true },
+      { source: "/contact.php",     destination: "/contact",    permanent: true },
+      { source: "/reservation.php", destination: "/fleet",      permanent: true },
     ];
   },
   async headers() {
