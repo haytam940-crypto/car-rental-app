@@ -38,6 +38,14 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      // Redirections 301 depuis l'ancien site PHP → nouveau site
+      { source: "/circuit.php",   destination: "/excursions", permanent: true },
+      { source: "/partenaire.php", destination: "/partenaires", permanent: true },
+      { source: "/contact.php",   destination: "/contact",    permanent: true },
+    ];
+  },
   async headers() {
     return [
       {
