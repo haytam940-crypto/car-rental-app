@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { saveServerReservation } from "@/lib/server-reservations";
 import { createPortalToken } from "@/lib/reservation-token";
-import { sendClientConfirmation, sendAdminNewReservation } from "@/lib/mailer";
+import { sendClientConfirmation } from "@/lib/mailer";
 import { CARS } from "@/lib/data";
 
 export async function POST(req: Request) {
@@ -20,22 +20,17 @@ export async function POST(req: Request) {
 
     const clientName = `${reservation.clientFirstName} ${reservation.clientLastName}`;
 
-    // Emails en parallèle
-    await Promise.all([
-      sendClientConfirmation({
-        clientName,
-        clientEmail: reservation.clientEmail,
-        reservation: {
-          ...reservation,
-          carName,
-          status: reservation.status ?? "pending",
-        },
-        portalToken,
-      }),
-      sendAdminNewReservation({
-        reservation: { ...reservation, carName },
-      }),
-    ]);
+    // Email de confirmation au client
+    await sendClientConfirmation({
+      clientName,
+      clientEmail: reservation.clientEmail,
+      reservation: {
+        ...reservation,
+        carName,
+        status: reservation.status ?? "pending",
+      },
+      portalToken,
+    });
 
     return NextResponse.json({ ok: true, portalToken });
   } catch (err) {

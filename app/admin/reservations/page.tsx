@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CARS, LOCATIONS, Reservation } from "@/lib/data";
 import { getMergedReservations, updateReservationStatus, saveReservation, getStoredCars } from "@/lib/store";
-import { CheckCircle, XCircle, ArrowLeft, Plus, X, Car, ClipboardList, FileText, BarChart2, LayoutDashboard, Globe, LogOut, Mountain, Calendar, Search, Filter, RotateCcw, Tag, MapPin } from "lucide-react";
+import { CheckCircle, XCircle, ArrowLeft, Plus, X, Car, ClipboardList, FilePlus, FileText, BarChart2, LayoutDashboard, Globe, LogOut, Mountain, Calendar, Search, Filter, RotateCcw, Tag, MapPin } from "lucide-react";
 
 const TODAY = new Date().toISOString().split("T")[0];
 
@@ -22,6 +22,7 @@ const navLinks = [
   { href: "/admin/reservations", icon: ClipboardList, label: "Réservations" },
   { href: "/admin/cars", icon: Car, label: "Voitures" },
   { href: "/admin/invoices", icon: FileText, label: "Factures" },
+  { href: "/admin/devis", icon: FilePlus, label: "Devis" },
   { href: "/admin/analytics", icon: BarChart2, label: "Analytique" },
   { href: "/admin/excursions", icon: Mountain, label: "Excursions" },
   { href: "/admin/planning",   icon: Calendar, label: "Planning" },

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CARS, Car, Reservation } from "@/lib/data";
 import { getMergedReservations } from "@/lib/store";
-import { FileText, Download, ArrowLeft, ScrollText, X, LayoutDashboard, ClipboardList, Car as CarIcon, BarChart2, Mountain, Calendar, Tag } from "lucide-react";
+import { FileText, Download, ArrowLeft, ScrollText, X, LayoutDashboard, ClipboardList, Car as CarIcon, BarChart2, Mountain, Calendar, Tag, FilePlus } from "lucide-react";
 
 function downloadInvoice(r: Reservation, car: Car | undefined, invoiceNum: string) {
   const deliveryFee = r.deliveryFee ?? 0;
@@ -539,6 +539,7 @@ export default function AdminInvoicesPage() {
     { href: "/admin/reservations",icon: ClipboardList,   label: "Réservations" },
     { href: "/admin/cars",        icon: CarIcon,         label: "Voitures" },
     { href: "/admin/invoices",    icon: FileText,        label: "Factures" },
+    { href: "/admin/devis",       icon: FilePlus,        label: "Devis" },
     { href: "/admin/analytics",   icon: BarChart2,       label: "Analytique" },
     { href: "/admin/excursions",  icon: Mountain,        label: "Excursions" },
     { href: "/admin/planning",    icon: Calendar,        label: "Planning" },

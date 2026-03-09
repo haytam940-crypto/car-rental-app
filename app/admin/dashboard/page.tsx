@@ -7,7 +7,7 @@ import { getMergedReservations } from "@/lib/store";
 import { Reservation } from "@/lib/data";
 import {
   Car, ClipboardList, TrendingUp, CheckCircle, Clock,
-  LogOut, LayoutDashboard, FileText, Menu, X, BarChart2, Globe, Mountain, Calendar, Tag, MapPin
+  LogOut, LayoutDashboard, FileText, FilePlus, Menu, X, BarChart2, Globe, Mountain, Calendar, Tag, MapPin
 } from "lucide-react";
 
 const navLinks = [
@@ -15,6 +15,7 @@ const navLinks = [
   { href: "/admin/reservations", icon: ClipboardList, label: "Réservations" },
   { href: "/admin/cars", icon: Car, label: "Voitures" },
   { href: "/admin/invoices", icon: FileText, label: "Factures" },
+  { href: "/admin/devis", icon: FilePlus, label: "Devis" },
   { href: "/admin/analytics", icon: BarChart2, label: "Analytique" },
   { href: "/admin/excursions", icon: Mountain, label: "Excursions" },
   { href: "/admin/planning",   icon: Calendar, label: "Planning" },

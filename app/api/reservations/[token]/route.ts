@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { verifyPortalToken, createPortalToken } from "@/lib/reservation-token";
 import { getServerReservationById, updateServerReservation } from "@/lib/server-reservations";
-import {
-  sendAdminModification, sendAdminCancellation,
-  sendClientModificationConfirm, sendClientCancellationConfirm,
-} from "@/lib/mailer";
+import { sendClientModificationConfirm, sendClientCancellationConfirm } from "@/lib/mailer";
 import { CARS } from "@/lib/data";
 
 type Params = { params: Promise<{ token: string }> };
@@ -58,10 +55,7 @@ export async function PATCH(req: Request, { params }: Params) {
   const clientName = `${current.clientFirstName} ${current.clientLastName}`;
   const portalToken = await createPortalToken(reservationId);
 
-  await Promise.all([
-    sendAdminModification({ reservationId, clientName, changes }),
-    sendClientModificationConfirm({ clientName, clientEmail: current.clientEmail, reservationId, changes, portalToken }),
-  ]);
+  await sendClientModificationConfirm({ clientName, clientEmail: current.clientEmail, reservationId, changes, portalToken });
 
   return NextResponse.json({ ok: true, reservation: updated });
 }
@@ -83,10 +77,7 @@ export async function DELETE(req: Request, { params }: Params) {
   const clientName = `${current.clientFirstName} ${current.clientLastName}`;
   const carName = car ? `${car.brand} ${car.name}` : "Véhicule";
 
-  await Promise.all([
-    sendAdminCancellation({ reservationId, clientName, clientEmail: current.clientEmail, carName, reason: body.reason }),
-    sendClientCancellationConfirm({ clientName, clientEmail: current.clientEmail, reservationId, carName }),
-  ]);
+  await sendClientCancellationConfirm({ clientName, clientEmail: current.clientEmail, reservationId, carName });
 
   return NextResponse.json({ ok: true, reservation: updated });
 }

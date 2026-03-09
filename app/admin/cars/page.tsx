@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Car, CarCharge, ChargeCategory, CHARGE_LABELS } from "@/lib/data";
 import { getStoredCars, saveCar, deleteCar, getStoredCharges, saveCharge, deleteCharge } from "@/lib/store";
-import { Fuel, Settings, Edit2, Trash2, Plus, X, Receipt, LayoutDashboard, ClipboardList, FileText, BarChart2, Globe, LogOut, Menu, Mountain, Calendar, Search, Filter, RotateCcw, Tag, MapPin } from "lucide-react";
+import { Fuel, Settings, Edit2, Trash2, Plus, X, Receipt, LayoutDashboard, ClipboardList, FilePlus, FileText, BarChart2, Globe, LogOut, Menu, Mountain, Calendar, Search, Filter, RotateCcw, Tag, MapPin } from "lucide-react";
 
 const CHARGE_CATEGORIES: ChargeCategory[] = [
   "gazoil", "lavage", "vidange", "vignette", "assurance", "credit_bail", "accident", "autre",
@@ -41,6 +41,7 @@ const navLinks = [
   { href: "/admin/reservations", icon: ClipboardList, label: "Réservations" },
   { href: "/admin/cars", icon: Settings, label: "Voitures" },
   { href: "/admin/invoices", icon: FileText, label: "Factures" },
+  { href: "/admin/devis", icon: FilePlus, label: "Devis" },
   { href: "/admin/analytics", icon: BarChart2, label: "Analytique" },
   { href: "/admin/excursions", icon: Mountain, label: "Excursions" },
   { href: "/admin/planning",   icon: Calendar, label: "Planning" },

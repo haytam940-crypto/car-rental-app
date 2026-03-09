@@ -8,7 +8,7 @@ import {
   saveExcursionBooking, getMergedExcursions, saveExcursion, deleteExcursion,
 } from "@/lib/store";
 import {
-  LayoutDashboard, ClipboardList, Car, FileText, BarChart2,
+  LayoutDashboard, ClipboardList, Car, FileText, FilePlus, BarChart2,
   Mountain, Calendar, Globe, LogOut, X, Plus, CheckCircle, XCircle,
   MapPin, Clock, Users, Download, Search, Filter, RotateCcw,
   Edit2, Trash2, ImageIcon, Tag,
@@ -20,7 +20,8 @@ const navLinks = [
   { href: "/admin/dashboard",    icon: LayoutDashboard, label: "Dashboard" },
   { href: "/admin/reservations", icon: ClipboardList,   label: "Réservations" },
   { href: "/admin/cars",         icon: Car,             label: "Voitures" },
-  { href: "/admin/invoices",     icon: FileText,        label: "Factures" },
+  { href: "/admin/invoices", icon: FileText, label: "Factures" },
+  { href: "/admin/devis", icon: FilePlus, label: "Devis" },
   { href: "/admin/analytics",    icon: BarChart2,       label: "Analytique" },
   { href: "/admin/excursions",   icon: Mountain,        label: "Excursions" },
   { href: "/admin/planning",     icon: Calendar,        label: "Planning" },

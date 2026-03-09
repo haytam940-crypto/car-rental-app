@@ -5,7 +5,7 @@ import Link from "next/link";
 import { getMergedReservations, getStoredCars } from "@/lib/store";
 import { Car, Reservation } from "@/lib/data";
 import {
-  LayoutDashboard, ClipboardList, Car as CarIcon, FileText, BarChart2,
+  LayoutDashboard, ClipboardList, Car as CarIcon, FileText, FilePlus, BarChart2,
   Mountain, Calendar, Globe, LogOut, X, ChevronLeft, ChevronRight, Tag, MapPin,
 } from "lucide-react";
 
@@ -19,7 +19,8 @@ const navLinks = [
   { href: "/admin/dashboard",    icon: LayoutDashboard, label: "Dashboard" },
   { href: "/admin/reservations", icon: ClipboardList,   label: "Réservations" },
   { href: "/admin/cars",         icon: CarIcon,         label: "Voitures" },
-  { href: "/admin/invoices",     icon: FileText,        label: "Factures" },
+  { href: "/admin/invoices", icon: FileText, label: "Factures" },
+  { href: "/admin/devis", icon: FilePlus, label: "Devis" },
   { href: "/admin/analytics",    icon: BarChart2,       label: "Analytique" },
   { href: "/admin/excursions",   icon: Mountain,        label: "Excursions" },
   { href: "/admin/planning",     icon: Calendar,        label: "Planning" },

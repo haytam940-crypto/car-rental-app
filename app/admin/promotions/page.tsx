@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Promotion } from "@/lib/data";
 import { getStoredPromotions, savePromotion, deletePromotion } from "@/lib/store";
 import {
-  Tag, Plus, Pencil, Trash2, X, Car, ClipboardList, FileText,
+  Tag, Plus, Pencil, Trash2, X, Car, ClipboardList, FileText, FilePlus,
   BarChart2, Mountain, Calendar, Menu, LogOut, LayoutDashboard,
   CheckCircle, Clock, XCircle, AlertCircle, Percent, MapPin,
 } from "lucide-react";
@@ -15,6 +15,7 @@ const navLinks = [
   { href: "/admin/reservations", icon: ClipboardList, label: "Réservations" },
   { href: "/admin/cars", icon: Car, label: "Voitures" },
   { href: "/admin/invoices", icon: FileText, label: "Factures" },
+  { href: "/admin/devis", icon: FilePlus, label: "Devis" },
   { href: "/admin/analytics", icon: BarChart2, label: "Analytique" },
   { href: "/admin/excursions", icon: Mountain, label: "Excursions" },
   { href: "/admin/planning", icon: Calendar, label: "Planning" },
