@@ -99,7 +99,7 @@ function baseLayout(content: string, accentBg = "#0a0a0a") {
 /* ─── Composants HTML ───────────────────────────────────────────────── */
 
 function badge(status: string) {
-  const map: Record<string, [string, string]> = {
+  const map: Record<string, [string, string, string]> = {
     pending:   ["#f59e0b", "#000", "En attente"],
     confirmed: ["#10b981", "#fff", "Confirmée"],
     cancelled: ["#ef4444", "#fff", "Annulée"],
