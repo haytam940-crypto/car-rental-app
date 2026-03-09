@@ -9,29 +9,27 @@ const SiteThemeContext = createContext<{ theme: Theme; toggle: () => void }>({
 });
 
 export function SiteThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme,   setTheme]   = useState<Theme>("dark");
-  const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
-    setMounted(true);
     const saved = localStorage.getItem("site_theme") as Theme | null;
-    if (saved === "light" || saved === "dark") setTheme(saved);
+    const initial = saved === "light" ? "light" : "dark";
+    setTheme(initial);
+    // Applique directement sur <html> pour couvrir tout le document
+    document.documentElement.setAttribute("data-site-theme", initial);
   }, []);
 
   const toggle = () =>
     setTheme((t) => {
       const next = t === "dark" ? "light" : "dark";
       localStorage.setItem("site_theme", next);
+      document.documentElement.setAttribute("data-site-theme", next);
       return next;
     });
 
-  const effective = mounted ? theme : "dark";
-
   return (
-    <SiteThemeContext.Provider value={{ theme: effective, toggle }}>
-      <div data-site-theme={effective} style={{ minHeight: "100vh" }}>
-        {children}
-      </div>
+    <SiteThemeContext.Provider value={{ theme, toggle }}>
+      {children}
     </SiteThemeContext.Provider>
   );
 }

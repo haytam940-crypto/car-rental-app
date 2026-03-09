@@ -9,16 +9,19 @@ export default function AdminThemeWrapper({ children }: { children: React.ReactN
 
   useEffect(() => {
     setMounted(true);
-    const a = localStorage.getItem("admin_theme");
-    const s = localStorage.getItem("site_theme");
-    if (a === "light") setAdminTheme("light");
-    if (s === "light") setSiteTheme("light");
+    const a = localStorage.getItem("admin_theme") === "light" ? "light" : "dark";
+    const s = localStorage.getItem("site_theme")  === "light" ? "light" : "dark";
+    setAdminTheme(a);
+    setSiteTheme(s);
+    // Applique sur <html> pour couvrir tout le document admin
+    document.documentElement.setAttribute("data-admin-theme", a);
   }, []);
 
   const toggleAdmin = () =>
     setAdminTheme((t) => {
       const next = t === "dark" ? "light" : "dark";
       localStorage.setItem("admin_theme", next);
+      document.documentElement.setAttribute("data-admin-theme", next);
       return next;
     });
 
@@ -29,10 +32,8 @@ export default function AdminThemeWrapper({ children }: { children: React.ReactN
       return next;
     });
 
-  const attr = mounted ? adminTheme : "dark";
-
   return (
-    <div data-admin-theme={attr} style={{ minHeight: "100vh" }}>
+    <>
       {children}
 
       {mounted && (
@@ -70,6 +71,6 @@ export default function AdminThemeWrapper({ children }: { children: React.ReactN
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
