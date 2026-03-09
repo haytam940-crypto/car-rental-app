@@ -96,9 +96,16 @@
 [data-site-theme="light"] .bg-white\/\[0\.04\]  { background-color: rgba(0,0,0,0.04) !important; }
 [data-site-theme="light"] .bg-white\/\[0\.06\]  { background-color: rgba(0,0,0,0.05) !important; }
 
-/* badges sur les photos (catégorie excursion, etc.) */
-[data-site-theme="light"] .bg-black\/50     { background-color: rgba(255,255,255,0.85) !important; }
-[data-site-theme="light"] .bg-black\/40     { background-color: rgba(255,255,255,0.75) !important; }
+/* Overlays noirs (sections avec photos de fond) → blancs en light */
+[data-site-theme="light"] .bg-black\/85     { background-color: rgba(248,250,252,0.82) !important; }
+[data-site-theme="light"] .bg-black\/75     { background-color: rgba(248,250,252,0.75) !important; }
+[data-site-theme="light"] .bg-black\/70     { background-color: rgba(248,250,252,0.70) !important; }
+[data-site-theme="light"] .bg-black\/60     { background-color: rgba(248,250,252,0.60) !important; }
+/* badges sur les photos (catégorie excursion, etc.) → fond clair */
+[data-site-theme="light"] .bg-black\/50     { background-color: rgba(255,255,255,0.88) !important; }
+[data-site-theme="light"] .bg-black\/40     { background-color: rgba(255,255,255,0.80) !important; }
+[data-site-theme="light"] .bg-black\/20     { background-color: rgba(255,255,255,0.60) !important; }
+[data-site-theme="light"] .bg-black\/10     { background-color: rgba(255,255,255,0.40) !important; }
 
 /* ── Hover backgrounds ── */
 [data-site-theme="light"] .hover\:bg-white\/5:hover   { background-color: rgba(0,0,0,0.05) !important; }
