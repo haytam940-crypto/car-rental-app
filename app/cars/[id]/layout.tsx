@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       url,
-      images: car.image ? [{ url: car.image, alt: `${car.brand} ${car.name}` }] : [],
+      images: car.images?.[0] ? [{ url: car.images[0], alt: `${car.brand} ${car.name}` }] : [],
     },
   };
 }
