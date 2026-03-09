@@ -128,11 +128,9 @@ function CarDetailContent() {
     if (!validateForm()) return;
     setSubmitting(true);
 
-    await new Promise((r) => setTimeout(r, 800));
-
     const reservationId = `RES-${Date.now()}`;
 
-    saveReservation({
+    const reservationData = {
       id: reservationId,
       carId: car.id,
       clientFirstName: form.firstName,
@@ -150,10 +148,20 @@ function CarDetailContent() {
       totalPrice: totalHT,
       deliveryFee: form.deliveryFee,
       recoveryFee: form.recoveryFee,
-      status: "pending",
+      status: "pending" as const,
       message: form.message,
       createdAt: new Date().toISOString().split("T")[0],
-    });
+    };
+
+    // Sauvegarde locale (admin dashboard)
+    saveReservation(reservationData);
+
+    // Sauvegarde serveur + envoi emails (non bloquant)
+    fetch("/api/reservations/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(reservationData),
+    }).catch(err => console.warn("[notify] email non envoyé:", err));
 
     router.push(
       `/booking?id=${reservationId}&car=${encodeURIComponent(`${car.brand} ${car.name}`)}&total=${totalHT}&days=${durationDays}&pickup=${encodeURIComponent(form.pickupDate)}&dropoff=${encodeURIComponent(form.dropoffDate)}`
