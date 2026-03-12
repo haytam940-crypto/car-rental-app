@@ -68,18 +68,17 @@ export default function Header() {
             : "linear-gradient(to bottom, rgba(10,10,10,0.7) 0%, transparent 100%)",
         }}
       >
-        {/* Main bar */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-[68px] flex items-center justify-between gap-4">
+        {/* Main bar — 3 colonnes : Logo | Nav centré | Actions */}
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 h-[68px] grid grid-cols-3 items-center">
 
-          {/* ── Logo ── */}
-          <Link href="/" className="flex items-center gap-3 shrink-0 group">
+          {/* ── Col 1 : Logo (extrême gauche) ── */}
+          <Link href="/" className="flex items-center gap-3 shrink-0 group justify-self-start">
             <div className="relative">
               <div className="w-10 h-10 bg-[#D4A96A] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-200">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="#0a0a0a">
                   <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
                 </svg>
               </div>
-              {/* glow */}
               <div className="absolute inset-0 w-10 h-10 bg-[#D4A96A] rounded-xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-200" />
             </div>
             <div className="leading-none">
@@ -92,8 +91,8 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* ── Nav desktop ── */}
-          <nav className="hidden lg:flex items-center">
+          {/* ── Col 2 : Nav (centre absolu) ── */}
+          <nav className="hidden lg:flex items-center justify-self-center">
             <div className="flex items-center gap-0.5 bg-white/[0.04] border border-white/[0.06] rounded-2xl px-2 py-1.5">
               {NAV_LINKS.map((link) => {
                 const active = isActive(link.href);
@@ -114,19 +113,17 @@ export default function Header() {
             </div>
           </nav>
 
-          {/* ── Right side ── */}
-          <div className="hidden md:flex items-center gap-2 shrink-0">
+          {/* ── Col 3 : Actions (extrême droite) ── */}
+          <div className="flex items-center gap-2 justify-self-end">
             {/* Language switcher */}
-            <div className="flex items-center gap-0.5 bg-white/[0.04] border border-white/[0.06] rounded-xl p-1">
+            <div className="hidden md:flex items-center gap-0.5 bg-white/[0.04] border border-white/[0.06] rounded-xl p-1">
               {LANGUAGES.map(({ code, flag }) => (
                 <button
                   key={code}
                   onClick={() => setLang(code)}
                   title={code.toUpperCase()}
                   className={`w-8 h-7 rounded-lg text-sm flex items-center justify-center transition-all duration-150 ${
-                    lang === code
-                      ? "bg-[#D4A96A] shadow-sm"
-                      : "hover:bg-white/8"
+                    lang === code ? "bg-[#D4A96A] shadow-sm" : "hover:bg-white/8"
                   }`}
                 >
                   {flag}
@@ -137,7 +134,7 @@ export default function Header() {
             {/* Phone */}
             <a
               href="tel:+212666890899"
-              className="hidden xl:flex items-center gap-2 bg-white/[0.04] border border-white/[0.06] hover:border-[#D4A96A]/30 rounded-xl px-3 py-2 text-sm text-gray-400 hover:text-white transition-all duration-200 group"
+              className="hidden xl:flex items-center gap-2 bg-white/[0.04] border border-white/[0.06] hover:border-[#D4A96A]/30 rounded-xl px-3 py-2 text-sm text-gray-400 hover:text-white transition-all duration-200"
             >
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60" />
@@ -150,26 +147,27 @@ export default function Header() {
             {/* CTA */}
             <Link
               href="/fleet"
-              className="flex items-center gap-2 bg-[#D4A96A] hover:bg-[#c49558] text-black font-bold text-sm px-5 py-2.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-[#D4A96A]/20 hover:shadow-xl hover:-translate-y-0.5"
+              className="hidden md:flex items-center gap-2 bg-[#D4A96A] hover:bg-[#c49558] text-black font-bold text-sm px-5 py-2.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-[#D4A96A]/20 hover:shadow-xl hover:-translate-y-0.5"
             >
               <Car size={14} />
               {t("header.book")}
             </Link>
+
+            {/* ── Burger mobile ── */}
+            <button
+              className="lg:hidden relative w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/8 text-white hover:bg-white/10 transition-colors"
+              onClick={() => setOpen(!open)}
+              aria-label="Menu"
+            >
+              <span className={`transition-all duration-200 ${open ? "opacity-0 scale-75" : "opacity-100 scale-100"} absolute`}>
+                <Menu size={20} />
+              </span>
+              <span className={`transition-all duration-200 ${open ? "opacity-100 scale-100" : "opacity-0 scale-75"} absolute`}>
+                <X size={20} />
+              </span>
+            </button>
           </div>
 
-          {/* ── Burger ── */}
-          <button
-            className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/8 text-white hover:bg-white/10 transition-colors"
-            onClick={() => setOpen(!open)}
-            aria-label="Menu"
-          >
-            <span className={`transition-all duration-200 ${open ? "opacity-0 scale-75" : "opacity-100 scale-100"} absolute`}>
-              <Menu size={20} />
-            </span>
-            <span className={`transition-all duration-200 ${open ? "opacity-100 scale-100" : "opacity-0 scale-75"} absolute`}>
-              <X size={20} />
-            </span>
-          </button>
         </div>
       </header>
 
