@@ -25,6 +25,13 @@ export default function HeroSlider() {
   const [current, setCurrent] = useState(0);
   const [prev, setPrev] = useState<number | null>(null);
   const [transitioning, setTransitioning] = useState(false);
+  const [revealed, setRevealed] = useState(false);
+
+  // Trigger background reveal on mount
+  useEffect(() => {
+    const t = setTimeout(() => setRevealed(true), 60);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -46,39 +53,50 @@ export default function HeroSlider() {
 
   return (
     <>
-      {/* Slides */}
-      {SLIDES.map((slide, i) => (
+      {/* Wrapper with initial cinematic fade-in (1.5s) */}
+      <div
+        style={{
+          opacity: revealed ? 1 : 0,
+          transition: "opacity 1.5s ease",
+          position: "absolute",
+          inset: 0,
+          zIndex: 0,
+        }}
+      >
+        {/* Slides */}
+        {SLIDES.map((slide, i) => (
+          <div
+            key={slide.url}
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-300"
+            style={{
+              backgroundImage: `url('${slide.url}')`,
+              opacity: i === current ? 1 : 0,
+              zIndex: i === current ? 1 : i === prev ? 0 : 0,
+            }}
+          />
+        ))}
+
+        {/* Overlay — adapte selon le thème */}
         <div
-          key={slide.url}
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-300"
+          className="absolute inset-0"
           style={{
-            backgroundImage: `url('${slide.url}')`,
-            opacity: i === current ? 1 : 0,
-            zIndex: i === current ? 1 : i === prev ? 0 : 0,
+            zIndex: 2,
+            background: isLight
+              ? "linear-gradient(to right, rgba(248,250,252,0.92) 0%, rgba(248,250,252,0.70) 60%, rgba(248,250,252,0.25) 100%)"
+              : "linear-gradient(to right, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.80) 60%, rgba(0,0,0,0.40) 100%)",
           }}
         />
-      ))}
-
-      {/* Overlay — adapte selon le thème */}
-      <div
-        className="absolute inset-0"
-        style={{
-          zIndex: 2,
-          background: isLight
-            ? "linear-gradient(to right, rgba(248,250,252,0.92) 0%, rgba(248,250,252,0.70) 60%, rgba(248,250,252,0.25) 100%)"
-            : "linear-gradient(to right, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.80) 60%, rgba(0,0,0,0.40) 100%)",
-        }}
-      />
-      {/* Bottom fade */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-40"
-        style={{
-          zIndex: 2,
-          background: isLight
-            ? "linear-gradient(to top, #f8fafc 0%, transparent 100%)"
-            : "linear-gradient(to top, #0a0a0a 0%, transparent 100%)",
-        }}
-      />
+        {/* Bottom fade */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-40"
+          style={{
+            zIndex: 2,
+            background: isLight
+              ? "linear-gradient(to top, #f8fafc 0%, transparent 100%)"
+              : "linear-gradient(to top, #0a0a0a 0%, transparent 100%)",
+          }}
+        />
+      </div>
 
       {/* Slide label + dots */}
       <div className="absolute bottom-44 left-0 right-0 flex flex-col items-center gap-3" style={{ zIndex: 10 }}>

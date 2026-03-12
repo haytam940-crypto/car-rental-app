@@ -70,22 +70,39 @@ export default function HomePage() {
 
         <div className="relative w-full px-4 sm:px-6 pt-32 pb-20 w-full" style={{ zIndex: 10 }}>
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-[#D4A96A]/10 border border-[#D4A96A]/30 text-[#D4A96A] px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest mb-8">
+
+            {/* Badge — apparaît en 1er après la photo */}
+            <div
+              className="animate-fade-in-up inline-flex items-center gap-2 bg-[#D4A96A]/10 border border-[#D4A96A]/30 text-[#D4A96A] px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest mb-8"
+              style={{ animationDelay: "1.2s" }}
+            >
               <span className="w-1.5 h-1.5 bg-[#D4A96A] rounded-full animate-pulse" />
               {availableCount} {t("home.badge")}
             </div>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6 tracking-tight">
+            {/* Titre — 2e élément */}
+            <h1
+              className="animate-fade-in-up text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6 tracking-tight"
+              style={{ animationDelay: "2.0s" }}
+            >
               {t("home.hero.title1")}<br />
               <span className="text-[#D4A96A]">{t("home.hero.title2")}</span><br />
               {t("home.hero.title3")}
             </h1>
 
-            <p className="text-gray-400 text-lg max-w-xl leading-relaxed mb-10">
+            {/* Sous-titre */}
+            <p
+              className="animate-fade-in-up text-gray-400 text-lg max-w-xl leading-relaxed mb-10"
+              style={{ animationDelay: "2.8s" }}
+            >
               {t("home.hero.sub")}
             </p>
 
-            <div className="flex flex-wrap gap-5 mb-12">
+            {/* Trust badges */}
+            <div
+              className="animate-fade-in-up flex flex-wrap gap-5 mb-12"
+              style={{ animationDelay: "3.4s" }}
+            >
               {[
                 { icon: Shield, text: t("home.trust.insurance") },
                 { icon: Clock, text: t("home.trust.available") },
@@ -99,7 +116,13 @@ export default function HomePage() {
               ))}
             </div>
 
-            <SearchWidget />
+            {/* Formulaire de recherche — dernier */}
+            <div
+              className="animate-fade-in-up"
+              style={{ animationDelay: "4.1s" }}
+            >
+              <SearchWidget />
+            </div>
           </div>
         </div>
       </section>
