@@ -212,7 +212,7 @@ function ExcursionsContent() {
       </div>
 
       {/* Filter */}
-      <section className="max-w-7xl mx-auto px-4 pt-12 pb-4">
+      <section className="w-full px-4 sm:px-6 pt-12 pb-4">
         <div className="flex gap-2 flex-wrap">
           {CATEGORIES.map((cat) => (
             <button
@@ -232,7 +232,7 @@ function ExcursionsContent() {
       </section>
 
       {/* Grid */}
-      <section className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <section className="w-full px-4 sm:px-6 py-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filtered.map((excursion) => (
           <div key={excursion.id} className="group bg-[#111111] border border-white/8 rounded-2xl overflow-hidden hover:border-[#D4A96A]/30 transition-all hover:-translate-y-1 duration-300 flex flex-col">
             {/* Image */}

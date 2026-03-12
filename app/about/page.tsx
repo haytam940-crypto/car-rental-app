@@ -60,7 +60,7 @@ export default function AboutPage() {
 
       {/* ── Notre Histoire ── */}
       <section className="py-20 bg-[#0a0a0a]">
-        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+        <div className="w-full px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
           {/* Image */}
           <div className="relative rounded-2xl overflow-hidden h-[420px] border border-white/8 order-2 lg:order-1">
             <img
@@ -129,7 +129,7 @@ export default function AboutPage() {
 
       {/* ── Services ── */}
       <section className="py-20 bg-[#0a0a0a]">
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="w-full px-4 sm:px-6">
           <div className="text-center mb-14">
             <p className="text-[#D4A96A] text-xs font-bold uppercase tracking-widest mb-3">{t("about.svc.tag")}</p>
             <h2 className="text-3xl md:text-4xl font-black text-white">{t("about.svc.title")}</h2>
@@ -150,7 +150,7 @@ export default function AboutPage() {
 
       {/* ── Valeurs ── */}
       <section className="py-20 bg-[#111111]">
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="w-full px-4 sm:px-6">
           <div className="text-center mb-14">
             <p className="text-[#D4A96A] text-xs font-bold uppercase tracking-widest mb-3">{t("about.values.tag")}</p>
             <h2 className="text-3xl font-black text-white">{t("about.values.title")}</h2>

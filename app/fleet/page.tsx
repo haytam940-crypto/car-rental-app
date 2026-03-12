@@ -76,7 +76,7 @@ function FleetContent() {
           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=1920')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/80 via-[#0a0a0a]/60 to-[#0a0a0a]" />
-        <div className="relative z-10 max-w-7xl mx-auto px-4">
+        <div className="relative z-10 w-full px-4 sm:px-6">
           <p className="text-[#D4A96A] text-xs font-bold uppercase tracking-widest mb-3">{t("fleet.title")}</p>
           <h1 className="text-4xl md:text-5xl font-black text-white mb-3">{t("fleet.sub")}</h1>
           <p className="text-gray-400">
@@ -93,7 +93,7 @@ function FleetContent() {
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 pb-20">
+      <div className="w-full px-4 sm:px-6 pb-20">
         <div className="flex flex-col lg:flex-row gap-8">
 
           {/* Filters sidebar — desktop */}

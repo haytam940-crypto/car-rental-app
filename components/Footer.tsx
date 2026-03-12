@@ -26,7 +26,7 @@ export default function Footer() {
     <footer className="bg-[#0a0a0a] border-t border-white/8">
       {/* Top band */}
       <div className="bg-[#D4A96A] py-4">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="w-full px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[#0a0a0a] font-bold text-sm">{t("footer.helpBanner")}</p>
           <a href="tel:+212524890562" className="text-[#0a0a0a] text-xl font-black tracking-wide hover:opacity-80 transition-opacity">
             +212.524.89.05.62
@@ -34,7 +34,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
+      <div className="w-full px-4 sm:px-6 py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
         {/* Brand */}
         <div className="sm:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-3 mb-5">
@@ -136,7 +136,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-white/8 max-w-7xl mx-auto px-4 py-5 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-600 gap-3">
+      <div className="border-t border-white/8 w-full px-4 sm:px-6 py-5 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-600 gap-3">
         <p>{t("footer.rights")}</p>
         <p>{t("footer.madeWith")}</p>
       </div>

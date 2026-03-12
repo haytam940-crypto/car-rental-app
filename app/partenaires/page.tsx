@@ -164,7 +164,7 @@ export default function PartenairesPage() {
 
       {/* ─── PARTNER CARDS ──────────────────────────────────── */}
       <section className="py-20 bg-[#0a0a0a]">
-        <div className="max-w-6xl mx-auto px-4 space-y-10">
+        <div className="w-full px-4 sm:px-6 space-y-10">
           {PARTNERS.map((p, i) => (
             <div
               key={p.id}
@@ -250,7 +250,7 @@ export default function PartenairesPage() {
 
       {/* ─── BECOME A PARTNER ───────────────────────────────── */}
       <section className="py-20 bg-[#111111] border-t border-white/8">
-        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
+        <div className="w-full px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
 
           {/* Left — pitch */}
           <div>

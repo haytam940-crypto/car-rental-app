@@ -179,7 +179,7 @@ function CarDetailContent() {
 
       {/* Breadcrumb */}
       <div className="pt-24 pb-4 border-b border-white/8">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="w-full px-4 sm:px-6">
           <Link href="/fleet" className="inline-flex items-center gap-1 text-gray-500 text-sm hover:text-[#D4A96A] transition-colors">
             <ChevronLeft size={16} />
             {t("car.detail.backToFleet")}
@@ -187,7 +187,7 @@ function CarDetailContent() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-10">
+      <div className="w-full px-4 sm:px-6 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
           {/* LEFT — Car info */}

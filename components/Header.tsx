@@ -69,7 +69,7 @@ export default function Header() {
         }}
       >
         {/* Main bar — Logo | Nav centré | Actions */}
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 h-[68px] flex items-center justify-between">
+        <div className="w-full px-4 sm:px-6 h-[68px] flex items-center justify-between">
 
           {/* ── Logo (extrême gauche) ── */}
           <Link href="/" className="flex items-center gap-3 shrink-0 group flex-1">

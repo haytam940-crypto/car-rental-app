@@ -70,7 +70,7 @@ export default function ContactPage() {
 
       {/* Form + Offices */}
       <section className="py-20 bg-[#0a0a0a]">
-        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-5 gap-10">
+        <div className="w-full px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-5 gap-10">
 
           {/* Form */}
           <div className="lg:col-span-3">
@@ -170,7 +170,7 @@ export default function ContactPage() {
 
       {/* Map */}
       <section className="bg-[#111111] border-t border-white/8">
-        <div className="max-w-6xl mx-auto px-4 py-12">
+        <div className="w-full px-4 sm:px-6 py-12">
           <div className="flex items-center gap-2 mb-6">
             <div className="w-8 h-8 bg-[#D4A96A] rounded-lg flex items-center justify-center shrink-0">
               <MIcon name="location_on" size={16} fill className="text-black" />
