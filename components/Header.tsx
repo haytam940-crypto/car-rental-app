@@ -68,11 +68,11 @@ export default function Header() {
             : "linear-gradient(to bottom, rgba(10,10,10,0.7) 0%, transparent 100%)",
         }}
       >
-        {/* Main bar — 3 colonnes : Logo | Nav centré | Actions */}
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 h-[68px] grid grid-cols-3 items-center">
+        {/* Main bar — Logo | Nav centré | Actions */}
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 h-[68px] flex items-center justify-between">
 
-          {/* ── Col 1 : Logo (extrême gauche) ── */}
-          <Link href="/" className="flex items-center gap-3 shrink-0 group justify-self-start">
+          {/* ── Logo (extrême gauche) ── */}
+          <Link href="/" className="flex items-center gap-3 shrink-0 group flex-1">
             <div className="relative">
               <div className="w-10 h-10 bg-[#D4A96A] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-200">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="#0a0a0a">
@@ -91,8 +91,8 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* ── Col 2 : Nav (centre absolu) ── */}
-          <nav className="hidden lg:flex items-center justify-self-center">
+          {/* ── Nav (centre absolu) ── */}
+          <nav className="hidden lg:flex items-center justify-center">
             <div className="flex items-center gap-0.5 bg-white/[0.04] border border-white/[0.06] rounded-2xl px-2 py-1.5">
               {NAV_LINKS.map((link) => {
                 const active = isActive(link.href);
@@ -113,8 +113,8 @@ export default function Header() {
             </div>
           </nav>
 
-          {/* ── Col 3 : Actions (extrême droite) ── */}
-          <div className="flex items-center gap-2 justify-self-end">
+          {/* ── Actions (extrême droite) ── */}
+          <div className="flex items-center gap-2 flex-1 justify-end">
             {/* Language switcher */}
             <div className="hidden md:flex items-center gap-0.5 bg-white/[0.04] border border-white/[0.06] rounded-xl p-1">
               {LANGUAGES.map(({ code, flag }) => (
