@@ -243,7 +243,10 @@ function CarDetailContent() {
                       <span className="text-base text-gray-400">DH/jour</span>
                     </div>
                     {toEur(effectivePrice) && (
-                      <div className="text-sm text-gray-400 mt-0.5">≈ <span className="text-white font-bold">{toEur(effectivePrice)} €</span>/jour</div>
+                      <div className="flex items-baseline gap-1 mt-1">
+                        <span className="text-2xl font-black text-white">{toEur(effectivePrice)}</span>
+                        <span className="text-base text-gray-400">€/jour</span>
+                      </div>
                     )}
                     <span className="inline-block bg-[#D4A96A] text-black text-xs font-black px-2 py-0.5 rounded-md mt-1">
                       -{car.discount}% de réduction
@@ -256,7 +259,10 @@ function CarDetailContent() {
                       <span className="text-base text-gray-400">DH/jour</span>
                     </div>
                     {toEur(car.pricePerDay) && (
-                      <div className="text-sm text-gray-400 mt-0.5">≈ <span className="text-white font-bold">{toEur(car.pricePerDay)} €</span>/jour</div>
+                      <div className="flex items-baseline gap-1 mt-1">
+                        <span className="text-2xl font-black text-white">{toEur(car.pricePerDay)}</span>
+                        <span className="text-base text-gray-400">€/jour</span>
+                      </div>
                     )}
                   </>
                 )}
@@ -463,7 +469,10 @@ function CarDetailContent() {
                           <div className="text-right">
                             <div className="text-[#D4A96A]">{totalHT} DH</div>
                             {toEur(totalHT) && (
-                              <div className="text-sm font-normal text-gray-400">≈ <span className="text-white font-bold">{toEur(totalHT)} €</span></div>
+                              <div className="flex items-baseline gap-1 justify-end">
+                                <span className="text-xl font-black text-white">{toEur(totalHT)}</span>
+                                <span className="text-sm text-gray-400">€</span>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -550,7 +559,10 @@ function CarDetailContent() {
                         <div className="text-right">
                           <div className="font-black text-[#D4A96A] text-base">{totalHT} DH <span className="text-[10px] font-normal text-gray-500">HT</span></div>
                           {toEur(totalHT) && (
-                            <div className="text-[11px] text-gray-400">≈ <span className="text-white font-bold">{toEur(totalHT)} €</span></div>
+                            <div className="flex items-baseline gap-1 justify-end mt-0.5">
+                              <span className="text-base font-black text-white">{toEur(totalHT)}</span>
+                              <span className="text-xs text-gray-400">€ HT</span>
+                            </div>
                           )}
                         </div>
                       </div>

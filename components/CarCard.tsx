@@ -97,16 +97,18 @@ export default function CarCard({ car, linkSuffix = "" }: { car: Car; linkSuffix
             {hasPromo && (
               <div className="text-xs text-gray-500 line-through">{originalHT} DH HT/j</div>
             )}
-            <div className="flex items-baseline gap-1">
+            <div className="flex items-baseline gap-1.5">
               <span className="text-2xl font-black text-[#D4A96A]">{htPrice}</span>
-              <span className="text-xs text-gray-400 font-medium">DH HT/j</span>
+              <span className="text-xs text-gray-400 font-medium">DH</span>
+              {toEur(htPrice) && (
+                <>
+                  <span className="text-gray-600 text-xs mx-0.5">|</span>
+                  <span className="text-lg font-black text-white">{toEur(htPrice)}</span>
+                  <span className="text-xs text-gray-400 font-medium">€</span>
+                </>
+              )}
             </div>
-            <div className="text-[11px] text-gray-600 mt-0.5">{ttcPrice} DH TTC</div>
-            {toEur(htPrice) && (
-              <div className="text-[11px] text-gray-500 mt-0.5">
-                ≈ <span className="text-white/60 font-semibold">{toEur(htPrice)} €</span>/j
-              </div>
-            )}
+            <div className="text-[11px] text-gray-600 mt-0.5">{ttcPrice} DH TTC / jour</div>
           </div>
           <Link
             href={isAvailable ? `/cars/${car.id}${linkSuffix}` : "#"}
