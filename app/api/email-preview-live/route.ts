@@ -1,0 +1,165 @@
+import { NextResponse } from "next/server";
+import { createPortalToken } from "@/lib/reservation-token";
+
+export async function GET() {
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
+  // Réservation de test avec un vrai token signé
+  const fakeId = `TEST-${Date.now()}`;
+  const portalToken = await createPortalToken(fakeId);
+  const portalUrl = `${SITE_URL}/reservation/${encodeURIComponent(portalToken)}`;
+
+  const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Email Test — Eson Maroc</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body style="margin:0;padding:0;background:#111111;font-family:'Segoe UI',Arial,sans-serif;">
+
+<!-- Bandeau test -->
+<div style="background:#f59e0b;color:#000;text-align:center;padding:10px;font-size:13px;font-weight:700;">
+  ⚡ MODE TEST — Cliquez les boutons pour vérifier que les liens fonctionnent
+</div>
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#111111;padding:40px 0;">
+<tr><td align="center">
+<table width="620" cellpadding="0" cellspacing="0" style="background:#1a1a1a;border-radius:16px;overflow:hidden;border:1px solid #2a2a2a;max-width:100%;">
+
+  <!-- Header -->
+  <tr><td style="background:#0a0a0a;padding:32px 48px;text-align:center;border-bottom:2px solid #D4A96A;">
+    <span style="font-size:26px;font-weight:900;color:#ffffff;letter-spacing:-0.5px;text-transform:uppercase;">
+      ESON<span style="color:#D4A96A;"> MAROC</span>
+    </span>
+    <p style="color:#888888;font-size:11px;margin:5px 0 0;text-transform:uppercase;letter-spacing:3px;">Location de Voitures Premium</p>
+  </td></tr>
+
+  <!-- Body -->
+  <tr><td style="padding:40px 48px;background:#1a1a1a;">
+
+    <h2 style="color:#ffffff;font-size:22px;font-weight:900;margin:0 0 8px;">
+      Confirmation de réservation &nbsp;
+      <span style="background:#f59e0b;color:#000;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;">En attente</span>
+    </h2>
+    <p style="color:#999999;font-size:14px;margin:0 0 32px;">
+      Bonjour <strong style="color:#D4A96A;">Youssef El Amrani</strong>, voici le récapitulatif de votre réservation.
+    </p>
+
+    <!-- Tableau infos -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#111111;border-radius:10px;overflow:hidden;border:1px solid #2a2a2a;margin-bottom:28px;">
+      <tr>
+        <td style="padding:10px 16px;color:#666666;font-size:13px;width:42%;border-bottom:1px solid #2a2a2a;">Référence</td>
+        <td style="padding:10px 16px;color:#D4A96A;font-size:13px;font-weight:700;border-bottom:1px solid #2a2a2a;font-family:monospace;">#${fakeId.slice(-8).toUpperCase()}</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 16px;color:#666666;font-size:13px;border-bottom:1px solid #2a2a2a;">Véhicule</td>
+        <td style="padding:10px 16px;color:#e5e5e5;font-size:13px;font-weight:600;border-bottom:1px solid #2a2a2a;">Dacia Duster 2023</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 16px;color:#666666;font-size:13px;border-bottom:1px solid #2a2a2a;">Date de livraison</td>
+        <td style="padding:10px 16px;color:#e5e5e5;font-size:13px;font-weight:600;border-bottom:1px solid #2a2a2a;">18/03/2026 &mdash; 10:00</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 16px;color:#666666;font-size:13px;border-bottom:1px solid #2a2a2a;">Lieu de livraison</td>
+        <td style="padding:10px 16px;color:#e5e5e5;font-size:13px;font-weight:600;border-bottom:1px solid #2a2a2a;">Aéroport de Ouarzazate</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 16px;color:#666666;font-size:13px;border-bottom:1px solid #2a2a2a;">Date de récupération</td>
+        <td style="padding:10px 16px;color:#e5e5e5;font-size:13px;font-weight:600;border-bottom:1px solid #2a2a2a;">21/03/2026 &mdash; 18:00</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 16px;color:#666666;font-size:13px;border-bottom:1px solid #2a2a2a;">Lieu de récupération</td>
+        <td style="padding:10px 16px;color:#e5e5e5;font-size:13px;font-weight:600;border-bottom:1px solid #2a2a2a;">Centre-ville Ouarzazate</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 16px;color:#666666;font-size:13px;border-bottom:1px solid #2a2a2a;">Durée</td>
+        <td style="padding:10px 16px;color:#e5e5e5;font-size:13px;font-weight:600;border-bottom:1px solid #2a2a2a;">3 jours</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 16px;color:#666666;font-size:13px;border-bottom:1px solid #2a2a2a;">Prix location</td>
+        <td style="padding:10px 16px;color:#e5e5e5;font-size:13px;font-weight:600;border-bottom:1px solid #2a2a2a;">1 050 DH</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 16px;color:#666666;font-size:13px;border-bottom:1px solid #2a2a2a;">Frais livraison</td>
+        <td style="padding:10px 16px;color:#e5e5e5;font-size:13px;font-weight:600;border-bottom:1px solid #2a2a2a;">150 DH</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 16px;color:#666666;font-size:13px;">Total HT</td>
+        <td style="padding:10px 16px;font-size:13px;font-weight:700;">
+          <span style="color:#D4A96A;font-size:18px;font-weight:900;">1 200 DH</span>
+          <span style="color:#888;font-size:13px;margin-left:8px;">≈ 110 €</span>
+        </td>
+      </tr>
+    </table>
+
+    <p style="color:#999999;font-size:14px;margin:0 0 18px;">Gérez votre réservation depuis votre portail personnel :</p>
+
+    <!-- Bouton principal -->
+    <div style="text-align:center;margin-bottom:18px;">
+      <a href="${portalUrl}" style="display:inline-block;background:#D4A96A;color:#000000;font-weight:700;padding:14px 32px;border-radius:10px;text-decoration:none;font-size:14px;letter-spacing:0.3px;">
+        Gérer ma réservation →
+      </a>
+    </div>
+
+    <!-- Boutons secondaires -->
+    <div style="text-align:center;margin-bottom:32px;">
+      <a href="${portalUrl}?action=modify" style="display:inline-block;background:transparent;color:#cccccc;font-weight:600;padding:11px 22px;border-radius:8px;text-decoration:none;font-size:13px;border:1px solid #3a3a3a;">
+        ✏️ Modifier
+      </a>
+      &nbsp;&nbsp;
+      <a href="${portalUrl}?action=cancel" style="display:inline-block;background:transparent;color:#ef4444;font-weight:600;padding:11px 22px;border-radius:8px;text-decoration:none;font-size:13px;border:1px solid #ef4444;">
+        ✕ Annuler
+      </a>
+    </div>
+
+    <!-- Note warmup -->
+    <div style="background:#1f1a0e;border:1px solid #D4A96A44;border-radius:10px;padding:16px 20px;">
+      <p style="color:#D4A96A;font-size:13px;margin:0;line-height:1.6;">
+        <strong>☕ Un verre de thé vous attend !</strong><br/>
+        <span style="color:#999999;">Notre équipe vous accueille chaleureusement.
+        Pour toute question appelez-nous au <strong style="color:#D4A96A;">+212.666.89.08.99</strong></span>
+      </p>
+    </div>
+
+  </td></tr>
+
+  <!-- Séparateur -->
+  <tr><td style="padding:0 48px;">
+    <div style="height:1px;background:linear-gradient(to right,transparent,#D4A96A44,transparent);"></div>
+  </td></tr>
+
+  <!-- Footer -->
+  <tr><td style="background:#111111;padding:24px 48px;text-align:center;">
+    <p style="color:#555555;font-size:12px;margin:0;">Av. Mohamed VI, en face de la RAM, Ouarzazate, Maroc</p>
+    <p style="color:#555555;font-size:12px;margin:5px 0 0;">
+      Tél : <span style="color:#D4A96A;">+212.524.89.05.62</span>
+      &nbsp;|&nbsp;
+      GSM : <span style="color:#D4A96A;">+212.666.89.08.99</span>
+    </p>
+    <p style="color:#333333;font-size:11px;margin:10px 0 0;">© 2026 Eson Maroc — Tous droits réservés</p>
+  </td></tr>
+
+</table>
+</td></tr>
+</table>
+
+<!-- Info liens -->
+<div style="max-width:620px;margin:20px auto;padding:16px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;font-size:12px;color:#666;">
+  <strong style="color:#D4A96A;">🔗 Liens générés dans cet email :</strong><br/><br/>
+  <b style="color:#888;">Portail principal :</b><br/>
+  <a href="${portalUrl}" style="color:#D4A96A;word-break:break-all;">${portalUrl}</a><br/><br/>
+  <b style="color:#888;">Modifier :</b><br/>
+  <a href="${portalUrl}?action=modify" style="color:#D4A96A;word-break:break-all;">${portalUrl}?action=modify</a><br/><br/>
+  <b style="color:#888;">Annuler :</b><br/>
+  <a href="${portalUrl}?action=cancel" style="color:#D4A96A;word-break:break-all;">${portalUrl}?action=cancel</a>
+</div>
+
+</body>
+</html>`;
+
+  return new NextResponse(html, {
+    headers: { "Content-Type": "text/html; charset=utf-8" },
+  });
+}
