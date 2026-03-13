@@ -6,10 +6,12 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CheckCircle, Calendar, Car, CreditCard, Phone, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useExchangeRate } from "@/hooks/useExchangeRate";
 
 function BookingContent() {
   const params = useSearchParams();
   const { t } = useLanguage();
+  const { toEur } = useExchangeRate();
   const id = params.get("id") || "RES-000000";
   const car = params.get("car") || "Véhicule";
   const total = params.get("total") || "0";
@@ -57,7 +59,12 @@ function BookingContent() {
                   <CreditCard size={18} className="text-[#D4A96A] shrink-0" />
                   <div>
                     <p className="text-xs text-gray-500">{t("booking.total")}</p>
-                    <p className="font-black text-[#D4A96A] text-lg">{total} DH</p>
+                    <div className="flex items-baseline gap-2 flex-wrap">
+                      <span className="font-black text-[#D4A96A] text-2xl">{total} DH</span>
+                      {toEur(Number(total)) && (
+                        <span className="font-black text-white text-xl">≈ {toEur(Number(total))} €</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
