@@ -1,34 +1,11 @@
 import { NextResponse } from "next/server";
 import { createPortalToken } from "@/lib/reservation-token";
-import { saveServerReservation } from "@/lib/server-reservations";
 
 export async function GET() {
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-  const fakeId = `TEST-${Date.now()}`;
-
-  // Sauvegarder la réservation en base pour que le portail la trouve
-  saveServerReservation({
-    id: fakeId,
-    carId: "1",
-    clientFirstName: "Youssef",
-    clientLastName: "El Amrani",
-    clientEmail: "test@eson-maroc.com",
-    clientPhone: "+212666000000",
-    pickupDate: "2026-03-18",
-    dropoffDate: "2026-03-21",
-    pickupLocation: "Aéroport de Ouarzazate",
-    dropoffLocation: "Centre-ville Ouarzazate",
-    pickupTime: "10:00",
-    dropoffTime: "18:00",
-    totalPrice: 1050,
-    deliveryFee: 150,
-    recoveryFee: 0,
-    durationDays: 3,
-    status: "pending",
-    message: "",
-    createdAt: new Date().toISOString(),
-  } as any);
+  // Utilise le préfixe DEMO- : pas de lecture/écriture fichier (compatible Vercel)
+  const fakeId = `DEMO-${Date.now()}`;
 
   const portalToken = await createPortalToken(fakeId);
   const portalUrl = `${SITE_URL}/reservation/${encodeURIComponent(portalToken)}`;

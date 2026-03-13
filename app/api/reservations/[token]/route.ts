@@ -6,11 +6,28 @@ import { CARS } from "@/lib/data";
 
 type Params = { params: Promise<{ token: string }> };
 
+const DEMO_RESERVATION = {
+  id: "DEMO", carId: "1",
+  clientFirstName: "Youssef", clientLastName: "El Amrani",
+  clientEmail: "test@eson-maroc.com", clientPhone: "+212666000000",
+  pickupDate: "2026-03-18", dropoffDate: "2026-03-21",
+  pickupLocation: "Aéroport de Ouarzazate", dropoffLocation: "Centre-ville Ouarzazate",
+  pickupTime: "10:00", dropoffTime: "18:00",
+  totalPrice: 1050, deliveryFee: 150, recoveryFee: 0,
+  durationDays: 3, status: "pending", message: "",
+  createdAt: new Date().toISOString(),
+};
+
 /** GET — vérifie le token et retourne la réservation */
 export async function GET(_req: Request, { params }: Params) {
   const { token } = await params;
   const reservationId = await verifyPortalToken(decodeURIComponent(token));
   if (!reservationId) return NextResponse.json({ error: "Lien invalide ou expiré." }, { status: 403 });
+
+  // Mode démo — pas de lecture fichier
+  if (reservationId.startsWith("DEMO")) {
+    return NextResponse.json({ reservation: { ...DEMO_RESERVATION, id: reservationId }, carName: "Dacia Duster 2023" });
+  }
 
   const reservation = getServerReservationById(reservationId);
   if (!reservation) return NextResponse.json({ error: "Réservation introuvable." }, { status: 404 });
@@ -24,6 +41,11 @@ export async function PATCH(req: Request, { params }: Params) {
   const { token } = await params;
   const reservationId = await verifyPortalToken(decodeURIComponent(token));
   if (!reservationId) return NextResponse.json({ error: "Lien invalide." }, { status: 403 });
+
+  // Mode démo
+  if (reservationId.startsWith("DEMO")) {
+    return NextResponse.json({ ok: true, reservation: { ...DEMO_RESERVATION, id: reservationId, status: "modified" } });
+  }
 
   const current = getServerReservationById(reservationId);
   if (!current) return NextResponse.json({ error: "Réservation introuvable." }, { status: 404 });
@@ -65,6 +87,11 @@ export async function DELETE(req: Request, { params }: Params) {
   const { token } = await params;
   const reservationId = await verifyPortalToken(decodeURIComponent(token));
   if (!reservationId) return NextResponse.json({ error: "Lien invalide." }, { status: 403 });
+
+  // Mode démo
+  if (reservationId.startsWith("DEMO")) {
+    return NextResponse.json({ ok: true, reservation: { ...DEMO_RESERVATION, id: reservationId, status: "cancelled" } });
+  }
 
   const current = getServerReservationById(reservationId);
   if (!current) return NextResponse.json({ error: "Réservation introuvable." }, { status: 404 });
