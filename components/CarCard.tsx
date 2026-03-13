@@ -5,9 +5,11 @@ import { Fuel, Settings, Users, ArrowRight } from "lucide-react";
 import { Car } from "@/lib/data";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getActivePromotion } from "@/lib/store";
+import { useExchangeRate } from "@/hooks/useExchangeRate";
 
 export default function CarCard({ car, linkSuffix = "" }: { car: Car; linkSuffix?: string }) {
   const { t } = useLanguage();
+  const { toEur } = useExchangeRate();
   const [globalDiscount, setGlobalDiscount] = useState(0);
 
   useEffect(() => {
@@ -100,6 +102,11 @@ export default function CarCard({ car, linkSuffix = "" }: { car: Car; linkSuffix
               <span className="text-xs text-gray-400 font-medium">DH HT/j</span>
             </div>
             <div className="text-[11px] text-gray-600 mt-0.5">{ttcPrice} DH TTC</div>
+            {toEur(htPrice) && (
+              <div className="text-[11px] text-gray-500 mt-0.5">
+                ≈ <span className="text-white/60 font-semibold">{toEur(htPrice)} €</span>/j
+              </div>
+            )}
           </div>
           <Link
             href={isAvailable ? `/cars/${car.id}${linkSuffix}` : "#"}

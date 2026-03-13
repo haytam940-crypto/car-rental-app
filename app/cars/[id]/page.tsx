@@ -8,6 +8,7 @@ import { CARS, LOCATIONS, calculatePrice, checkAvailability } from "@/lib/data";
 import { saveReservation, getStoredCars, getDeliveryFees } from "@/lib/store";
 import { Fuel, Settings, Users, Calendar, MapPin, ChevronLeft, Star, Shield, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useExchangeRate } from "@/hooks/useExchangeRate";
 
 function CarDetailContent() {
   const { id } = useParams();
@@ -32,6 +33,7 @@ function CarDetailContent() {
     ? (car.discount && car.discount > 0 ? Math.round(car.pricePerDay * (1 - car.discount / 100)) : car.pricePerDay)
     : 0;
 
+  const { toEur, rate } = useExchangeRate();
   const [activeImg, setActiveImg] = useState(0);
   const [form, setForm] = useState({
     pickupLocation: prePickup,
@@ -240,6 +242,9 @@ function CarDetailContent() {
                       <span className="text-4xl font-black text-[#D4A96A]">{effectivePrice}</span>
                       <span className="text-base text-gray-400">DH/jour</span>
                     </div>
+                    {toEur(effectivePrice) && (
+                      <div className="text-sm text-gray-400 mt-0.5">≈ <span className="text-white font-bold">{toEur(effectivePrice)} €</span>/jour</div>
+                    )}
                     <span className="inline-block bg-[#D4A96A] text-black text-xs font-black px-2 py-0.5 rounded-md mt-1">
                       -{car.discount}% de réduction
                     </span>
@@ -250,6 +255,9 @@ function CarDetailContent() {
                       <span className="text-4xl font-black text-[#D4A96A]">{car.pricePerDay}</span>
                       <span className="text-base text-gray-400">DH/jour</span>
                     </div>
+                    {toEur(car.pricePerDay) && (
+                      <div className="text-sm text-gray-400 mt-0.5">≈ <span className="text-white font-bold">{toEur(car.pricePerDay)} €</span>/jour</div>
+                    )}
                   </>
                 )}
               </div>
@@ -452,7 +460,12 @@ function CarDetailContent() {
                         )}
                         <div className="flex justify-between font-black text-white text-lg border-t border-white/8 pt-2">
                           <span>Total HT</span>
-                          <span className="text-[#D4A96A]">{totalHT} DH</span>
+                          <div className="text-right">
+                            <div className="text-[#D4A96A]">{totalHT} DH</div>
+                            {toEur(totalHT) && (
+                              <div className="text-sm font-normal text-gray-400">≈ <span className="text-white font-bold">{toEur(totalHT)} €</span></div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     )}
@@ -534,7 +547,12 @@ function CarDetailContent() {
                       {/* Total */}
                       <div className="px-3 py-2.5 flex justify-between items-center bg-[#D4A96A]/10">
                         <span className="font-black text-[#D4A96A] uppercase tracking-wide text-[11px]">Total à payer</span>
-                        <span className="font-black text-[#D4A96A] text-base">{totalHT} DH <span className="text-[10px] font-normal text-gray-500">HT</span></span>
+                        <div className="text-right">
+                          <div className="font-black text-[#D4A96A] text-base">{totalHT} DH <span className="text-[10px] font-normal text-gray-500">HT</span></div>
+                          {toEur(totalHT) && (
+                            <div className="text-[11px] text-gray-400">≈ <span className="text-white font-bold">{toEur(totalHT)} €</span></div>
+                          )}
+                        </div>
                       </div>
                     </div>
 
