@@ -182,7 +182,7 @@ export default function ContactPage() {
               </div>
             </div>
             <a
-              href="https://maps.google.com/?q=Eson+Maroc+Ouarzazate+Avenue+Mohamed+VI"
+              href="https://www.google.com/maps/place/Location+de+voitures+Rent+car+ESON+MAROC/@30.9205573,-6.9161778,17z"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 bg-[#D4A96A]/10 border border-[#D4A96A]/30 text-[#D4A96A] text-xs font-semibold px-4 py-2 rounded-xl hover:bg-[#D4A96A]/20 transition-colors"
@@ -193,7 +193,7 @@ export default function ContactPage() {
           </div>
           <div className="rounded-2xl overflow-hidden border border-white/8 h-[420px]">
             <iframe
-              src="https://maps.google.com/maps?q=Avenue+Mohamed+VI+Ouarzazate+Maroc&z=16&output=embed&hl=fr"
+              src="https://maps.google.com/maps?q=30.9205573,-6.9161778&z=17&output=embed&hl=fr"
               width="100%"
               height="100%"
               style={{ border: 0 }}
