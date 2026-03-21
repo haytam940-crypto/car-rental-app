@@ -26,11 +26,11 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com",
       "font-src 'self' data: https://fonts.gstatic.com",
       // Images : local + Unsplash CDN
-      "img-src 'self' data: blob: https://images.unsplash.com",
+      "img-src 'self' data: blob: https://images.unsplash.com https://*.googleapis.com https://*.gstatic.com https://maps.gstatic.com https://maps.google.com",
       // Connexions réseau : local uniquement
-      "connect-src 'self'",
-      // Iframes autorisées : uniquement OpenStreetMap
-      "frame-src https://www.openstreetmap.org",
+      "connect-src 'self' https://maps.googleapis.com",
+      // Iframes autorisées : Google Maps
+      "frame-src https://maps.google.com https://www.google.com https://www.openstreetmap.org",
       // Empêche ce site d'être intégré dans une iframe externe
       "frame-ancestors 'none'",
     ].join("; "),
@@ -56,6 +56,7 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
         protocol: "https",

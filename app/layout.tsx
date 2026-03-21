@@ -84,8 +84,8 @@ const jsonLd = {
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: 30.9189,
-    longitude: -6.8936,
+    latitude: 30.9205573,
+    longitude: -6.9161778,
   },
   openingHoursSpecification: [
     {
@@ -105,16 +105,23 @@ const jsonLd = {
     { "@type": "Country", name: "Maroc" },
   ],
   sameAs: [],
-  hasMap: "https://www.openstreetmap.org/?mlat=30.9189&mlon=-6.8936",
+  hasMap: "https://www.google.com/maps/place/Location+de+voitures+Rent+car+ESON+MAROC/@30.9205573,-6.9161778,17z",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" data-scroll-behavior="smooth">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preload"
+          as="style"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional"
+        />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional"
         />
         <script
           type="application/ld+json"

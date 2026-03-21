@@ -343,7 +343,7 @@ function ExcursionsContent() {
               <div className="p-6 space-y-5">
                 {/* Excursion recap */}
                 <div className="bg-[#1a1a1a] border border-white/8 rounded-xl p-4 flex gap-4">
-                  <img src={selected.image} alt={selected.title} className="w-16 h-16 object-cover rounded-lg shrink-0" />
+                  <img src={selected.image} alt={selected.title} className="w-16 h-16 object-cover rounded-lg shrink-0" loading="lazy" />
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
                       <Clock size={11} className="text-[#D4A96A]" />{selected.duration}

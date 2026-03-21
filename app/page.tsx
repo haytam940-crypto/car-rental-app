@@ -315,7 +315,7 @@ export default function HomePage() {
         <div className="w-full px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="relative rounded-2xl overflow-hidden h-[500px]">
-              <img src="/marrakech.jpg" alt="Eson Maroc Maroc" className="w-full h-full object-cover" />
+              <img src="/marrakech.jpg" alt="Eson Maroc Maroc" className="w-full h-full object-cover" loading="lazy" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               <div className="absolute bottom-6 left-6 right-6 bg-[#0a0a0a]/90 backdrop-blur-sm border border-white/10 rounded-xl p-4 flex items-center gap-4">
                 <div className="w-12 h-12 bg-[#D4A96A] rounded-xl flex items-center justify-center shrink-0">

@@ -213,7 +213,7 @@ function CarDetailContent() {
                         activeImg === i ? "border-[#D4A96A]" : "border-white/10 hover:border-white/30"
                       }`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
                     </button>
                   ))}
                 </div>
