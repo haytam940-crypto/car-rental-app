@@ -171,23 +171,35 @@ export default function ContactPage() {
       {/* Map */}
       <section className="bg-[#111111] border-t border-white/8">
         <div className="w-full px-4 sm:px-6 py-12">
-          <div className="flex items-center gap-2 mb-6">
-            <div className="w-8 h-8 bg-[#D4A96A] rounded-lg flex items-center justify-center shrink-0">
-              <MIcon name="location_on" size={16} fill className="text-black" />
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-[#D4A96A] rounded-lg flex items-center justify-center shrink-0">
+                <MIcon name="location_on" size={16} fill className="text-black" />
+              </div>
+              <div>
+                <p className="text-white font-bold text-sm">Eson Maroc — Ouarzazate</p>
+                <p className="text-gray-500 text-xs">Av. Mohamed VI, en face de la RAM, Ouarzazate, Maroc</p>
+              </div>
             </div>
-            <div>
-              <p className="text-white font-bold text-sm">Eson Maroc — Ouarzazate</p>
-              <p className="text-gray-500 text-xs">Av. Mohamed VI, en face de la RAM, Ouarzazate, Maroc</p>
-            </div>
+            <a
+              href="https://maps.google.com/?q=Eson+Maroc+Ouarzazate+Avenue+Mohamed+VI"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-[#D4A96A]/10 border border-[#D4A96A]/30 text-[#D4A96A] text-xs font-semibold px-4 py-2 rounded-xl hover:bg-[#D4A96A]/20 transition-colors"
+            >
+              <MIcon name="open_in_new" size={14} />
+              Ouvrir dans Google Maps
+            </a>
           </div>
-          <div className="rounded-2xl overflow-hidden border border-white/8 h-[380px]">
+          <div className="rounded-2xl overflow-hidden border border-white/8 h-[420px]">
             <iframe
-              src="https://www.openstreetmap.org/export/embed.html?bbox=-6.9436%2C30.8989%2C-6.8436%2C30.9389&layer=mapnik&marker=30.9189%2C-6.8936"
+              src="https://maps.google.com/maps?q=Avenue+Mohamed+VI+Ouarzazate+Maroc&z=16&output=embed&hl=fr"
               width="100%"
               height="100%"
-              style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) brightness(0.85)" }}
+              style={{ border: 0 }}
               allowFullScreen
               loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
             />
           </div>
         </div>
