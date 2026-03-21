@@ -1,27 +1,14 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import {
-  LayoutDashboard, ClipboardList, Car, FileText, BarChart2, Mountain,
-  Calendar, Tag, LogOut, Menu, X, Plus, Send, Trash2, Edit2,
-  FilePlus, CheckCircle, XCircle, Clock, RefreshCw, ChevronDown,
+  X, Plus, Send, Trash2, Edit2,
+  FilePlus, CheckCircle, XCircle, Clock, RefreshCw,
   FileCheck, AlertCircle,
 } from "lucide-react";
 import MIcon from "@/components/MIcon";
 import { CARS } from "@/lib/data";
 import type { Devis, DevisItem } from "@/lib/server-devis";
-
-const navLinks = [
-  { href: "/admin/dashboard",    icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/admin/reservations", icon: ClipboardList,   label: "Réservations" },
-  { href: "/admin/cars",         icon: Car,             label: "Voitures" },
-  { href: "/admin/devis",        icon: FilePlus,        label: "Devis" },
-  { href: "/admin/invoices",     icon: FileText,        label: "Factures" },
-  { href: "/admin/analytics",    icon: BarChart2,       label: "Analytique" },
-  { href: "/admin/excursions",   icon: Mountain,        label: "Excursions" },
-  { href: "/admin/planning",     icon: Calendar,        label: "Planning" },
-  { href: "/admin/promotions",   icon: Tag,             label: "Promotions" },
-];
+import AdminSidebar from "@/components/AdminSidebar";
 
 const STATUS_LABELS: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
   draft:    { label: "Brouillon",  color: "#888",     bg: "#88888820", icon: Clock },
@@ -51,8 +38,7 @@ function emptyForm(): Partial<Devis> {
 }
 
 export default function AdminDevisPage() {
-  const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = "/admin/devis";
   const [devisList, setDevisList] = useState<Devis[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState<string | null>(null);
@@ -63,8 +49,6 @@ export default function AdminDevisPage() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterType, setFilterType] = useState("all");
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
-
-  const logout = () => fetch("/api/auth/logout", { method: "POST" }).then(() => router.push("/admin/login"));
 
   const fetchDevis = useCallback(async () => {
     setLoading(true);
@@ -212,41 +196,16 @@ export default function AdminDevisPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex">
-      {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#111] border-r border-white/10 flex flex-col transform transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}>
-        <div className="flex items-center justify-between p-6 border-b border-white/10">
-          <div>
-            <span className="font-black text-lg tracking-tight">ESON<span className="text-[#D4A96A]"> MAROC</span></span>
-            <p className="text-[10px] text-white/40 uppercase tracking-widest mt-0.5">Administration</p>
-          </div>
-          <button className="lg:hidden text-white/50 hover:text-white" onClick={() => setSidebarOpen(false)}><X size={20} /></button>
-        </div>
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {navLinks.map(({ href, icon: Icon, label }) => (
-            <a key={href} href={href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${href === "/admin/devis" ? "bg-[#D4A96A]/15 text-[#D4A96A]" : "text-white/60 hover:text-white hover:bg-white/5"}`}>
-              <Icon size={16} />{label}
-            </a>
-          ))}
-        </nav>
-        <div className="p-4 border-t border-white/10">
-          <button onClick={logout} className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition-colors">
-            <LogOut size={16} />Déconnexion
-          </button>
-        </div>
-      </aside>
-
-      {sidebarOpen && <div className="fixed inset-0 z-40 bg-black/60 lg:hidden" onClick={() => setSidebarOpen(false)} />}
+      <AdminSidebar pathname={pathname} />
 
       {/* Main */}
-      <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col min-h-screen">
         {/* Header */}
-        <header className="sticky top-0 z-30 bg-[#111]/90 backdrop-blur border-b border-white/10 px-6 py-4 flex items-center justify-between">
+        <header className="sticky top-0 z-30 bg-[#111111] border-b border-white/8 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button className="lg:hidden text-white/60 hover:text-white" onClick={() => setSidebarOpen(true)}><Menu size={22} /></button>
             <div>
               <h1 className="font-black text-xl tracking-tight">Devis</h1>
-              <p className="text-white/40 text-xs mt-0.5">Créez et envoyez des devis à vos clients</p>
+              <p className="text-gray-400 text-xs mt-0.5">Créez et envoyez des devis à vos clients</p>
             </div>
           </div>
           <button onClick={openCreate} className="flex items-center gap-2 bg-[#D4A96A] text-black font-bold px-4 py-2 rounded-xl text-sm hover:bg-[#c49558] transition-colors">
@@ -258,13 +217,13 @@ export default function AdminDevisPage() {
           {/* Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { label: "Total devis", value: stats.total, color: "#D4A96A", bg: "#D4A96A15" },
-              { label: "Brouillons", value: stats.draft, color: "#888", bg: "#88888815" },
-              { label: "Envoyés", value: stats.sent, color: "#6366f1", bg: "#6366f115" },
-              { label: "Acceptés", value: stats.accepted, color: "#10b981", bg: "#10b98115" },
+              { label: "Total devis",  value: stats.total,    color: "#D4A96A", cls: "bg-[#D4A96A]/10 border-[#D4A96A]/25" },
+              { label: "Brouillons",   value: stats.draft,    color: "#94a3b8", cls: "bg-white/5 border-white/10" },
+              { label: "Envoyés",      value: stats.sent,     color: "#6366f1", cls: "bg-[#6366f1]/10 border-[#6366f1]/25" },
+              { label: "Acceptés",     value: stats.accepted, color: "#10b981", cls: "bg-[#10b981]/10 border-[#10b981]/25" },
             ].map(s => (
-              <div key={s.label} style={{ background: s.bg, borderColor: s.color + "30" }} className="rounded-2xl border p-5">
-                <p className="text-white/50 text-xs mb-1">{s.label}</p>
+              <div key={s.label} className={`rounded-2xl border p-5 ${s.cls}`}>
+                <p className="text-gray-400 text-xs mb-1">{s.label}</p>
                 <p style={{ color: s.color }} className="text-3xl font-black">{s.value}</p>
               </div>
             ))}
@@ -275,7 +234,7 @@ export default function AdminDevisPage() {
             <div className="flex gap-1 bg-[#1a1a1a] rounded-xl p-1">
               {["all", "draft", "sent", "accepted", "rejected", "expired"].map(s => (
                 <button key={s} onClick={() => setFilterStatus(s)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${filterStatus === s ? "bg-[#D4A96A] text-black" : "text-white/50 hover:text-white"}`}>
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${filterStatus === s ? "bg-[#D4A96A] text-black" : "text-gray-400 hover:text-gray-400"}`}>
                   {s === "all" ? "Tous" : STATUS_LABELS[s]?.label}
                 </button>
               ))}
@@ -283,23 +242,23 @@ export default function AdminDevisPage() {
             <div className="flex gap-1 bg-[#1a1a1a] rounded-xl p-1">
               {[["all", "Tous"], ["location", "Location"], ["excursion", "Excursion"]].map(([v, l]) => (
                 <button key={v} onClick={() => setFilterType(v)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${filterType === v ? "bg-[#D4A96A] text-black" : "text-white/50 hover:text-white"}`}>
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${filterType === v ? "bg-[#D4A96A] text-black" : "text-gray-400 hover:text-gray-400"}`}>
                   {l}
                 </button>
               ))}
             </div>
-            <button onClick={fetchDevis} className="ml-auto text-white/40 hover:text-white p-2 rounded-lg hover:bg-white/5 transition-colors">
+            <button onClick={fetchDevis} className="ml-auto text-gray-500 hover:text-gray-400 p-2 rounded-lg hover:bg-white/5 transition-colors">
               <RefreshCw size={15} />
             </button>
           </div>
 
           {/* Liste */}
           {loading ? (
-            <div className="text-center py-20 text-white/30">Chargement...</div>
+            <div className="text-center py-20 text-gray-500">Chargement...</div>
           ) : filtered.length === 0 ? (
             <div className="text-center py-20">
-              <FilePlus size={40} className="text-white/10 mx-auto mb-4" />
-              <p className="text-white/30 text-sm">Aucun devis trouvé</p>
+              <FilePlus size={40} className="text-gray-500 mx-auto mb-4" />
+              <p className="text-gray-400 text-sm">Aucun devis trouvé</p>
               <button onClick={openCreate} className="mt-4 text-[#D4A96A] text-sm hover:underline">
                 Créer le premier devis →
               </button>
@@ -311,7 +270,7 @@ export default function AdminDevisPage() {
                 const typeColor = d.type === "location" ? "#6366f1" : "#f59e0b";
                 const typeLabel = d.type === "location" ? "Location" : "Excursion";
                 return (
-                  <div key={d.id} className="bg-[#111] border border-white/10 rounded-2xl p-5 hover:border-[#D4A96A]/30 transition-colors">
+                  <div key={d.id} className="bg-[#111111] border border-white/10 rounded-2xl p-5 hover:border-[#D4A96A]/30 transition-colors">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       {/* Infos gauche */}
                       <div className="flex-1 min-w-0">
@@ -323,19 +282,19 @@ export default function AdminDevisPage() {
                         <p className="text-white font-semibold text-base truncate">
                           {d.clientFirstName} {d.clientLastName}
                         </p>
-                        <p className="text-white/40 text-xs mt-0.5">{d.clientEmail} · {d.clientPhone}</p>
+                        <p className="text-gray-400 text-xs mt-0.5">{d.clientEmail} · {d.clientPhone}</p>
                         {d.type === "location" && d.carName && (
-                          <p className="text-white/50 text-xs mt-1 flex items-center gap-1">
+                          <p className="text-gray-400 text-xs mt-1 flex items-center gap-1">
                             <MIcon name="directions_car" size={13} fill className="text-[#D4A96A]" /> {d.carName} · {d.pickupDate} → {d.dropoffDate}
                           </p>
                         )}
                         {d.type === "excursion" && d.destination && (
-                          <p className="text-white/50 text-xs mt-1 flex items-center gap-1">
+                          <p className="text-gray-400 text-xs mt-1 flex items-center gap-1">
                             <MIcon name="landscape" size={13} fill className="text-[#D4A96A]" /> {d.destination} · {d.excursionDate} · {d.participants} pers.
                           </p>
                         )}
                         {d.validUntil && (
-                          <p className="text-amber-500/60 text-xs mt-1 flex items-center gap-1">
+                          <p className="text-amber-500 text-xs mt-1 flex items-center gap-1">
                             <MIcon name="hourglass_empty" size={13} className="text-amber-500" /> Valable jusqu'au {d.validUntil}
                           </p>
                         )}
@@ -346,7 +305,7 @@ export default function AdminDevisPage() {
                         <div className="text-right">
                           <p className="text-[#D4A96A] font-black text-xl">{d.total.toLocaleString("fr-MA")} DH</p>
                           {d.discount > 0 && <p className="text-green-400 text-xs">-{d.discount.toLocaleString("fr-MA")} DH remise</p>}
-                          <p className="text-white/30 text-xs">{d.items.length} prestation{d.items.length > 1 ? "s" : ""}</p>
+                          <p className="text-gray-400 text-xs">{d.items.length} prestation{d.items.length > 1 ? "s" : ""}</p>
                         </div>
 
                         <div className="flex flex-col gap-2">
@@ -359,13 +318,13 @@ export default function AdminDevisPage() {
 
                           {/* Modifier */}
                           <button onClick={() => openEdit(d)}
-                            className="flex items-center gap-1.5 bg-white/5 text-white/60 hover:text-white hover:bg-white/10 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">
+                            className="flex items-center gap-1.5 bg-white/5 text-gray-400 hover:text-gray-400 hover:bg-white/10 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">
                             <Edit2 size={12} />Modifier
                           </button>
 
                           {/* Statut rapide */}
                           <select value={d.status} onChange={e => handleStatus(d.id, e.target.value)}
-                            className="bg-[#1a1a1a] border border-white/10 text-white/60 text-xs rounded-lg px-2 py-1.5 cursor-pointer">
+                            className="bg-[#1a1a1a] border border-white/10 text-gray-400 text-xs rounded-lg px-2 py-1.5 cursor-pointer">
                             {Object.entries(STATUS_LABELS).map(([v, s]) => (
                               <option key={v} value={v}>{s.label}</option>
                             ))}
@@ -390,11 +349,11 @@ export default function AdminDevisPage() {
       {/* ── Modal création/édition ── */}
       {modal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-start justify-center p-4 overflow-y-auto">
-          <div className="bg-[#111] border border-white/10 rounded-2xl w-full max-w-2xl my-8">
+          <div className="bg-[#111111] border border-white/10 rounded-2xl w-full max-w-2xl my-8">
             {/* Header modal */}
             <div className="flex items-center justify-between p-6 border-b border-white/10">
               <h2 className="font-black text-lg">{editId ? "Modifier le devis" : "Nouveau devis"}</h2>
-              <button onClick={() => setModal(false)} className="text-white/40 hover:text-white p-2 rounded-lg hover:bg-white/5">
+              <button onClick={() => setModal(false)} className="text-gray-500 hover:text-gray-400 p-2 rounded-lg hover:bg-white/5">
                 <X size={20} />
               </button>
             </div>
@@ -402,11 +361,11 @@ export default function AdminDevisPage() {
             <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
               {/* Type */}
               <div>
-                <label className="text-white/50 text-xs uppercase tracking-widest mb-3 block">Type de devis</label>
+                <label className="text-gray-400 text-xs uppercase tracking-widest mb-3 block">Type de devis</label>
                 <div className="grid grid-cols-2 gap-3">
                   {([["location", "directions_car", "Location voiture"], ["excursion", "landscape", "Excursion"]] as [string, string, string][]).map(([v, icon, label]) => (
                     <button key={v} onClick={() => setForm(f => ({ ...f, type: v as "location" | "excursion" }))}
-                      className={`flex items-center gap-3 p-4 rounded-xl border-2 text-sm font-semibold transition-all ${form.type === v ? "border-[#D4A96A] bg-[#D4A96A]/10 text-[#D4A96A]" : "border-white/10 text-white/40 hover:border-white/20"}`}>
+                      className={`flex items-center gap-3 p-4 rounded-xl border-2 text-sm font-semibold transition-all ${form.type === v ? "border-[#D4A96A] bg-[#D4A96A]/10 text-[#D4A96A]" : "border-white/10 text-gray-500 hover:border-white/20"}`}>
                       <MIcon name={icon} size={24} fill={form.type === v} />{label}
                     </button>
                   ))}
@@ -415,7 +374,7 @@ export default function AdminDevisPage() {
 
               {/* Client */}
               <div>
-                <label className="text-white/50 text-xs uppercase tracking-widest mb-3 block">Informations client</label>
+                <label className="text-gray-400 text-xs uppercase tracking-widest mb-3 block">Informations client</label>
                 <div className="grid grid-cols-2 gap-3">
                   <Input label="Prénom" value={form.clientFirstName ?? ""} onChange={v => setForm(f => ({ ...f, clientFirstName: v }))} />
                   <Input label="Nom" value={form.clientLastName ?? ""} onChange={v => setForm(f => ({ ...f, clientLastName: v }))} />
@@ -427,10 +386,10 @@ export default function AdminDevisPage() {
               {/* Détails service */}
               {form.type === "location" ? (
                 <div>
-                  <label className="text-white/50 text-xs uppercase tracking-widest mb-3 block">Détails location</label>
+                  <label className="text-gray-400 text-xs uppercase tracking-widest mb-3 block">Détails location</label>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="col-span-2">
-                      <label className="text-white/50 text-xs mb-1 block">Véhicule</label>
+                      <label className="text-gray-400 text-xs mb-1 block">Véhicule</label>
                       <select value={form.carId ?? ""} onChange={e => setForm(f => ({ ...f, carId: e.target.value }))}
                         className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-[#D4A96A]/50 outline-none">
                         <option value="">— Sélectionner —</option>
@@ -445,12 +404,12 @@ export default function AdminDevisPage() {
                     <Input label="Lieu récupération" value={form.dropoffLocation ?? ""} onChange={v => setForm(f => ({ ...f, dropoffLocation: v }))} />
                   </div>
                   {form.durationDays && form.durationDays > 0 && (
-                    <p className="text-white/30 text-xs mt-2">Durée calculée : <span className="text-[#D4A96A]">{form.durationDays} jour{form.durationDays > 1 ? "s" : ""}</span></p>
+                    <p className="text-gray-500 text-xs mt-2">Durée calculée : <span className="text-[#D4A96A]">{form.durationDays} jour{form.durationDays > 1 ? "s" : ""}</span></p>
                   )}
                 </div>
               ) : (
                 <div>
-                  <label className="text-white/50 text-xs uppercase tracking-widest mb-3 block">Détails excursion</label>
+                  <label className="text-gray-400 text-xs uppercase tracking-widest mb-3 block">Détails excursion</label>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="col-span-2">
                       <Input label="Destination" value={form.destination ?? ""} onChange={v => setForm(f => ({ ...f, destination: v }))} />
@@ -464,7 +423,7 @@ export default function AdminDevisPage() {
               {/* Prestations */}
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <label className="text-white/50 text-xs uppercase tracking-widest">Prestations & tarifs</label>
+                  <label className="text-gray-400 text-xs uppercase tracking-widest">Prestations & tarifs</label>
                   <button onClick={addItem} className="flex items-center gap-1 text-[#D4A96A] text-xs hover:underline">
                     <Plus size={12} />Ajouter une ligne
                   </button>
@@ -472,10 +431,10 @@ export default function AdminDevisPage() {
                 <div className="space-y-2">
                   {/* Header */}
                   <div className="grid grid-cols-12 gap-2 px-2">
-                    <span className="col-span-5 text-white/30 text-xs">Description</span>
-                    <span className="col-span-2 text-white/30 text-xs text-center">Qté</span>
-                    <span className="col-span-2 text-white/30 text-xs text-right">Prix unit.</span>
-                    <span className="col-span-2 text-white/30 text-xs text-right">Total</span>
+                    <span className="col-span-5 text-gray-500 text-xs">Description</span>
+                    <span className="col-span-2 text-gray-500 text-xs text-center">Qté</span>
+                    <span className="col-span-2 text-gray-500 text-xs text-right">Prix unit.</span>
+                    <span className="col-span-2 text-gray-500 text-xs text-right">Total</span>
                     <span className="col-span-1"></span>
                   </div>
                   {(form.items ?? []).map((item, idx) => (
@@ -499,11 +458,11 @@ export default function AdminDevisPage() {
                 {/* Totaux */}
                 <div className="mt-4 pt-4 border-t border-white/10 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-white/40 text-sm">Sous-total</span>
+                    <span className="text-gray-500 text-sm">Sous-total</span>
                     <span className="text-white text-sm">{(form.subtotal ?? 0).toLocaleString("fr-MA")} DH</span>
                   </div>
                   <div className="flex items-center justify-between gap-4">
-                    <span className="text-white/40 text-sm">Remise (DH)</span>
+                    <span className="text-gray-500 text-sm">Remise (DH)</span>
                     <input type="number" min="0" value={form.discount ?? 0} onChange={e => setDiscount(Number(e.target.value))}
                       className="w-28 bg-[#1a1a1a] border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white text-right focus:border-[#D4A96A]/50 outline-none" />
                   </div>
@@ -518,7 +477,7 @@ export default function AdminDevisPage() {
               <div className="grid grid-cols-2 gap-3">
                 <Input label="Valable jusqu'au" type="date" value={form.validUntil ?? ""} onChange={v => setForm(f => ({ ...f, validUntil: v }))} />
                 <div>
-                  <label className="text-white/50 text-xs mb-1 block">Statut</label>
+                  <label className="text-gray-400 text-xs mb-1 block">Statut</label>
                   <select value={form.status ?? "draft"} onChange={e => setForm(f => ({ ...f, status: e.target.value as Devis["status"] }))}
                     className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-[#D4A96A]/50 outline-none">
                     {Object.entries(STATUS_LABELS).map(([v, s]) => (
@@ -530,7 +489,7 @@ export default function AdminDevisPage() {
 
               {/* Notes */}
               <div>
-                <label className="text-white/50 text-xs mb-1 block">Notes / Conditions particulières</label>
+                <label className="text-gray-400 text-xs mb-1 block">Notes / Conditions particulières</label>
                 <textarea value={form.notes ?? ""} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={3}
                   placeholder="Conditions, remarques, informations complémentaires..."
                   className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-[#D4A96A]/50 outline-none resize-none" />
@@ -539,7 +498,7 @@ export default function AdminDevisPage() {
 
             {/* Footer modal */}
             <div className="p-6 border-t border-white/10 flex items-center justify-between gap-3">
-              <button onClick={() => setModal(false)} className="text-white/40 hover:text-white text-sm transition-colors">
+              <button onClick={() => setModal(false)} className="text-gray-500 hover:text-gray-400 text-sm transition-colors">
                 Annuler
               </button>
               <div className="flex gap-3">
@@ -557,10 +516,10 @@ export default function AdminDevisPage() {
       {/* ── Confirmation suppression ── */}
       {confirmDelete && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-          <div className="bg-[#111] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center">
+          <div className="bg-[#111111] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center">
             <Trash2 size={32} className="text-red-400 mx-auto mb-4" />
             <h3 className="font-bold text-lg mb-2">Supprimer ce devis ?</h3>
-            <p className="text-white/40 text-sm mb-6">Cette action est irréversible.</p>
+            <p className="text-gray-500 text-sm mb-6">Cette action est irréversible.</p>
             <div className="flex gap-3 justify-center">
               <button onClick={() => setConfirmDelete(null)} className="px-5 py-2 bg-white/5 rounded-xl text-sm hover:bg-white/10 transition-colors">Annuler</button>
               <button onClick={() => handleDelete(confirmDelete)} className="px-5 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-colors">Supprimer</button>
@@ -579,7 +538,7 @@ function Input({ label, value, onChange, type = "text", placeholder }: {
 }) {
   return (
     <div>
-      <label className="text-white/50 text-xs mb-1 block">{label}</label>
+      <label className="text-gray-400 text-xs mb-1 block">{label}</label>
       <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
         className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-[#D4A96A]/50 outline-none transition-colors" />
     </div>

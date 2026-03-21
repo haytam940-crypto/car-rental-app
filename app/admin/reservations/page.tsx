@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { CARS, LOCATIONS, Reservation } from "@/lib/data";
 import { getMergedReservations, updateReservationStatus, saveReservation, getStoredCars } from "@/lib/store";
-import { CheckCircle, XCircle, ArrowLeft, Plus, X, Car, ClipboardList, FilePlus, FileText, BarChart2, LayoutDashboard, Globe, LogOut, Mountain, Calendar, Search, Filter, RotateCcw, Tag, MapPin } from "lucide-react";
+import { CheckCircle, XCircle, Plus, X, Search, Filter, RotateCcw } from "lucide-react";
+import AdminSidebar from "@/components/AdminSidebar";
 
 const TODAY = new Date().toISOString().split("T")[0];
 
@@ -17,21 +17,9 @@ const EMPTY_FORM = {
   message: "",
 };
 
-const navLinks = [
-  { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/admin/reservations", icon: ClipboardList, label: "Réservations" },
-  { href: "/admin/cars", icon: Car, label: "Voitures" },
-  { href: "/admin/invoices", icon: FileText, label: "Factures" },
-  { href: "/admin/devis", icon: FilePlus, label: "Devis" },
-  { href: "/admin/analytics", icon: BarChart2, label: "Analytique" },
-  { href: "/admin/excursions", icon: Mountain, label: "Excursions" },
-  { href: "/admin/planning",   icon: Calendar, label: "Planning" },
-  { href: "/admin/promotions", icon: Tag, label: "Promotions" },
-];
-
 export default function AdminReservationsPage() {
   const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = "/admin/reservations";
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [filter, setFilter] = useState<"all" | "pending" | "confirmed" | "cancelled">("all");
   const [search, setSearch] = useState("");
@@ -48,7 +36,6 @@ export default function AdminReservationsPage() {
     setCars(getStoredCars());
   }, [router]);
 
-  const logout = () => { fetch("/api/auth/logout", { method: "POST" }).then(() => router.push("/admin/login")); };
   const refresh = () => setReservations(getMergedReservations());
   const resetFilters = () => { setSearch(""); setCarFilter(""); setDateFrom(""); setDateTo(""); setFilter("all"); };
   const hasFilters = !!(search || carFilter || dateFrom || dateTo || filter !== "all");
@@ -115,56 +102,13 @@ export default function AdminReservationsPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex">
-      {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#0d0d0d] border-r border-white/8 flex flex-col transition-transform duration-300 ${
-        sidebarOpen ? "translate-x-0" : "-translate-x-full"
-      } lg:translate-x-0 lg:static lg:flex`}>
-        <div className="p-6 border-b border-white/8 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#D4A96A] rounded-lg flex items-center justify-center">
-              <Car size={16} className="text-black" />
-            </div>
-            <div className="text-xl font-black text-white">
-              ESON<span className="text-[#D4A96A]"> MAROC</span>
-              <span className="text-xs font-normal text-gray-600 ml-1 block -mt-1">Admin</span>
-            </div>
-          </div>
-          <button className="lg:hidden text-gray-500 hover:text-white" onClick={() => setSidebarOpen(false)}>
-            <X size={20} />
-          </button>
-        </div>
-        <nav className="flex-1 p-4 space-y-1">
-          {navLinks.map(({ href, icon: Icon, label }) => (
-            <Link key={href} href={href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                href === "/admin/reservations"
-                  ? "bg-[#D4A96A] text-black font-bold"
-                  : "text-gray-500 hover:bg-white/5 hover:text-white"
-              }`}>
-              <Icon size={17} />{label}
-            </Link>
-          ))}
-        </nav>
-        <div className="p-4 border-t border-white/8 space-y-1">
-          <Link href="/" className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-gray-500 hover:bg-white/5 hover:text-white transition-colors">
-            <Globe size={17} />Voir le site
-          </Link>
-          <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-gray-500 hover:bg-red-500/10 hover:text-red-400 transition-colors">
-            <LogOut size={17} />Déconnexion
-          </button>
-        </div>
-      </aside>
-
-      {sidebarOpen && <div className="fixed inset-0 z-40 bg-black/60 lg:hidden" onClick={() => setSidebarOpen(false)} />}
+      <AdminSidebar pathname={pathname} />
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Topbar */}
         <header className="bg-[#0d0d0d] border-b border-white/8 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button className="lg:hidden text-gray-500 hover:text-white" onClick={() => setSidebarOpen(true)}>
-              <LayoutDashboard size={22} />
-            </button>
             <h1 className="text-lg font-bold text-white">Réservations</h1>
           </div>
           <button
@@ -223,7 +167,7 @@ export default function AdminReservationsPage() {
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                   filter === s
                     ? "bg-[#D4A96A] text-black font-bold"
-                    : "bg-[#111111] text-gray-400 border border-white/8 hover:border-[#D4A96A]/30 hover:text-white"
+                    : "bg-[#111111] text-gray-400 border border-white/8 hover:border-[#D4A96A]/30 hover:text-gray-400"
                 }`}
               >
                 {s === "all" ? "Toutes" : statusLabel[s]}
@@ -325,7 +269,7 @@ export default function AdminReservationsPage() {
                 <h2 className="font-bold text-white text-lg">Nouvelle réservation manuelle</h2>
                 <p className="text-xs text-gray-500 mt-0.5">Client en agence — saisie directe dans le système</p>
               </div>
-              <button onClick={() => setModal(false)} className="text-gray-500 hover:text-white"><X size={20} /></button>
+              <button onClick={() => setModal(false)} className="text-gray-500 hover:text-gray-400"><X size={20} /></button>
             </div>
 
             <div className="p-6 space-y-5">

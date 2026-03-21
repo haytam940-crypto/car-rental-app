@@ -1,26 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Promotion } from "@/lib/data";
 import { getStoredPromotions, savePromotion, deletePromotion } from "@/lib/store";
 import {
-  Tag, Plus, Pencil, Trash2, X, Car, ClipboardList, FileText, FilePlus,
-  BarChart2, Mountain, Calendar, Menu, LogOut, LayoutDashboard,
-  CheckCircle, Clock, XCircle, AlertCircle, Percent, MapPin,
+  Tag, Plus, Pencil, Trash2, X,
+  CheckCircle, Clock, XCircle, AlertCircle, Percent,
 } from "lucide-react";
+import AdminSidebar from "@/components/AdminSidebar";
 
-const navLinks = [
-  { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/admin/reservations", icon: ClipboardList, label: "Réservations" },
-  { href: "/admin/cars", icon: Car, label: "Voitures" },
-  { href: "/admin/invoices", icon: FileText, label: "Factures" },
-  { href: "/admin/devis", icon: FilePlus, label: "Devis" },
-  { href: "/admin/analytics", icon: BarChart2, label: "Analytique" },
-  { href: "/admin/excursions", icon: Mountain, label: "Excursions" },
-  { href: "/admin/planning", icon: Calendar, label: "Planning" },
-  { href: "/admin/promotions", icon: Tag, label: "Promotions" },
-];
 
 const EMPTY_FORM: Omit<Promotion, "id"> = {
   name: "",
@@ -49,7 +37,7 @@ const STATUS_STYLES: Record<string, { label: string; cls: string; icon: React.El
 
 export default function AdminPromotions() {
   const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = "/admin/promotions";
   const [promos, setPromos] = useState<Promotion[]>([]);
   const [modal, setModal] = useState(false);
   const [editing, setEditing] = useState<Promotion | null>(null);
@@ -61,8 +49,6 @@ export default function AdminPromotions() {
     
     setPromos(getStoredPromotions());
   }, [router]);
-
-  const logout = () => { fetch("/api/auth/logout", { method: "POST" }).then(() => router.push("/admin/login")); };
 
   const inp = "bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-[#D4A96A]/60 transition-colors placeholder-gray-600 w-full";
 
@@ -113,53 +99,12 @@ export default function AdminPromotions() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex">
-      {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#0d0d0d] border-r border-white/8 flex flex-col transition-transform duration-300 ${
-        sidebarOpen ? "translate-x-0" : "-translate-x-full"
-      } lg:translate-x-0 lg:static lg:flex`}>
-        <div className="p-6 border-b border-white/8 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#D4A96A] rounded-lg flex items-center justify-center">
-              <Car size={16} className="text-black" />
-            </div>
-            <div className="text-xl font-black text-white">
-              ESON<span className="text-[#D4A96A]"> MAROC</span>
-              <span className="text-xs font-normal text-gray-600 ml-1 block -mt-1">Admin</span>
-            </div>
-          </div>
-          <button className="lg:hidden text-gray-500 hover:text-white" onClick={() => setSidebarOpen(false)}>
-            <X size={20} />
-          </button>
-        </div>
-        <nav className="flex-1 p-4 space-y-1">
-          {navLinks.map(({ href, icon: Icon, label }) => (
-            <Link key={href} href={href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                href === "/admin/promotions"
-                  ? "bg-[#D4A96A]/10 text-[#D4A96A] border border-[#D4A96A]/20"
-                  : "text-gray-400 hover:text-white hover:bg-white/5"
-              }`}>
-              <Icon size={17} />
-              {label}
-            </Link>
-          ))}
-        </nav>
-        <div className="p-4 border-t border-white/8">
-          <button onClick={logout} className="flex items-center gap-2 text-gray-500 hover:text-red-400 transition-colors text-sm w-full px-3 py-2">
-            <LogOut size={16} />Déconnexion
-          </button>
-        </div>
-      </aside>
-
-      {sidebarOpen && <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />}
+      <AdminSidebar pathname={pathname} />
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="bg-[#0d0d0d] border-b border-white/8 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button className="lg:hidden text-gray-400 hover:text-white" onClick={() => setSidebarOpen(true)}>
-              <Menu size={22} />
-            </button>
             <Tag size={18} className="text-[#D4A96A]" />
             <h1 className="text-lg font-bold text-white">Promotions</h1>
           </div>
@@ -281,7 +226,7 @@ export default function AdminPromotions() {
                 <Tag size={18} className="text-[#D4A96A]" />
                 <h2 className="text-lg font-bold text-white">{editing ? "Modifier la promotion" : "Nouvelle promotion"}</h2>
               </div>
-              <button onClick={() => setModal(false)} className="text-gray-500 hover:text-white transition-colors">
+              <button onClick={() => setModal(false)} className="text-gray-500 hover:text-gray-400 transition-colors">
                 <X size={20} />
               </button>
             </div>
@@ -364,7 +309,7 @@ export default function AdminPromotions() {
             </div>
 
             <div className="p-6 pt-0 flex gap-3">
-              <button onClick={() => setModal(false)} className="flex-1 py-3 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-colors text-sm font-semibold">
+              <button onClick={() => setModal(false)} className="flex-1 py-3 rounded-xl border border-white/10 text-gray-400 hover:text-gray-400 hover:border-white/20 transition-colors text-sm font-semibold">
                 Annuler
               </button>
               <button onClick={handleSave} className="flex-1 py-3 rounded-xl bg-[#D4A96A] text-black font-bold hover:bg-[#b8894e] transition-colors text-sm">
@@ -387,7 +332,7 @@ export default function AdminPromotions() {
             </div>
             <p className="text-gray-400 text-sm mb-6">Cette action est irréversible. La promotion sera définitivement supprimée.</p>
             <div className="flex gap-3">
-              <button onClick={() => setConfirmDelete(null)} className="flex-1 py-2.5 rounded-xl border border-white/10 text-gray-400 hover:text-white transition-colors text-sm font-semibold">
+              <button onClick={() => setConfirmDelete(null)} className="flex-1 py-2.5 rounded-xl border border-white/10 text-gray-400 hover:text-gray-400 transition-colors text-sm font-semibold">
                 Annuler
               </button>
               <button onClick={() => handleDelete(confirmDelete)} className="flex-1 py-2.5 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition-colors text-sm">

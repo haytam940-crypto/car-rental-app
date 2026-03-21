@@ -1,32 +1,20 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Excursion, ExcursionBooking } from "@/lib/data";
 import {
   getMergedExcursionBookings, updateExcursionBookingStatus,
   saveExcursionBooking, getMergedExcursions, saveExcursion, deleteExcursion,
 } from "@/lib/store";
 import {
-  LayoutDashboard, ClipboardList, Car, FileText, FilePlus, BarChart2,
-  Mountain, Calendar, Globe, LogOut, X, Plus, CheckCircle, XCircle,
+  Mountain, X, Plus, CheckCircle, XCircle,
   MapPin, Clock, Users, Download, Search, Filter, RotateCcw,
-  Edit2, Trash2, ImageIcon, Tag,
+  Edit2, Trash2, ImageIcon,
 } from "lucide-react";
+import AdminSidebar from "@/components/AdminSidebar";
 
 const TODAY = new Date().toISOString().split("T")[0];
 
-const navLinks = [
-  { href: "/admin/dashboard",    icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/admin/reservations", icon: ClipboardList,   label: "Réservations" },
-  { href: "/admin/cars",         icon: Car,             label: "Voitures" },
-  { href: "/admin/invoices", icon: FileText, label: "Factures" },
-  { href: "/admin/devis", icon: FilePlus, label: "Devis" },
-  { href: "/admin/analytics",    icon: BarChart2,       label: "Analytique" },
-  { href: "/admin/excursions",   icon: Mountain,        label: "Excursions" },
-  { href: "/admin/planning",     icon: Calendar,        label: "Planning" },
-  { href: "/admin/promotions",   icon: Tag, label: "Promotions" },
-];
 
 const statusStyle: Record<string, string> = {
   pending:   "bg-[#D4A96A]/15 text-[#D4A96A] border border-[#D4A96A]/20",
@@ -173,7 +161,7 @@ function downloadExcursionInvoice(b: ExcursionBooking, exc: Excursion | undefine
 
 export default function AdminExcursionsPage() {
   const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = "/admin/excursions";
 
   // Bookings state
   const [bookings, setBookings] = useState<ExcursionBooking[]>([]);
@@ -202,7 +190,6 @@ export default function AdminExcursionsPage() {
     setExcursions(getMergedExcursions());
   }, [router]);
 
-  const logout        = () => { fetch("/api/auth/logout", { method: "POST" }).then(() => router.push("/admin/login")); };
   const refreshB      = () => setBookings(getMergedExcursionBookings());
   const refreshExc    = () => setExcursions(getMergedExcursions());
   const resetFilters  = () => { setSearch(""); setExcFilter(""); setDateFrom(""); setDateTo(""); setStatusFilter("all"); };
@@ -305,43 +292,12 @@ export default function AdminExcursionsPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex">
-      {/* ── Sidebar ── */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#0d0d0d] border-r border-white/8 flex flex-col transition-transform duration-300 ${
-        sidebarOpen ? "translate-x-0" : "-translate-x-full"
-      } lg:translate-x-0 lg:static lg:flex`}>
-        <div className="p-6 border-b border-white/8 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#D4A96A] rounded-lg flex items-center justify-center"><Car size={16} className="text-black" /></div>
-            <div className="text-xl font-black text-white">
-              ESON<span className="text-[#D4A96A]"> MAROC</span>
-              <span className="text-xs font-normal text-gray-600 ml-1 block -mt-1">Admin</span>
-            </div>
-          </div>
-          <button className="lg:hidden text-gray-500 hover:text-white" onClick={() => setSidebarOpen(false)}><X size={20} /></button>
-        </div>
-        <nav className="flex-1 p-4 space-y-1">
-          {navLinks.map(({ href, icon: Icon, label }) => (
-            <Link key={href} href={href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                href === "/admin/excursions" ? "bg-[#D4A96A] text-black font-bold" : "text-gray-500 hover:bg-white/5 hover:text-white"
-              }`}>
-              <Icon size={17} />{label}
-            </Link>
-          ))}
-        </nav>
-        <div className="p-4 border-t border-white/8 space-y-1">
-          <Link href="/" className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-gray-500 hover:bg-white/5 hover:text-white transition-colors"><Globe size={17} />Voir le site</Link>
-          <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-gray-500 hover:bg-red-500/10 hover:text-red-400 transition-colors"><LogOut size={17} />Déconnexion</button>
-        </div>
-      </aside>
-
-      {sidebarOpen && <div className="fixed inset-0 z-40 bg-black/60 lg:hidden" onClick={() => setSidebarOpen(false)} />}
+      <AdminSidebar pathname={pathname} />
 
       {/* ── Main ── */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="bg-[#0d0d0d] border-b border-white/8 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button className="lg:hidden text-gray-500 hover:text-white" onClick={() => setSidebarOpen(true)}><LayoutDashboard size={22} /></button>
             <h1 className="text-lg font-bold text-white">Excursions</h1>
           </div>
           <div className="flex items-center gap-3">
@@ -382,7 +338,7 @@ export default function AdminExcursionsPage() {
             {(["bookings", "packages"] as const).map(t => (
               <button key={t} onClick={() => setTab(t)}
                 className={`px-5 py-2 rounded-xl text-sm font-semibold transition-colors ${
-                  tab === t ? "bg-[#D4A96A] text-black" : "bg-[#111] text-gray-400 border border-white/8 hover:text-white"
+                  tab === t ? "bg-[#D4A96A] text-black" : "bg-[#111] text-gray-400 border border-white/8 hover:text-gray-400"
                 }`}>
                 {t === "bookings" ? `Réservations clients (${bookings.length})` : `Catalogue (${excursions.length})`}
               </button>
@@ -427,7 +383,7 @@ export default function AdminExcursionsPage() {
                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                       statusFilter === s
                         ? "bg-[#D4A96A] text-black font-bold"
-                        : "bg-[#111] text-gray-400 border border-white/8 hover:border-[#D4A96A]/30 hover:text-white"
+                        : "bg-[#111] text-gray-400 border border-white/8 hover:border-[#D4A96A]/30 hover:text-gray-400"
                     }`}>
                     {s === "all" ? "Toutes" : statusLabel[s]}
                     <span className="ml-2 text-xs opacity-70">
@@ -540,7 +496,7 @@ export default function AdminExcursionsPage() {
                           </div>
                           <div className="absolute bottom-2 right-2">
                             <span className="text-[#D4A96A] font-black text-lg">{e.pricePerPerson}</span>
-                            <span className="text-white/60 text-xs"> DH/pers.</span>
+                            <span className="text-gray-400 text-xs"> DH/pers.</span>
                           </div>
                           {/* Edit / Delete overlay */}
                           <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -580,7 +536,7 @@ export default function AdminExcursionsPage() {
           <div className="bg-[#111] border border-white/10 rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-white/8">
               <div><h2 className="font-bold text-white text-lg">Nouvelle réservation</h2><p className="text-xs text-gray-500 mt-0.5">Saisie manuelle depuis l'agence</p></div>
-              <button onClick={() => setBookingModal(false)} className="text-gray-500 hover:text-white"><X size={20} /></button>
+              <button onClick={() => setBookingModal(false)} className="text-gray-500 hover:text-gray-400"><X size={20} /></button>
             </div>
             <div className="p-6 space-y-5">
               <div>
@@ -640,7 +596,7 @@ export default function AdminExcursionsPage() {
                 <h2 className="font-bold text-white text-lg">{excEditing ? "Modifier l'excursion" : "Nouvelle excursion"}</h2>
                 <p className="text-xs text-gray-500 mt-0.5">{excEditing ? "Mettez à jour les informations de cette excursion" : "Ajoutez une nouvelle excursion au catalogue"}</p>
               </div>
-              <button onClick={() => setExcModal(false)} className="text-gray-500 hover:text-white"><X size={20} /></button>
+              <button onClick={() => setExcModal(false)} className="text-gray-500 hover:text-gray-400"><X size={20} /></button>
             </div>
 
             <div className="p-6 space-y-6">

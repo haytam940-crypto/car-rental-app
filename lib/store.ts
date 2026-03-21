@@ -28,10 +28,17 @@ export function saveReservation(reservation: Reservation): void {
 // ─── Cars ────────────────────────────────────────────────────────────────────
 
 const CARS_KEY = "autoloc_cars";
+const CARS_VERSION_KEY = "autoloc_cars_version";
+const CARS_VERSION = "v2"; // bump this when CARS in data.ts changes
 
 export function getStoredCars(): Car[] {
   if (typeof window === "undefined") return CARS;
   try {
+    // If data version changed, clear old cache so new cars from data.ts are used
+    if (localStorage.getItem(CARS_VERSION_KEY) !== CARS_VERSION) {
+      localStorage.removeItem(CARS_KEY);
+      localStorage.setItem(CARS_VERSION_KEY, CARS_VERSION);
+    }
     const raw = localStorage.getItem(CARS_KEY);
     return raw ? JSON.parse(raw) : CARS;
   } catch {

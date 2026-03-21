@@ -7,33 +7,21 @@ import { getMergedReservations } from "@/lib/store";
 import { Reservation } from "@/lib/data";
 import {
   Car, ClipboardList, TrendingUp, CheckCircle, Clock,
-  LogOut, LayoutDashboard, FileText, FilePlus, Menu, X, BarChart2, Globe, Mountain, Calendar, Tag, MapPin
+  FileText, BarChart2
 } from "lucide-react";
-
-const navLinks = [
-  { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/admin/reservations", icon: ClipboardList, label: "Réservations" },
-  { href: "/admin/cars", icon: Car, label: "Voitures" },
-  { href: "/admin/invoices", icon: FileText, label: "Factures" },
-  { href: "/admin/devis", icon: FilePlus, label: "Devis" },
-  { href: "/admin/analytics", icon: BarChart2, label: "Analytique" },
-  { href: "/admin/excursions", icon: Mountain, label: "Excursions" },
-  { href: "/admin/planning",   icon: Calendar, label: "Planning" },
-  { href: "/admin/promotions", icon: Tag, label: "Promotions" },
-];
+import AdminSidebar from "@/components/AdminSidebar";
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = "/admin/dashboard";
   const [allReservations, setAllReservations] = useState<Reservation[]>([]);
+  const [role, setRole] = useState("");
 
   useEffect(() => {
     setAllReservations(getMergedReservations());
+    const match = document.cookie.match(/(?:^|; )eson_role=([^;]*)/);
+    setRole(match ? decodeURIComponent(match[1]) : "");
   }, [router]);
-
-  const logout = () => {
-    fetch("/api/auth/logout", { method: "POST" }).then(() => router.push("/admin/login"));
-  };
 
   const available = CARS.filter((c) => c.status === "available").length;
   const rented = CARS.filter((c) => c.status === "rented").length;
@@ -52,73 +40,13 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex">
-      {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#0d0d0d] border-r border-white/8 flex flex-col transition-transform duration-300 ${
-        sidebarOpen ? "translate-x-0" : "-translate-x-full"
-      } lg:translate-x-0 lg:static lg:flex`}>
-        {/* Logo */}
-        <div className="p-6 border-b border-white/8 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#D4A96A] rounded-lg flex items-center justify-center">
-              <Car size={16} className="text-black" />
-            </div>
-            <div className="text-xl font-black text-white">
-              ESON<span className="text-[#D4A96A]"> MAROC</span>
-              <span className="text-xs font-normal text-gray-600 ml-1 block -mt-1">Admin</span>
-            </div>
-          </div>
-          <button className="lg:hidden text-gray-500 hover:text-white" onClick={() => setSidebarOpen(false)}>
-            <X size={20} />
-          </button>
-        </div>
-
-        {/* Nav */}
-        <nav className="flex-1 p-4 space-y-1">
-          {navLinks.map(({ href, icon: Icon, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                href === "/admin/dashboard"
-                  ? "bg-[#D4A96A] text-black font-bold"
-                  : "text-gray-500 hover:bg-white/5 hover:text-white"
-              }`}
-            >
-              <Icon size={17} />
-              {label}
-            </Link>
-          ))}
-        </nav>
-
-        {/* View site + Logout */}
-        <div className="p-4 border-t border-white/8 space-y-1">
-          <Link href="/" className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-gray-500 hover:bg-white/5 hover:text-white transition-colors">
-            <Globe size={17} />
-            Voir le site
-          </Link>
-          <button
-            onClick={logout}
-            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-gray-500 hover:bg-red-500/10 hover:text-red-400 transition-colors"
-          >
-            <LogOut size={17} />
-            Déconnexion
-          </button>
-        </div>
-      </aside>
-
-      {/* Overlay mobile */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-40 bg-black/60 lg:hidden" onClick={() => setSidebarOpen(false)} />
-      )}
+      <AdminSidebar pathname={pathname} />
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Topbar */}
         <header className="bg-[#0d0d0d] border-b border-white/8 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button className="lg:hidden text-gray-500 hover:text-white" onClick={() => setSidebarOpen(true)}>
-              <Menu size={22} />
-            </button>
             <div>
               <h1 className="text-lg font-bold text-white">Dashboard</h1>
               <p className="text-xs text-gray-500">
@@ -215,8 +143,8 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Quick actions */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {/* Quick actions — masqué pour viewer */}
+          {role !== "viewer" && <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { href: "/admin/cars", label: "Ajouter voiture", icon: Car },
               { href: "/admin/reservations", label: "Réservations", icon: ClipboardList },
@@ -236,7 +164,7 @@ export default function AdminDashboard() {
                 <span className="text-sm font-semibold">{label}</span>
               </Link>
             ))}
-          </div>
+          </div>}
         </main>
       </div>
     </div>

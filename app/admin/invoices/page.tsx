@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { CARS, Car, Reservation } from "@/lib/data";
 import { getMergedReservations } from "@/lib/store";
-import { FileText, Download, ArrowLeft, ScrollText, X, LayoutDashboard, ClipboardList, Car as CarIcon, BarChart2, Mountain, Calendar, Tag, FilePlus } from "lucide-react";
+import { FileText, Download, ScrollText, X } from "lucide-react";
+import AdminSidebar from "@/components/AdminSidebar";
 
 function downloadInvoice(r: Reservation, car: Car | undefined, invoiceNum: string) {
   const deliveryFee = r.deliveryFee ?? 0;
@@ -497,9 +497,46 @@ const EMPTY_EXTRAS: ContractExtras = {
   d2ArriveeMaroc: "", d2NumEntree: "", d2Telephone: "",
 };
 
+type FilterType = "all" | "week" | "month" | "prev_month" | "custom";
+
+function parseDate(str: string): Date | null {
+  // format JJ/MM/AAAA
+  const parts = str?.split("/");
+  if (!parts || parts.length !== 3) return null;
+  const d = new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function getFilterRange(filter: FilterType, customFrom: string, customTo: string): { from: Date | null; to: Date | null } {
+  const now = new Date();
+  if (filter === "week") {
+    const day = now.getDay() === 0 ? 6 : now.getDay() - 1;
+    const from = new Date(now); from.setDate(now.getDate() - day); from.setHours(0, 0, 0, 0);
+    const to = new Date(from); to.setDate(from.getDate() + 6); to.setHours(23, 59, 59, 999);
+    return { from, to };
+  }
+  if (filter === "month") {
+    const from = new Date(now.getFullYear(), now.getMonth(), 1);
+    const to = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+    return { from, to };
+  }
+  if (filter === "prev_month") {
+    const from = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const to = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+    return { from, to };
+  }
+  if (filter === "custom") {
+    return { from: customFrom ? new Date(customFrom) : null, to: customTo ? new Date(customTo + "T23:59:59") : null };
+  }
+  return { from: null, to: null };
+}
+
 export default function AdminInvoicesPage() {
   const router = useRouter();
   const [confirmedReservations, setConfirmedReservations] = useState<Reservation[]>([]);
+  const [filterType, setFilterType] = useState<FilterType>("all");
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
   const [contractModal, setContractModal] = useState<{
     open: boolean; r: Reservation | null; car: Car | undefined; contractNum: string;
   }>({ open: false, r: null, car: undefined, contractNum: "" });
@@ -533,53 +570,22 @@ export default function AdminInvoicesPage() {
     setConfirmedReservations(getMergedReservations().filter((r) => r.status === "confirmed"));
   }, [router]);
 
+  const { from, to } = getFilterRange(filterType, customFrom, customTo);
+  const filteredReservations = confirmedReservations.filter((r) => {
+    if (filterType === "all") return true;
+    const d = parseDate(r.pickupDate);
+    if (!d) return false;
+    if (from && d < from) return false;
+    if (to && d > to) return false;
+    return true;
+  });
+  const filteredTotal = filteredReservations.reduce((sum, r) => sum + r.totalPrice, 0);
+
   const pathname = "/admin/invoices";
-  const NAV = [
-    { href: "/admin/dashboard",   icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/admin/reservations",icon: ClipboardList,   label: "Réservations" },
-    { href: "/admin/cars",        icon: CarIcon,         label: "Voitures" },
-    { href: "/admin/invoices",    icon: FileText,        label: "Factures" },
-    { href: "/admin/devis",       icon: FilePlus,        label: "Devis" },
-    { href: "/admin/analytics",   icon: BarChart2,       label: "Analytique" },
-    { href: "/admin/excursions",  icon: Mountain,        label: "Excursions" },
-    { href: "/admin/planning",    icon: Calendar,        label: "Planning" },
-    { href: "/admin/promotions",  icon: Tag,             label: "Promotions" },
-  ];
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex">
-      {/* Sidebar */}
-      <aside className="w-60 shrink-0 bg-[#0d0d0d] border-r border-white/8 flex flex-col min-h-screen">
-        <div className="px-6 py-5 border-b border-white/8">
-          <Link href="/" className="text-xl font-black text-white">ESON<span className="text-[#D4A96A]"> MAROC</span></Link>
-          <p className="text-[10px] text-gray-600 uppercase tracking-widest mt-0.5">Administration</p>
-        </div>
-        <nav className="flex-1 px-3 py-4 space-y-1">
-          {NAV.map(({ href, icon: Icon, label }) => (
-            <Link key={href} href={href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                pathname === href
-                  ? "bg-[#D4A96A]/10 text-[#D4A96A]"
-                  : "text-gray-400 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              <Icon size={16} />
-              {label}
-            </Link>
-          ))}
-        </nav>
-        <div className="px-3 py-4 border-t border-white/8 space-y-1">
-          <Link href="/" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-400 hover:text-white hover:bg-white/5">
-            Voir le site
-          </Link>
-          <button
-            onClick={() => { fetch("/api/auth/logout", { method: "POST" }).then(() => router.push("/admin/login")); }}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-400 hover:text-red-400 hover:bg-white/5"
-          >
-            Déconnexion
-          </button>
-        </div>
-      </aside>
+      <AdminSidebar pathname={pathname} />
 
       {/* Main content */}
       <div className="flex-1 flex flex-col">
@@ -589,17 +595,62 @@ export default function AdminInvoicesPage() {
         </header>
 
         <div className="max-w-4xl mx-auto w-full px-6 py-8">
+
+          {/* Filtrage par date */}
+          <div className="bg-[#111111] border border-white/8 rounded-2xl p-4 mb-6 space-y-3">
+            <div className="flex flex-wrap gap-2">
+              {([["all","Toutes"],["week","Cette semaine"],["month","Ce mois"],["prev_month","Mois précédent"],["custom","Personnalisé"]] as [FilterType, string][]).map(([val, label]) => (
+                <button
+                  key={val}
+                  onClick={() => setFilterType(val)}
+                  className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
+                    filterType === val
+                      ? "bg-[#D4A96A] text-black"
+                      : "bg-white/5 text-gray-400 hover:text-gray-400 hover:bg-white/10"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {filterType === "custom" && (
+              <div className="flex flex-wrap gap-3 items-center pt-1">
+                <div className="flex items-center gap-2">
+                  <label className="text-xs text-gray-500">Du</label>
+                  <input type="date" value={customFrom} onChange={e => setCustomFrom(e.target.value)}
+                    className="bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-1.5 text-sm text-white outline-none focus:border-[#D4A96A]/60" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs text-gray-500">au</label>
+                  <input type="date" value={customTo} onChange={e => setCustomTo(e.target.value)}
+                    className="bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-1.5 text-sm text-white outline-none focus:border-[#D4A96A]/60" />
+                </div>
+              </div>
+            )}
+            {filterType !== "all" && (
+              <div className="flex items-center gap-4 pt-1 border-t border-white/5">
+                <span className="text-xs text-gray-500">{filteredReservations.length} facture{filteredReservations.length !== 1 ? "s" : ""}</span>
+                <span className="text-xs font-bold text-[#D4A96A]">Total : {filteredTotal.toLocaleString("fr-MA")} DH</span>
+              </div>
+            )}
+          </div>
+
           {confirmedReservations.length === 0 ? (
             <div className="text-center py-20">
               <FileText size={48} className="text-gray-700 mx-auto mb-4" />
               <h3 className="text-lg font-bold text-gray-400">Aucune facture disponible</h3>
               <p className="text-gray-600 text-sm mt-2">Les factures sont générées après confirmation des réservations</p>
             </div>
+          ) : filteredReservations.length === 0 ? (
+            <div className="text-center py-16">
+              <FileText size={40} className="text-gray-700 mx-auto mb-3" />
+              <p className="text-gray-400 font-semibold">Aucune facture sur cette période</p>
+            </div>
           ) : (
             <div className="space-y-4">
-              {confirmedReservations.map((r, i) => {
+              {filteredReservations.map((r, i) => {
                 const car = CARS.find((c) => c.id === r.carId);
-                const invoiceNum = `FAC-2026-${String(i + 1).padStart(4, "0")}`;
+                const invoiceNum = `FAC-2026-${String(confirmedReservations.indexOf(r) + 1).padStart(4, "0")}`;
                 return (
                   <div key={r.id} className="bg-[#111111] border border-white/8 rounded-2xl p-6 flex items-center justify-between gap-4 flex-wrap">
                     <div className="flex items-center gap-4">
@@ -623,7 +674,7 @@ export default function AdminInvoicesPage() {
                       </button>
                       <button
                         onClick={() => openContractModal(r, car, `CTR-${invoiceNum.replace("FAC-", "")}`)}
-                        className="mt-1 flex items-center gap-2 text-xs text-gray-400 hover:text-white hover:underline font-medium ml-auto"
+                        className="mt-1 flex items-center gap-2 text-xs text-gray-400 hover:text-gray-400 hover:underline font-medium ml-auto"
                       >
                         <ScrollText size={13} />
                         Contrat PDF
@@ -646,7 +697,7 @@ export default function AdminInvoicesPage() {
                 <h2 className="font-bold text-white text-lg">Informations pour le contrat</h2>
                 <p className="text-sm text-gray-500 mt-0.5">{contractModal.r.clientFirstName} {contractModal.r.clientLastName} — {contractModal.contractNum}</p>
               </div>
-              <button onClick={() => setContractModal({ open: false, r: null, car: undefined, contractNum: "" })} className="text-gray-500 hover:text-white">
+              <button onClick={() => setContractModal({ open: false, r: null, car: undefined, contractNum: "" })} className="text-gray-500 hover:text-gray-400">
                 <X size={20} />
               </button>
             </div>
@@ -737,7 +788,7 @@ export default function AdminInvoicesPage() {
             <div className="p-6 border-t border-white/8 flex gap-3 justify-end">
               <button
                 onClick={() => setContractModal({ open: false, r: null, car: undefined, contractNum: "" })}
-                className="px-5 py-2.5 rounded-xl border border-white/10 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5"
+                className="px-5 py-2.5 rounded-xl border border-white/10 text-sm font-medium text-gray-400 hover:text-gray-400 hover:bg-white/5"
               >
                 Annuler
               </button>

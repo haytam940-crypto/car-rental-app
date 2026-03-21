@@ -52,6 +52,23 @@ html[data-admin-theme="light"] input,
 html[data-admin-theme="light"] select,
 html[data-admin-theme="light"] textarea { color: #0f172a !important; }
 
+/* bg-[#111] (sans double chiffres — utilisé dans devis, modal) */
+html[data-admin-theme="light"] .bg-\[\#111\]       { background-color: #f1f5f9 !important; }
+html[data-admin-theme="light"] .bg-\[\#111\]\/90   { background-color: rgba(241,245,249,0.97) !important; }
+
+/* text-white avec opacité (non couverts sinon) */
+html[data-admin-theme="light"] .text-white\/10  { color: rgba(15,23,42,0.28) !important; }
+html[data-admin-theme="light"] .text-white\/20  { color: rgba(15,23,42,0.38) !important; }
+html[data-admin-theme="light"] .text-white\/30  { color: rgba(15,23,42,0.48) !important; }
+html[data-admin-theme="light"] .text-white\/40  { color: rgba(15,23,42,0.56) !important; }
+html[data-admin-theme="light"] .text-white\/50  { color: rgba(15,23,42,0.65) !important; }
+html[data-admin-theme="light"] .text-white\/60  { color: rgba(15,23,42,0.73) !important; }
+html[data-admin-theme="light"] .text-white\/70  { color: rgba(15,23,42,0.80) !important; }
+html[data-admin-theme="light"] .text-white\/80  { color: rgba(15,23,42,0.87) !important; }
+
+/* hover:text-white avec opacité */
+html[data-admin-theme="light"] .hover\:text-white\/60:hover { color: rgba(15,23,42,0.73) !important; }
+
 /* card-dark en mode light */
 html[data-admin-theme="light"] .card-dark {
   background: #ffffff !important;
