@@ -9,7 +9,7 @@ import MIcon from "@/components/MIcon";
 import HeroSlider from "@/components/HeroSlider";
 import { CARS, Excursion } from "@/lib/data";
 import { getMergedExcursions, getActivePromotion } from "@/lib/store";
-import { Shield, Clock, MapPin, Star, ChevronRight, Check, Phone, Mountain, Users, ArrowRight } from "lucide-react";
+import { Shield, Clock, MapPin, Star, ChevronRight, Check, Phone, Mountain, Users, ArrowRight, Car, Zap, ShieldCheck, Truck, CreditCard, Headphones } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const difficultyStyle: Record<string, string> = {
@@ -40,12 +40,12 @@ export default function HomePage() {
     promoDiscount > 0 ? Math.round(base * (1 - promoDiscount / 100)) : base;
 
   const WHY_US = [
-    { icon: "directions_car", title: t("home.whyUs.fleet"), desc: t("home.whyUs.fleetDesc") },
-    { icon: "bolt", title: t("home.whyUs.booking"), desc: t("home.whyUs.bookingDesc") },
-    { icon: "verified_user", title: t("home.whyUs.insurance"), desc: t("home.whyUs.insuranceDesc") },
-    { icon: "local_shipping", title: t("home.whyUs.delivery"), desc: t("home.whyUs.deliveryDesc") },
-    { icon: "payments", title: t("home.whyUs.price"), desc: t("home.whyUs.priceDesc") },
-    { icon: "support_agent", title: t("home.whyUs.support"), desc: t("home.whyUs.supportDesc") },
+    { icon: Car,          title: t("home.whyUs.fleet"),     desc: t("home.whyUs.fleetDesc") },
+    { icon: Zap,          title: t("home.whyUs.booking"),   desc: t("home.whyUs.bookingDesc") },
+    { icon: ShieldCheck,  title: t("home.whyUs.insurance"), desc: t("home.whyUs.insuranceDesc") },
+    { icon: Truck,        title: t("home.whyUs.delivery"),  desc: t("home.whyUs.deliveryDesc") },
+    { icon: CreditCard,   title: t("home.whyUs.price"),     desc: t("home.whyUs.priceDesc") },
+    { icon: Headphones,   title: t("home.whyUs.support"),   desc: t("home.whyUs.supportDesc") },
   ];
 
   const STEPS = [
@@ -334,10 +334,10 @@ export default function HomePage() {
               <p className="text-gray-500 leading-relaxed mb-10">{t("home.whyUs.sub")}</p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {WHY_US.map(({ icon, title, desc }) => (
+                {WHY_US.map(({ icon: Icon, title, desc }) => (
                   <div key={title} className="flex gap-4">
                     <div className="w-11 h-11 bg-[#D4A96A]/10 border border-[#D4A96A]/20 rounded-xl flex items-center justify-center shrink-0">
-                      <MIcon name={icon} size={22} fill className="text-[#D4A96A]" />
+                      <Icon size={20} className="text-[#D4A96A]" />
                     </div>
                     <div>
                       <h4 className="text-white font-bold text-sm mb-1">{title}</h4>
