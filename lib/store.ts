@@ -141,6 +141,8 @@ export function updateExcursionBookingStatus(
 
 const CUSTOM_EXCURSIONS_KEY = "eson_custom_excursions";
 const DELETED_EXCURSIONS_KEY = "eson_deleted_excursions";
+const EXCURSIONS_VERSION_KEY = "eson_excursions_version";
+const EXCURSIONS_VERSION = "v2"; // bump quand EXCURSIONS dans data.ts change
 
 function getDeletedExcursionIds(): Set<string> {
   if (typeof window === "undefined") return new Set();
@@ -159,6 +161,13 @@ export function getCustomExcursions(): Excursion[] {
 }
 
 export function getMergedExcursions(): Excursion[] {
+  if (typeof window !== "undefined") {
+    if (localStorage.getItem(EXCURSIONS_VERSION_KEY) !== EXCURSIONS_VERSION) {
+      localStorage.removeItem(CUSTOM_EXCURSIONS_KEY);
+      localStorage.removeItem(DELETED_EXCURSIONS_KEY);
+      localStorage.setItem(EXCURSIONS_VERSION_KEY, EXCURSIONS_VERSION);
+    }
+  }
   const custom = getCustomExcursions();
   const customIds = new Set(custom.map(e => e.id));
   const deletedIds = getDeletedExcursionIds();
