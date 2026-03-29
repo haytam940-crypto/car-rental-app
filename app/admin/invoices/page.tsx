@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CARS, Car, Reservation } from "@/lib/data";
-import { getMergedReservations } from "@/lib/store";
+import { useServerReservations } from "@/hooks/useServerReservations";
 import { FileText, Download, ScrollText, X } from "lucide-react";
 import AdminSidebar from "@/components/AdminSidebar";
 
@@ -532,8 +532,8 @@ function getFilterRange(filter: FilterType, customFrom: string, customTo: string
 }
 
 export default function AdminInvoicesPage() {
-  const router = useRouter();
-  const [confirmedReservations, setConfirmedReservations] = useState<Reservation[]>([]);
+  const { reservations: allReservations } = useServerReservations();
+  const confirmedReservations = allReservations.filter((r) => r.status === "confirmed");
   const [filterType, setFilterType] = useState<FilterType>("all");
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
@@ -566,9 +566,6 @@ export default function AdminInvoicesPage() {
     </div>
   );
 
-  useEffect(() => {
-    setConfirmedReservations(getMergedReservations().filter((r) => r.status === "confirmed"));
-  }, [router]);
 
   const { from, to } = getFilterRange(filterType, customFrom, customTo);
   const filteredReservations = confirmedReservations.filter((r) => {

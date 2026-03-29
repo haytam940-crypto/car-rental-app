@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Car, CarCharge, CHARGE_LABELS, ChargeCategory } from "@/lib/data";
-import { getStoredCars, getStoredCharges, getMergedReservations } from "@/lib/store";
+import { getStoredCars, getStoredCharges } from "@/lib/store";
+import { useServerReservations } from "@/hooks/useServerReservations";
 import { TrendingUp, Wallet, Receipt } from "lucide-react";
 import AdminSidebar from "@/components/AdminSidebar";
 
@@ -18,18 +19,18 @@ const CHARGE_COLORS: Record<ChargeCategory, string> = {
 };
 
 export default function AnalyticsPage() {
-  const router = useRouter();
   const pathname = "/admin/analytics";
   const [cars, setCars] = useState<Car[]>([]);
   const [charges, setCharges] = useState<CarCharge[]>([]);
   const [selectedCar, setSelectedCar] = useState<string>("all");
+  const { reservations: allReservations } = useServerReservations();
 
   useEffect(() => {
     setCars(getStoredCars());
     setCharges(getStoredCharges());
-  }, [router]);
+  }, []);
 
-  const reservations = getMergedReservations().filter((r) => r.status === "confirmed");
+  const reservations = allReservations.filter((r) => r.status === "confirmed");
   const caBrutByCar = (carId: string) => reservations.filter((r) => r.carId === carId).reduce((s, r) => s + r.totalPrice, 0);
   const chargesByCar = (carId: string) => charges.filter((c) => c.carId === carId).reduce((s, c) => s + c.amount, 0);
   const chargesByCategory = (carId: string) => {

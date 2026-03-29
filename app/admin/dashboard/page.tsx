@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CARS } from "@/lib/data";
-import { getMergedReservations } from "@/lib/store";
-import { Reservation } from "@/lib/data";
+import { useServerReservations } from "@/hooks/useServerReservations";
 import {
   Car, ClipboardList, TrendingUp, CheckCircle, Clock,
   FileText, BarChart2
@@ -14,11 +13,10 @@ import AdminSidebar from "@/components/AdminSidebar";
 export default function AdminDashboard() {
   const router = useRouter();
   const pathname = "/admin/dashboard";
-  const [allReservations, setAllReservations] = useState<Reservation[]>([]);
+  const { reservations: allReservations } = useServerReservations();
   const [role, setRole] = useState("");
 
   useEffect(() => {
-    setAllReservations(getMergedReservations());
     const match = document.cookie.match(/(?:^|; )eson_role=([^;]*)/);
     setRole(match ? decodeURIComponent(match[1]) : "");
   }, [router]);

@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { getMergedReservations, getStoredCars } from "@/lib/store";
+import { getStoredCars } from "@/lib/store";
+import { useServerReservations } from "@/hooks/useServerReservations";
 import { Car, Reservation } from "@/lib/data";
 import {
   X, ChevronLeft, ChevronRight,
@@ -16,10 +17,9 @@ const MONTHS_FR = [
 const DAYS_FR = ["Di","Lu","Ma","Me","Je","Ve","Sa"];
 
 export default function AdminPlanningPage() {
-  const router = useRouter();
   const pathname = "/admin/planning";
   const [cars, setCars] = useState<Car[]>([]);
-  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const { reservations } = useServerReservations();
   const [selectedRes, setSelectedRes] = useState<Reservation | null>(null);
 
   const now = new Date();
@@ -27,10 +27,8 @@ export default function AdminPlanningPage() {
   const [month, setMonth] = useState(now.getMonth());
 
   useEffect(() => {
-    
     setCars(getStoredCars());
-    setReservations(getMergedReservations());
-  }, [router]);
+  }, []);
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
