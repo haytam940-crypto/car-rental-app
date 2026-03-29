@@ -7,11 +7,13 @@ import fs from "fs";
 import path from "path";
 import { Reservation } from "./data";
 
-const DATA_FILE = path.join(process.cwd(), "data", "reservations.json");
+// Stocké dans le répertoire HOME pour survivre aux déploiements
+const DATA_DIR = process.env.RESERVATIONS_PATH
+  || path.join(process.env.HOME || "/tmp", "eson_data");
+const DATA_FILE = path.join(DATA_DIR, "reservations.json");
 
 function ensureFile() {
-  const dir = path.dirname(DATA_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
   if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, JSON.stringify({ reservations: [] }));
 }
 
