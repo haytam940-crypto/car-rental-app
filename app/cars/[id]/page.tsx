@@ -5,7 +5,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CARS, LOCATIONS, calculatePrice, checkAvailability } from "@/lib/data";
-import { saveReservation, getStoredCars, getDeliveryFees } from "@/lib/store";
+import { getStoredCars, getDeliveryFees } from "@/lib/store";
 import { Fuel, Settings, Users, Calendar, MapPin, ChevronLeft, Star, Shield, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
@@ -155,15 +155,16 @@ function CarDetailContent() {
       createdAt: new Date().toISOString().split("T")[0],
     };
 
-    // Sauvegarde locale (admin dashboard)
-    saveReservation(reservationData);
-
-    // Sauvegarde serveur + envoi emails (non bloquant)
-    fetch("/api/reservations/notify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(reservationData),
-    }).catch(err => console.warn("[notify] email non envoyé:", err));
+    // Sauvegarde serveur (bloquant) + envoi email
+    try {
+      await fetch("/api/reservations/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(reservationData),
+      });
+    } catch (err) {
+      console.warn("[notify] échec:", err);
+    }
 
     router.push(
       `/booking?id=${reservationId}&car=${encodeURIComponent(`${car.brand} ${car.name}`)}&total=${totalHT}&days=${durationDays}&pickup=${encodeURIComponent(form.pickupDate)}&dropoff=${encodeURIComponent(form.dropoffDate)}`
