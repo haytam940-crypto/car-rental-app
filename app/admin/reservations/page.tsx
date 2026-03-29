@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CARS, LOCATIONS, Reservation } from "@/lib/data";
-import { getMergedReservations, updateReservationStatus, saveReservation, getStoredCars } from "@/lib/store";
+import { getStoredCars } from "@/lib/store";
 import { CheckCircle, XCircle, Plus, X, Search, Filter, RotateCcw } from "lucide-react";
 import AdminSidebar from "@/components/AdminSidebar";
 
@@ -31,12 +31,21 @@ export default function AdminReservationsPage() {
   const [formError, setFormError] = useState("");
   const [cars, setCars] = useState(CARS);
 
-  useEffect(() => {
-    setReservations(getMergedReservations());
-    setCars(getStoredCars());
-  }, [router]);
+  const refresh = async () => {
+    try {
+      const res = await fetch("/api/reservations/list");
+      const data = await res.json();
+      setReservations(data.reservations ?? []);
+    } catch {
+      setReservations([]);
+    }
+  };
 
-  const refresh = () => setReservations(getMergedReservations());
+  useEffect(() => {
+    refresh();
+    setCars(getStoredCars());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const resetFilters = () => { setSearch(""); setCarFilter(""); setDateFrom(""); setDateTo(""); setFilter("all"); };
   const hasFilters = !!(search || carFilter || dateFrom || dateTo || filter !== "all");
 
@@ -52,12 +61,16 @@ export default function AdminReservationsPage() {
     return true;
   });
 
-  const changeStatus = (id: string, status: "confirmed" | "cancelled") => {
-    updateReservationStatus(id, status);
+  const changeStatus = async (id: string, status: "confirmed" | "cancelled") => {
+    await fetch(`/api/reservations/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
     refresh();
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     setFormError("");
     const { clientFirstName, clientLastName, clientPhone, clientLicense, carId, pickupLocation, dropoffLocation, pickupDate, dropoffDate } = form;
     if (!clientFirstName || !clientLastName || !clientPhone || !clientLicense)
@@ -72,20 +85,24 @@ export default function AdminReservationsPage() {
     const diffDays = Math.ceil((new Date(dropoffDate).getTime() - new Date(pickupDate).getTime()) / 86400000) || 1;
     const totalPrice = diffDays * (car?.pricePerDay ?? 0);
 
-    saveReservation({
-      id: `manual-${Date.now()}`,
-      carId, clientFirstName, clientLastName, clientPhone,
-      clientEmail: form.clientEmail,
-      clientLicense,
-      pickupLocation, dropoffLocation,
-      pickupDate, dropoffDate,
-      durationDays: diffDays,
-      totalPrice,
-      status: form.status,
-      message: form.message || undefined,
-      createdAt: TODAY,
+    await fetch("/api/reservations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: `manual-${Date.now()}`,
+        carId, clientFirstName, clientLastName, clientPhone,
+        clientEmail: form.clientEmail,
+        clientLicense,
+        pickupLocation, dropoffLocation,
+        pickupDate, dropoffDate,
+        durationDays: diffDays,
+        totalPrice,
+        status: form.status,
+        message: form.message || undefined,
+        createdAt: TODAY,
+      }),
     });
-    refresh();
+    await refresh();
     setModal(false);
     setForm(EMPTY_FORM);
   };
