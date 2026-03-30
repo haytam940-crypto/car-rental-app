@@ -85,21 +85,24 @@ export default function AdminReservationsPage() {
     const diffDays = Math.ceil((new Date(dropoffDate).getTime() - new Date(pickupDate).getTime()) / 86400000) || 1;
     const totalPrice = diffDays * (car?.pricePerDay ?? 0);
 
-    await fetch("/api/reservations", {
+    await fetch("/api/reservations/notify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        id: `manual-${Date.now()}`,
-        carId, clientFirstName, clientLastName, clientPhone,
-        clientEmail: form.clientEmail,
-        clientLicense,
-        pickupLocation, dropoffLocation,
-        pickupDate, dropoffDate,
-        durationDays: diffDays,
-        totalPrice,
-        status: form.status,
-        message: form.message || undefined,
-        createdAt: TODAY,
+        _action: "manual_add",
+        reservation: {
+          id: `manual-${Date.now()}`,
+          carId, clientFirstName, clientLastName, clientPhone,
+          clientEmail: form.clientEmail,
+          clientLicense,
+          pickupLocation, dropoffLocation,
+          pickupDate, dropoffDate,
+          durationDays: diffDays,
+          totalPrice,
+          status: form.status,
+          message: form.message || undefined,
+          createdAt: TODAY,
+        },
       }),
     });
     await refresh();
