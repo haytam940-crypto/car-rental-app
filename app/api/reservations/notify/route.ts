@@ -1,12 +1,21 @@
 import { NextResponse } from "next/server";
-import { saveServerReservation } from "@/lib/server-reservations";
+import { saveServerReservation, updateServerReservation } from "@/lib/server-reservations";
 import { createPortalToken } from "@/lib/reservation-token";
 import { sendClientConfirmation } from "@/lib/mailer";
 import { CARS } from "@/lib/data";
 
 export async function POST(req: Request) {
   try {
-    const reservation = await req.json();
+    const body = await req.json();
+
+    // ── Mise à jour de statut (depuis l'admin) ──────────────────
+    if (body._action === "update_status") {
+      const updated = updateServerReservation(body.id, { status: body.status });
+      if (!updated) return NextResponse.json({ error: "Réservation introuvable" }, { status: 404 });
+      return NextResponse.json({ ok: true });
+    }
+
+    const reservation = body;
 
     // Sauvegarde côté serveur
     saveServerReservation(reservation);

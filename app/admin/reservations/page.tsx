@@ -62,10 +62,10 @@ export default function AdminReservationsPage() {
   });
 
   const changeStatus = async (id: string, status: "confirmed" | "cancelled") => {
-    await fetch("/api/reservations/update", {
+    await fetch("/api/reservations/notify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, status }),
+      body: JSON.stringify({ _action: "update_status", id, status }),
     });
     refresh();
   };
