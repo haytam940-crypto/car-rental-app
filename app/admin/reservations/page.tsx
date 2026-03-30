@@ -124,24 +124,23 @@ export default function AdminReservationsPage() {
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Topbar */}
-        <header className="bg-[#0d0d0d] border-b border-white/8 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-lg font-bold text-white">Réservations</h1>
-          </div>
+        <header className="bg-[#0d0d0d] border-b border-white/8 px-4 lg:px-6 py-4 flex items-center justify-between">
+          <h1 className="text-lg font-bold text-white">Réservations</h1>
           <button
             onClick={() => { setForm(EMPTY_FORM); setFormError(""); setModal(true); }}
-            className="flex items-center gap-2 bg-[#D4A96A] text-black px-4 py-2 rounded-xl text-sm font-bold hover:bg-[#b8894e] transition-colors"
+            className="flex items-center gap-2 bg-[#D4A96A] text-black px-3 lg:px-4 py-2 rounded-xl text-sm font-bold hover:bg-[#b8894e] transition-colors"
           >
             <Plus size={16} />
-            Réservation manuelle
+            <span className="hidden sm:inline">Réservation manuelle</span>
+            <span className="sm:hidden">Ajouter</span>
           </button>
         </header>
 
-        <div className="flex-1 p-6 space-y-5">
+        <div className="flex-1 p-4 lg:p-6 space-y-4">
           {/* ── Filter bar ── */}
           <div className="bg-[#111] border border-white/8 rounded-2xl p-4 space-y-3">
             <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-widest">
-              <Filter size={12} />Filtres de recherche
+              <Filter size={12} />Filtres
               {hasFilters && (
                 <button onClick={resetFilters} className="ml-auto flex items-center gap-1 text-[#D4A96A] hover:text-[#b8894e] transition-colors font-semibold">
                   <RotateCcw size={11} />Réinitialiser
@@ -151,46 +150,31 @@ export default function AdminReservationsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               <div className="relative">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
-                <input
-                  className={filterInp + " pl-8 w-full"}
-                  placeholder="Nom, téléphone, email, permis..."
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                />
+                <input className={filterInp + " pl-8 w-full"} placeholder="Nom, téléphone..." value={search} onChange={e => setSearch(e.target.value)} />
               </div>
               <select className={filterInp + " w-full"} value={carFilter} onChange={e => setCarFilter(e.target.value)} style={{ colorScheme: "dark" }}>
                 <option value="" className="bg-[#1a1a1a]">Toutes les voitures</option>
                 {cars.map(c => <option key={c.id} value={c.id} className="bg-[#1a1a1a]">{c.brand} {c.name}</option>)}
               </select>
               <div className="flex items-center gap-2">
-                <input className={filterInp + " flex-1"} type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} style={{ colorScheme: "dark" }} title="Période — du" />
+                <input className={filterInp + " flex-1"} type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} style={{ colorScheme: "dark" }} />
                 <span className="text-gray-600 text-xs shrink-0">→</span>
-                <input className={filterInp + " flex-1"} type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} style={{ colorScheme: "dark" }} title="Période — au" />
+                <input className={filterInp + " flex-1"} type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} style={{ colorScheme: "dark" }} />
               </div>
             </div>
             {hasFilters && (
-              <p className="text-xs text-gray-500">
-                <span className="text-[#D4A96A] font-semibold">{filtered.length}</span> résultat(s) sur {reservations.length}
-              </p>
+              <p className="text-xs text-gray-500"><span className="text-[#D4A96A] font-semibold">{filtered.length}</span> résultat(s) sur {reservations.length}</p>
             )}
           </div>
 
-          {/* Status counts */}
+          {/* Status tabs */}
           <div className="flex gap-2 flex-wrap">
             {(["all", "pending", "confirmed", "cancelled"] as const).map((s) => (
-              <button
-                key={s}
-                onClick={() => setFilter(s)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                  filter === s
-                    ? "bg-[#D4A96A] text-black font-bold"
-                    : "bg-[#111111] text-gray-400 border border-white/8 hover:border-[#D4A96A]/30 hover:text-gray-400"
-                }`}
+              <button key={s} onClick={() => setFilter(s)}
+                className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-colors ${filter === s ? "bg-[#D4A96A] text-black font-bold" : "bg-[#111111] text-gray-400 border border-white/8"}`}
               >
                 {s === "all" ? "Toutes" : statusLabel[s]}
-                <span className="ml-2 text-xs opacity-70">
-                  ({s === "all" ? reservations.length : reservations.filter((r) => r.status === s).length})
-                </span>
+                <span className="ml-1.5 text-xs opacity-70">({s === "all" ? reservations.length : reservations.filter(r => r.status === s).length})</span>
               </button>
             ))}
           </div>
@@ -201,78 +185,134 @@ export default function AdminReservationsPage() {
               {hasFilters && <button onClick={resetFilters} className="mt-3 text-[#D4A96A] text-sm hover:underline">Effacer les filtres</button>}
             </div>
           ) : (
-            <div className="bg-[#111111] border border-white/8 rounded-2xl overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-white/5 border-b border-white/8">
-                    <tr>
-                      {["Client", "Voiture", "Lieu départ → retour", "Dates", "Durée", "Total", "Statut", "Actions"].map((h) => (
-                        <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {filtered.map((r) => {
-                      const car = CARS.find((c) => c.id === r.carId);
-                      return (
-                        <tr key={r.id} className="hover:bg-white/3 transition-colors">
-                          <td className="px-4 py-4">
-                            <p className="font-semibold text-sm text-white">{r.clientFirstName} {r.clientLastName}</p>
-                            <p className="text-xs text-gray-500">{r.clientPhone}</p>
-                            <p className="text-xs text-gray-600">{r.clientEmail}</p>
-                          </td>
-                          <td className="px-4 py-4">
-                            <p className="text-sm font-medium text-white">{car ? `${car.brand} ${car.name}` : r.carId}</p>
-                            <p className="text-xs text-gray-500">{car?.pricePerDay} DH/j</p>
-                          </td>
-                          <td className="px-4 py-4 text-xs text-gray-500 max-w-[180px]">
-                            <p className="truncate">{r.pickupLocation}</p>
-                            <p className="truncate text-gray-600">→ {r.dropoffLocation}</p>
-                          </td>
-                          <td className="px-4 py-4 text-sm text-gray-400 whitespace-nowrap">
-                            <p>{r.pickupDate}{r.pickupTime && <span className="text-gray-600 ml-1">{r.pickupTime}</span>}</p>
-                            <p className="text-gray-600">→ {r.dropoffDate}{r.dropoffTime && <span className="ml-1">{r.dropoffTime}</span>}</p>
-                          </td>
-                          <td className="px-4 py-4 text-sm text-gray-400 whitespace-nowrap">{r.durationDays}j</td>
-                          <td className="px-4 py-4">
-                            <span className="font-bold text-[#D4A96A] whitespace-nowrap">{r.totalPrice} DH HT</span>
-                            {((r.deliveryFee ?? 0) > 0 || (r.recoveryFee ?? 0) > 0) && (
-                              <p className="text-[10px] text-gray-600 mt-0.5">
-                                {(r.deliveryFee ?? 0) > 0 && <span>Livr. {r.deliveryFee} DH </span>}
-                                {(r.recoveryFee ?? 0) > 0 && <span>Récup. {r.recoveryFee} DH</span>}
-                              </p>
-                            )}
-                          </td>
-                          <td className="px-4 py-4">
-                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${statusStyle[r.status]}`}>
-                              {statusLabel[r.status]}
-                            </span>
-                          </td>
-                          <td className="px-4 py-4">
-                            <div className="flex items-center gap-2">
-                              {r.status === "pending" && (
-                                <>
-                                  <button onClick={() => changeStatus(r.id, "confirmed")}
-                                    className="p-1.5 bg-green-500/15 text-green-400 rounded-lg hover:bg-green-500/25 transition-colors" title="Confirmer">
-                                    <CheckCircle size={16} />
-                                  </button>
-                                  <button onClick={() => changeStatus(r.id, "cancelled")}
-                                    className="p-1.5 bg-red-500/15 text-red-400 rounded-lg hover:bg-red-500/25 transition-colors" title="Annuler">
-                                    <XCircle size={16} />
-                                  </button>
-                                </>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+            <>
+              {/* ── Vue mobile : cartes ── */}
+              <div className="lg:hidden space-y-3">
+                {filtered.map((r) => {
+                  const car = CARS.find((c) => c.id === r.carId);
+                  return (
+                    <div key={r.id} className="bg-[#111] border border-white/8 rounded-2xl p-4 space-y-3">
+                      {/* En-tête carte */}
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-bold text-white">{r.clientFirstName} {r.clientLastName}</p>
+                          <a href={`tel:${r.clientPhone}`} className="text-sm text-[#D4A96A] font-medium">{r.clientPhone}</a>
+                        </div>
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 ${statusStyle[r.status]}`}>
+                          {statusLabel[r.status]}
+                        </span>
+                      </div>
+                      {/* Détails */}
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="bg-white/5 rounded-xl p-2.5">
+                          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Voiture</p>
+                          <p className="text-white font-medium text-xs">{car ? `${car.brand} ${car.name}` : r.carId}</p>
+                        </div>
+                        <div className="bg-white/5 rounded-xl p-2.5">
+                          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Durée</p>
+                          <p className="text-white font-medium">{r.durationDays} jour(s)</p>
+                        </div>
+                        <div className="bg-white/5 rounded-xl p-2.5">
+                          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Départ</p>
+                          <p className="text-white font-medium text-xs">{r.pickupDate}{r.pickupTime ? ` ${r.pickupTime}` : ""}</p>
+                        </div>
+                        <div className="bg-white/5 rounded-xl p-2.5">
+                          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Retour</p>
+                          <p className="text-white font-medium text-xs">{r.dropoffDate}{r.dropoffTime ? ` ${r.dropoffTime}` : ""}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="font-black text-[#D4A96A] text-lg">{r.totalPrice} DH</span>
+                        {r.status === "pending" && (
+                          <div className="flex gap-2">
+                            <button onClick={() => changeStatus(r.id, "confirmed")}
+                              className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/15 text-green-400 rounded-xl text-xs font-bold hover:bg-green-500/25 transition-colors">
+                              <CheckCircle size={14} />Confirmer
+                            </button>
+                            <button onClick={() => changeStatus(r.id, "cancelled")}
+                              className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/15 text-red-400 rounded-xl text-xs font-bold hover:bg-red-500/25 transition-colors">
+                              <XCircle size={14} />Annuler
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            </div>
+
+              {/* ── Vue desktop : tableau ── */}
+              <div className="hidden lg:block bg-[#111111] border border-white/8 rounded-2xl overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-white/5 border-b border-white/8">
+                      <tr>
+                        {["Client", "Voiture", "Lieu départ → retour", "Dates", "Durée", "Total", "Statut", "Actions"].map((h) => (
+                          <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {filtered.map((r) => {
+                        const car = CARS.find((c) => c.id === r.carId);
+                        return (
+                          <tr key={r.id} className="hover:bg-white/3 transition-colors">
+                            <td className="px-4 py-4">
+                              <p className="font-semibold text-sm text-white">{r.clientFirstName} {r.clientLastName}</p>
+                              <p className="text-xs text-gray-500">{r.clientPhone}</p>
+                              <p className="text-xs text-gray-600">{r.clientEmail}</p>
+                            </td>
+                            <td className="px-4 py-4">
+                              <p className="text-sm font-medium text-white">{car ? `${car.brand} ${car.name}` : r.carId}</p>
+                              <p className="text-xs text-gray-500">{car?.pricePerDay} DH/j</p>
+                            </td>
+                            <td className="px-4 py-4 text-xs text-gray-500 max-w-[180px]">
+                              <p className="truncate">{r.pickupLocation}</p>
+                              <p className="truncate text-gray-600">→ {r.dropoffLocation}</p>
+                            </td>
+                            <td className="px-4 py-4 text-sm text-gray-400 whitespace-nowrap">
+                              <p>{r.pickupDate}{r.pickupTime && <span className="text-gray-600 ml-1">{r.pickupTime}</span>}</p>
+                              <p className="text-gray-600">→ {r.dropoffDate}{r.dropoffTime && <span className="ml-1">{r.dropoffTime}</span>}</p>
+                            </td>
+                            <td className="px-4 py-4 text-sm text-gray-400 whitespace-nowrap">{r.durationDays}j</td>
+                            <td className="px-4 py-4">
+                              <span className="font-bold text-[#D4A96A] whitespace-nowrap">{r.totalPrice} DH HT</span>
+                              {((r.deliveryFee ?? 0) > 0 || (r.recoveryFee ?? 0) > 0) && (
+                                <p className="text-[10px] text-gray-600 mt-0.5">
+                                  {(r.deliveryFee ?? 0) > 0 && <span>Livr. {r.deliveryFee} DH </span>}
+                                  {(r.recoveryFee ?? 0) > 0 && <span>Récup. {r.recoveryFee} DH</span>}
+                                </p>
+                              )}
+                            </td>
+                            <td className="px-4 py-4">
+                              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${statusStyle[r.status]}`}>
+                                {statusLabel[r.status]}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4">
+                              <div className="flex items-center gap-2">
+                                {r.status === "pending" && (
+                                  <>
+                                    <button onClick={() => changeStatus(r.id, "confirmed")}
+                                      className="p-1.5 bg-green-500/15 text-green-400 rounded-lg hover:bg-green-500/25 transition-colors" title="Confirmer">
+                                      <CheckCircle size={16} />
+                                    </button>
+                                    <button onClick={() => changeStatus(r.id, "cancelled")}
+                                      className="p-1.5 bg-red-500/15 text-red-400 rounded-lg hover:bg-red-500/25 transition-colors" title="Annuler">
+                                      <XCircle size={16} />
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
