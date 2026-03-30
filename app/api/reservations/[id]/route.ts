@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { updateServerReservation } from "@/lib/server-reservations";
 
-/** PATCH — Mise à jour du statut d'une réservation */
-export async function PATCH(
+/** POST — Mise à jour du statut d'une réservation (PATCH bloqué par Hostinger) */
+export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
