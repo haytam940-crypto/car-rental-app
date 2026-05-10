@@ -60,7 +60,7 @@ const translations = {
     "car.seats": "pl.",
 
     // Home
-    "home.badge": "véhicules disponibles au Maroc",
+    "home.badge": "Véhicules récents & contrôlés",
     "home.hero.title1": "Louez la voiture",
     "home.hero.title2": "de vos rêves",
     "home.hero.title3": "au Maroc",
@@ -70,7 +70,7 @@ const translations = {
     "home.trust.rating": "Note 4.9/5",
     "home.trust.cities": "10+ villes",
     "home.stats.vehicles": "Véhicules",
-    "home.stats.vehiclesSub": "dans notre flotte",
+    "home.stats.vehiclesSub": "récents & contrôlés",
     "home.stats.cities": "Villes",
     "home.stats.citiesSub": "au Maroc",
     "home.stats.clients": "Clients",
@@ -310,7 +310,7 @@ const translations = {
     "car.unavailable": "Unavailable",
     "car.seats": "seats",
 
-    "home.badge": "vehicles available in Morocco",
+    "home.badge": "Recent & controlled vehicles",
     "home.hero.title1": "Rent the car",
     "home.hero.title2": "of your dreams",
     "home.hero.title3": "in Morocco",
@@ -320,7 +320,7 @@ const translations = {
     "home.trust.rating": "Rating 4.9/5",
     "home.trust.cities": "10+ cities",
     "home.stats.vehicles": "Vehicles",
-    "home.stats.vehiclesSub": "in our fleet",
+    "home.stats.vehiclesSub": "recent & controlled",
     "home.stats.cities": "Cities",
     "home.stats.citiesSub": "in Morocco",
     "home.stats.clients": "Clients",
@@ -555,7 +555,7 @@ const translations = {
     "car.unavailable": "No disponible",
     "car.seats": "plazas",
 
-    "home.badge": "vehículos disponibles en Marruecos",
+    "home.badge": "Vehículos recientes & controlados",
     "home.hero.title1": "Alquile el coche",
     "home.hero.title2": "de sus sueños",
     "home.hero.title3": "en Marruecos",
@@ -565,7 +565,7 @@ const translations = {
     "home.trust.rating": "Puntuación 4.9/5",
     "home.trust.cities": "10+ ciudades",
     "home.stats.vehicles": "Vehículos",
-    "home.stats.vehiclesSub": "en nuestra flota",
+    "home.stats.vehiclesSub": "recientes & controlados",
     "home.stats.cities": "Ciudades",
     "home.stats.citiesSub": "en Marruecos",
     "home.stats.clients": "Clientes",

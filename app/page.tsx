@@ -77,7 +77,7 @@ export default function HomePage() {
               style={{ animationDelay: "1.2s" }}
             >
               <span className="w-1.5 h-1.5 bg-[#D4A96A] rounded-full animate-pulse" />
-              {availableCount} {t("home.badge")}
+              50+ {t("home.badge")}
             </div>
 
             {/* Titre — 2e élément */}
@@ -131,8 +131,8 @@ export default function HomePage() {
       <section className="bg-[#111111] border-y border-white/8 py-14">
         <div className="w-full px-4 sm:px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
-            { value: `${CARS.length}+`, label: t("home.stats.vehicles"), sub: t("home.stats.vehiclesSub") },
-            { value: "10+", label: t("home.stats.cities"), sub: t("home.stats.citiesSub") },
+            { value: "50+", label: t("home.stats.vehicles"), sub: t("home.stats.vehiclesSub") },
+            { value: "14+", label: t("home.stats.cities"), sub: t("home.stats.citiesSub") },
             { value: "500+", label: t("home.stats.clients"), sub: t("home.stats.clientsSub") },
             { value: "4.9★", label: t("home.stats.rating"), sub: t("home.stats.ratingSub") },
           ].map(({ value, label, sub }) => (
@@ -142,6 +142,48 @@ export default function HomePage() {
               <div className="text-gray-600 text-xs mt-0.5">{sub}</div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ─── MARQUES & LABELS PROFESSIONNELS ─────────────────────────── */}
+      <section className="bg-[#0d0d0d] border-b border-white/8 py-8 overflow-hidden">
+        <div className="w-full px-4 sm:px-6">
+          <p className="text-center text-[10px] font-bold text-gray-600 uppercase tracking-[0.25em] mb-6">
+            Flotte officielle — Marques partenaires
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
+            {[
+              { name: "Renault", badge: "🔶", color: "text-yellow-400" },
+              { name: "Dacia", badge: "🔷", color: "text-blue-400" },
+              { name: "Toyota", badge: "⬛", color: "text-red-400" },
+              { name: "Peugeot", badge: "🦁", color: "text-blue-300" },
+              { name: "Citroën", badge: "〰", color: "text-gray-300" },
+            ].map(({ name, badge, color }) => (
+              <div
+                key={name}
+                className="flex items-center gap-2 bg-white/[0.03] border border-white/8 rounded-xl px-5 py-2.5 hover:border-[#D4A96A]/30 hover:bg-white/[0.06] transition-all group"
+              >
+                <span className="text-lg">{badge}</span>
+                <span className={`font-black text-sm tracking-widest uppercase ${color} group-hover:text-[#D4A96A] transition-colors`}>{name}</span>
+              </div>
+            ))}
+          </div>
+          {/* Trust badges */}
+          <div className="flex flex-wrap items-center justify-center gap-3 md:gap-5 mt-6 pt-6 border-t border-white/[0.04]">
+            {[
+              { icon: "🛡️", label: "Assurance tous risques" },
+              { icon: "🏅", label: "Agence agréée depuis 2003" },
+              { icon: "✅", label: "Véhicules contrôlés & récents" },
+              { icon: "💳", label: "Paiement Cash / Virement" },
+              { icon: "🌍", label: "Guide touristique certifié" },
+              { icon: "📞", label: "Support 7j/7" },
+            ].map(({ icon, label }) => (
+              <div key={label} className="flex items-center gap-2 text-gray-500 text-xs">
+                <span>{icon}</span>
+                <span>{label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
