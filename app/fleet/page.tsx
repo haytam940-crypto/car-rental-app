@@ -6,7 +6,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CarCard from "@/components/CarCard";
 import MIcon from "@/components/MIcon";
-import { getStoredCars } from "@/lib/store";
 import { CARS } from "@/lib/data";
 import { SlidersHorizontal, X, Search } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -19,7 +18,12 @@ function FleetContent() {
   const searchParams = useSearchParams();
   const { t } = useLanguage();
   const [cars, setCars] = useState(CARS);
-  useEffect(() => { setCars(getStoredCars()); }, []);
+  useEffect(() => {
+    fetch("/api/catalog")
+      .then((r) => r.json())
+      .then((d) => { if (d.cars?.length) setCars(d.cars); })
+      .catch(() => {});
+  }, []);
 
   const urlFrom = searchParams.get("from") || "";
   const urlTo = searchParams.get("to") || "";
@@ -80,7 +84,7 @@ function FleetContent() {
           <p className="text-[#D4A96A] text-xs font-bold uppercase tracking-widest mb-3">{t("fleet.title")}</p>
           <h1 className="text-4xl md:text-5xl font-black text-white mb-3">{t("fleet.sub")}</h1>
           <p className="text-gray-400">
-            {cars.filter((c) => c.status === "available").length} {t("fleet.available")}
+            +50 {t("fleet.available")}
           </p>
 
           {urlFrom && urlTo && (

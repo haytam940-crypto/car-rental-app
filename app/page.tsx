@@ -22,7 +22,7 @@ const categoryIcon: Record<string, string> = {
 
 export default function HomePage() {
   const { t } = useLanguage();
-  const featuredCars = CARS.filter((c) => c.status === "available").slice(0, 4);
+  const [featuredCars, setFeaturedCars] = useState(CARS.filter((c) => c.status === "available").slice(0, 4));
   const [excursions, setExcursions] = useState<Excursion[]>([]);
   const [promoDiscount, setPromoDiscount] = useState(0);
 
@@ -32,6 +32,10 @@ export default function HomePage() {
     if (promo && (promo.applyTo === "excursions" || promo.applyTo === "all")) {
       setPromoDiscount(promo.discountPercent);
     }
+    fetch("/api/catalog")
+      .then((r) => r.json())
+      .then((d) => { if (d.cars?.length) setFeaturedCars(d.cars.filter((c: { status: string }) => c.status === "available").slice(0, 4)); })
+      .catch(() => {});
   }, []);
 
   const excHT = (base: number) =>
