@@ -18,7 +18,22 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
+    try {
+      await fetch("/api/reservations/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          _action: "contact",
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          subject: form.subject,
+          message: form.message,
+        }),
+      });
+    } catch (err) {
+      console.warn("[contact]", err);
+    }
     setSent(true);
     setLoading(false);
   };
@@ -49,7 +64,7 @@ export default function ContactPage() {
           {[
             { icon: "phone", label: t("contact.ch.phone"), value: "+212.524.89.05.62", href: "tel:+212524890562" },
             { icon: "mail", label: t("contact.ch.email"), value: "contact@eson-maroc.com", href: "mailto:contact@eson-maroc.com" },
-            { icon: "schedule", label: t("footer.open"), value: "7j/7 · 8h00 – 22h00", href: null },
+            { icon: "schedule", label: t("footer.open"), value: "7j/7 · 8h00 – 20h00", href: null },
           ].map(({ icon, label, value, href }) => (
             <div key={label} className="flex items-center gap-4 p-5 rounded-2xl border border-white/8 hover:border-[#D4A96A]/30 transition-all group">
               <div className="w-12 h-12 bg-[#D4A96A]/10 border border-[#D4A96A]/20 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-[#D4A96A] transition-colors">

@@ -63,16 +63,20 @@ export type Reservation = {
 };
 
 export const LOCATIONS = [
-  "Casablanca | Aéroport Mohammed V",
-  "Casablanca | Centre Ville",
-  "Rabat | Centre Ville",
+  "Ouarzazate | Centre Ville",
+  "Ouarzazate | Aéroport",
   "Marrakech | Aéroport Menara",
   "Marrakech | Gueliz",
+  "Casablanca | Aéroport Mohammed V",
+  "Casablanca | Centre Ville",
   "Agadir | Aéroport Al Massira",
   "Agadir | Centre Ville",
+  "Rabat | Centre Ville",
+  "Fes | Centre Ville",
   "Tanger | Aéroport Ibn Batouta",
   "Tanger | Centre Ville",
-  "Fes | Centre Ville",
+  "Zagora | Centre Ville",
+  "Merzouga | Centre Ville",
 ];
 
 export type DeliveryFeeEntry = {
@@ -82,16 +86,20 @@ export type DeliveryFeeEntry = {
 };
 
 export const DEFAULT_DELIVERY_FEES: DeliveryFeeEntry[] = [
-  { location: "Casablanca | Aéroport Mohammed V", deliveryFee: 200, recoveryFee: 200 },
-  { location: "Casablanca | Centre Ville",        deliveryFee: 180, recoveryFee: 180 },
-  { location: "Rabat | Centre Ville",             deliveryFee: 220, recoveryFee: 220 },
+  { location: "Ouarzazate | Centre Ville",        deliveryFee: 0,   recoveryFee: 0   },
+  { location: "Ouarzazate | Aéroport",            deliveryFee: 0,   recoveryFee: 0   },
   { location: "Marrakech | Aéroport Menara",      deliveryFee: 100, recoveryFee: 100 },
   { location: "Marrakech | Gueliz",               deliveryFee: 90,  recoveryFee: 90  },
+  { location: "Casablanca | Aéroport Mohammed V", deliveryFee: 200, recoveryFee: 200 },
+  { location: "Casablanca | Centre Ville",        deliveryFee: 180, recoveryFee: 180 },
   { location: "Agadir | Aéroport Al Massira",     deliveryFee: 150, recoveryFee: 150 },
   { location: "Agadir | Centre Ville",            deliveryFee: 140, recoveryFee: 140 },
+  { location: "Rabat | Centre Ville",             deliveryFee: 220, recoveryFee: 220 },
+  { location: "Fes | Centre Ville",               deliveryFee: 280, recoveryFee: 280 },
   { location: "Tanger | Aéroport Ibn Batouta",    deliveryFee: 350, recoveryFee: 350 },
   { location: "Tanger | Centre Ville",            deliveryFee: 330, recoveryFee: 330 },
-  { location: "Fes | Centre Ville",               deliveryFee: 280, recoveryFee: 280 },
+  { location: "Zagora | Centre Ville",            deliveryFee: 80,  recoveryFee: 80  },
+  { location: "Merzouga | Centre Ville",          deliveryFee: 250, recoveryFee: 250 },
 ];
 
 export const CARS: Car[] = [

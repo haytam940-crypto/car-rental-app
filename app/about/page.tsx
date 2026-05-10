@@ -45,16 +45,43 @@ export default function AboutPage() {
       <section className="bg-[#111111] border-y border-white/8 py-12">
         <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {[
-            { value: "20+", label: t("about.stats.exp") },
+            { value: "23+", label: t("about.stats.exp") },
             { value: "500+", label: t("about.stats.clients") },
             { value: "50+", label: t("about.stats.fleet") },
-            { value: "10+", label: t("about.stats.cities") },
+            { value: "14+", label: t("about.stats.cities") },
           ].map(({ value, label }) => (
             <div key={label}>
               <div className="text-3xl md:text-4xl font-black text-[#D4A96A] mb-1">{value}</div>
               <div className="text-gray-400 text-sm">{label}</div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── Autocollants / Certifications professionnelles ── */}
+      <section className="bg-[#0d0d0d] border-b border-white/8 py-8">
+        <div className="max-w-5xl mx-auto px-4">
+          <p className="text-center text-[10px] font-bold text-gray-600 uppercase tracking-[0.25em] mb-6">
+            Certifications & Labels professionnels
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            {[
+              { icon: "🏅", label: "Agréé Ministère du Tourisme", sub: "Depuis 2003" },
+              { icon: "🛡️", label: "Assurance tous risques", sub: "Véhicules assurés" },
+              { icon: "✅", label: "Contrôle technique", sub: "Véhicules récents" },
+              { icon: "🌍", label: "Guide officiel certifié", sub: "Excursions agréées" },
+              { icon: "⭐", label: "Note 4.9/5", sub: "500+ avis clients" },
+              { icon: "🤝", label: "Partenaire Renault · Dacia", sub: "Flotte officielle" },
+            ].map(({ icon, label, sub }) => (
+              <div key={label} className="flex items-center gap-3 bg-white/[0.03] border border-[#D4A96A]/20 rounded-xl px-4 py-3 hover:border-[#D4A96A]/40 hover:bg-[#D4A96A]/5 transition-all">
+                <span className="text-2xl">{icon}</span>
+                <div>
+                  <p className="text-white font-bold text-xs">{label}</p>
+                  <p className="text-gray-600 text-[10px]">{sub}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -84,7 +111,7 @@ export default function AboutPage() {
 
             {/* Timeline pill */}
             <div className="flex items-center gap-3 flex-wrap">
-              {["2003 — Création", "Ouarzazate", "Tout le Maroc", "20+ ans d'expertise"].map((item) => (
+              {["2003 — Création", "Ouarzazate", "Tout le Maroc", "23+ ans d'expertise"].map((item) => (
                 <span key={item} className="text-xs bg-white/5 border border-white/10 text-gray-400 px-3 py-1.5 rounded-full">
                   {item}
                 </span>

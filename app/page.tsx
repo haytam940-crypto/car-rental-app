@@ -5,7 +5,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SearchWidget from "@/components/SearchWidget";
 import CarCard from "@/components/CarCard";
-import MIcon from "@/components/MIcon";
 import HeroSlider from "@/components/HeroSlider";
 import { CARS, Excursion } from "@/lib/data";
 import { getMergedExcursions, getActivePromotion } from "@/lib/store";
@@ -24,7 +23,6 @@ const categoryIcon: Record<string, string> = {
 export default function HomePage() {
   const { t } = useLanguage();
   const featuredCars = CARS.filter((c) => c.status === "available").slice(0, 4);
-  const availableCount = CARS.filter((c) => c.status === "available").length;
   const [excursions, setExcursions] = useState<Excursion[]>([]);
   const [promoDiscount, setPromoDiscount] = useState(0);
 

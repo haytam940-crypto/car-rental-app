@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { saveServerReservation, updateServerReservation } from "@/lib/server-reservations";
 import { createPortalToken } from "@/lib/reservation-token";
-import { sendClientConfirmation } from "@/lib/mailer";
+import { sendClientConfirmation, sendContactEmail } from "@/lib/mailer";
 import { CARS } from "@/lib/data";
 
 export async function POST(req: Request) {
@@ -18,6 +18,18 @@ export async function POST(req: Request) {
     // ── Ajout manuel depuis l'admin (sans email) ────────────────
     if (body._action === "manual_add") {
       saveServerReservation(body.reservation);
+      return NextResponse.json({ ok: true });
+    }
+
+    // ── Message de contact ────────────────────────────────────
+    if (body._action === "contact") {
+      await sendContactEmail({
+        name: body.name,
+        email: body.email,
+        phone: body.phone,
+        subject: body.subject,
+        message: body.message,
+      });
       return NextResponse.json({ ok: true });
     }
 

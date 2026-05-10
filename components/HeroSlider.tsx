@@ -17,7 +17,7 @@ const SLIDES = [
   },
 ];
 
-const INTERVAL = 2000; // ms between slides
+const INTERVAL = 5000; // ms between slides
 
 export default function HeroSlider() {
   const { theme } = useSiteTheme();

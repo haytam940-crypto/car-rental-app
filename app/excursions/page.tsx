@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Excursion } from "@/lib/data";
-import { saveExcursionBooking, getMergedExcursions, getActivePromotion } from "@/lib/store";
+import { getMergedExcursions, getActivePromotion } from "@/lib/store";
 import { MapPin, Clock, Users, Check, ChevronRight, X, Star, Mountain } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -147,7 +147,7 @@ function ExcursionsContent() {
 
   const totalPrice = selected ? excPrice(selected.pricePerPerson).ht * form.participants : 0;
 
-  const handleBook = () => {
+  const handleBook = async () => {
     setFormError("");
     if (!form.clientFirstName || !form.clientLastName) return setFormError(T.errName);
     if (!form.clientPhone) return setFormError(T.errPhone);
@@ -155,9 +155,10 @@ function ExcursionsContent() {
     if (form.participants < 1) return setFormError(T.errPart);
     if (!selected) return;
 
-    saveExcursionBooking({
+    const booking = {
       id: `excb-${Date.now()}`,
       excursionId: selected.id,
+      excursionTitle: selected.title,
       clientFirstName: form.clientFirstName,
       clientLastName: form.clientLastName,
       clientPhone: form.clientPhone,
@@ -168,7 +169,37 @@ function ExcursionsContent() {
       status: "pending",
       message: form.message || undefined,
       createdAt: TODAY,
-    });
+      type: "excursion",
+    };
+
+    // Save to server via existing notify route
+    try {
+      await fetch("/api/reservations/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ _action: "manual_add", reservation: {
+          id: booking.id,
+          carId: `excursion:${selected.id}`,
+          clientFirstName: form.clientFirstName,
+          clientLastName: form.clientLastName,
+          clientPhone: form.clientPhone,
+          clientEmail: form.clientEmail,
+          clientLicense: `Excursion — ${selected.title}`,
+          pickupLocation: selected.destination,
+          dropoffLocation: selected.destination,
+          pickupDate: form.date,
+          dropoffDate: form.date,
+          durationDays: 1,
+          totalPrice,
+          status: "pending" as const,
+          message: `Excursion: ${selected.title} — ${form.participants} participant(s)${form.message ? ` — ${form.message}` : ""}`,
+          createdAt: TODAY,
+        }}),
+      });
+    } catch (err) {
+      console.warn("[excursion booking]", err);
+    }
+
     setSuccess(true);
   };
 

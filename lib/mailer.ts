@@ -385,6 +385,50 @@ export async function sendClientCancellationConfirm(params: {
   await sendEmail(clientEmail, `[Eson Maroc] Annulation confirmée — #${reservationId.slice(-8).toUpperCase()}`, baseLayout(content));
 }
 
+/* ─── Email contact ─────────────────────────────────────────────────── */
+export async function sendContactEmail(params: {
+  name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+}) {
+  const { name, email, phone, subject, message } = params;
+
+  const content = `
+    <h2 style="color:#ffffff;font-size:20px;font-weight:900;margin:0 0 8px;">
+      ${mi("mail", "#D4A96A", 22)} Message reçu via le site
+    </h2>
+    <p style="color:#999999;font-size:14px;margin:0 0 28px;">
+      Sujet : <strong style="color:#D4A96A;">${subject}</strong>
+    </p>
+
+    ${infoTable(`
+      ${infoRow("Nom", `<strong style="color:#ffffff;">${name}</strong>`)}
+      ${infoRow("Email", `<a href="mailto:${email}" style="color:#D4A96A;text-decoration:none;">${email}</a>`)}
+      ${phone ? infoRow("Téléphone", `<a href="tel:${phone}" style="color:#D4A96A;text-decoration:none;">${phone}</a>`) : ""}
+      ${infoRow("Sujet", subject)}
+    `)}
+
+    <div style="background:#111111;border:1px solid #2a2a2a;border-radius:10px;padding:20px 24px;margin-bottom:24px;">
+      <p style="color:#888;font-size:11px;text-transform:uppercase;letter-spacing:2px;margin:0 0 10px;">Message</p>
+      <p style="color:#e5e5e5;font-size:14px;margin:0;line-height:1.8;white-space:pre-wrap;">${message}</p>
+    </div>
+
+    <div style="text-align:center;">
+      <a href="mailto:${email}?subject=Re: ${encodeURIComponent(subject)}" style="display:inline-block;background:#D4A96A;color:#000000;font-weight:700;padding:12px 28px;border-radius:10px;text-decoration:none;font-size:14px;">
+        Répondre à ${name}
+      </a>
+    </div>
+  `;
+
+  await sendEmail(
+    ADMIN_EMAIL,
+    `[Eson Maroc] Contact — ${subject} — ${name}`,
+    baseLayout(content, "#0d0d1a")
+  );
+}
+
 /* ─── Email client : devis ──────────────────────────────────────────── */
 export async function sendDevisToClient(devis: {
   id: string;
