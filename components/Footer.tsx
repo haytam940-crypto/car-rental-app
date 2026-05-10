@@ -151,13 +151,13 @@ export default function Footer() {
             { icon: "✅", label: "Véhicules contrôlés" },
             { icon: "🔐", label: "Données sécurisées" },
           ].map(({ icon, label }) => (
-            <div key={label} className="flex items-center gap-1.5 bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-1.5 text-gray-600 text-[11px]">
+            <div key={label} className="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-gray-400 text-[11px]">
               <span>{icon}</span>
               <span>{label}</span>
             </div>
           ))}
         </div>
-        <div className="flex flex-col sm:flex-row justify-between items-center text-xs text-gray-600 gap-3">
+        <div className="flex flex-col sm:flex-row justify-between items-center text-xs text-gray-400 gap-3">
           <p>{t("footer.rights")}</p>
           <p>{t("footer.madeWith")}</p>
         </div>

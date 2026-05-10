@@ -141,7 +141,7 @@ export default function HomePage() {
             <div key={label} className="text-center">
               <div className="text-4xl md:text-5xl font-black text-[#D4A96A] mb-1">{value}</div>
               <div className="text-white font-semibold text-sm">{label}</div>
-              <div className="text-gray-600 text-xs mt-0.5">{sub}</div>
+              <div className="text-gray-400 text-xs mt-0.5">{sub}</div>
             </div>
           ))}
         </div>
@@ -150,7 +150,7 @@ export default function HomePage() {
       {/* ─── MARQUES & LABELS PROFESSIONNELS ─────────────────────────── */}
       <section className="bg-[#0d0d0d] border-b border-white/8 py-8 overflow-hidden">
         <div className="w-full px-4 sm:px-6">
-          <p className="text-center text-[10px] font-bold text-gray-600 uppercase tracking-[0.25em] mb-6">
+          <p className="text-center text-[10px] font-bold text-gray-400 uppercase tracking-[0.25em] mb-6">
             Flotte officielle — Marques partenaires
           </p>
           <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
@@ -171,7 +171,7 @@ export default function HomePage() {
             ))}
           </div>
           {/* Trust badges */}
-          <div className="flex flex-wrap items-center justify-center gap-3 md:gap-5 mt-6 pt-6 border-t border-white/[0.04]">
+          <div className="flex flex-wrap items-center justify-center gap-3 md:gap-5 mt-6 pt-6 border-t border-white/10">
             {[
               { icon: "🛡️", label: "Assurance tous risques" },
               { icon: "🏅", label: "Agence agréée depuis 2003" },
@@ -293,7 +293,7 @@ export default function HomePage() {
                         <span key={inc} className="text-[10px] bg-white/5 border border-white/8 text-gray-400 px-2 py-0.5 rounded-full">{inc}</span>
                       ))}
                       {exc.includes.length > 3 && (
-                        <span className="text-[10px] text-gray-600">+{exc.includes.length - 3}</span>
+                        <span className="text-[10px] text-gray-400">+{exc.includes.length - 3}</span>
                       )}
                     </div>
 
@@ -301,13 +301,13 @@ export default function HomePage() {
                     <div className="flex items-center justify-between pt-4 border-t border-white/8">
                       <div>
                         {hasPromo && (
-                          <div className="text-[11px] text-gray-600 line-through">{exc.pricePerPerson} DH HT</div>
+                          <div className="text-[11px] text-gray-400 line-through">{exc.pricePerPerson} DH HT</div>
                         )}
                         <div className="flex items-baseline gap-1">
                           <span className="text-xl font-black text-[#D4A96A]">{ht}</span>
                           <span className="text-xs text-gray-400">DH HT{t("home.excursions.perPerson")}</span>
                         </div>
-                        <div className="text-[11px] text-gray-600">{ttc} DH TTC</div>
+                        <div className="text-[11px] text-gray-400">{ttc} DH TTC</div>
                       </div>
                       <Link
                         href="/excursions"
@@ -385,7 +385,7 @@ export default function HomePage() {
                     </div>
                     <div>
                       <h4 className="text-white font-bold text-sm mb-1">{title}</h4>
-                      <p className="text-gray-600 text-xs leading-relaxed">{desc}</p>
+                      <p className="text-gray-400 text-xs leading-relaxed">{desc}</p>
                     </div>
                   </div>
                 ))}
@@ -422,7 +422,7 @@ export default function HomePage() {
                   </div>
                   <div>
                     <p className="text-white font-semibold text-sm">{name}</p>
-                    <p className="text-gray-600 text-xs">{city}</p>
+                    <p className="text-gray-400 text-xs">{city}</p>
                   </div>
                 </div>
               </div>

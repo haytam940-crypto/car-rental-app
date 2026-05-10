@@ -148,7 +148,7 @@ function FleetContent() {
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
                   className="w-full accent-[#D4A96A]"
                 />
-                <div className="flex justify-between text-xs text-gray-600 mt-1">
+                <div className="flex justify-between text-xs text-gray-400 mt-1">
                   <span>200 DH</span>
                   <span>1000 DH</span>
                 </div>
@@ -184,7 +184,7 @@ function FleetContent() {
             {filtered.length === 0 ? (
               <div className="text-center py-24">
                 <div className="w-20 h-20 bg-white/5 border border-white/8 rounded-full flex items-center justify-center mx-auto mb-5">
-                  <Search size={32} className="text-gray-600" />
+                  <Search size={32} className="text-gray-400" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">{t("fleet.noResults")}</h3>
                 <p className="text-gray-500 mb-6">{t("fleet.noResultsSub")}</p>

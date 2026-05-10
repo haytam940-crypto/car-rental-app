@@ -38,7 +38,7 @@ export default function ContactPage() {
     setLoading(false);
   };
 
-  const inputCls = "w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-[#D4A96A]/60 transition-colors placeholder-gray-600";
+  const inputCls = "w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-[#D4A96A]/60 transition-colors placeholder-gray-400";
 
   return (
     <main className="bg-[#0a0a0a]">
@@ -142,7 +142,7 @@ export default function ContactPage() {
                   <label className="block text-[10px] font-bold text-[#D4A96A] uppercase tracking-widest mb-1.5">{t("contact.form.message")} *</label>
                   <textarea required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
                     rows={5} placeholder={t("contact.form.messagePh")}
-                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-[#D4A96A]/60 transition-colors resize-none placeholder-gray-600" />
+                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-[#D4A96A]/60 transition-colors resize-none placeholder-gray-400" />
                 </div>
                 <button type="submit" disabled={loading}
                   className="w-full yellow-btn py-3.5 rounded-xl font-bold disabled:opacity-60">
@@ -166,7 +166,7 @@ export default function ContactPage() {
                   </div>
                   <p className="text-sm text-gray-500 mb-1">{address}</p>
                   <a href={`tel:${phone.replace(/\s/g, "")}`} className="text-sm text-[#D4A96A] font-medium hover:underline block mb-1">{phone}</a>
-                  <p className="text-xs text-gray-600">{hours}</p>
+                  <p className="text-xs text-gray-400">{hours}</p>
                 </div>
               ))}
             </div>

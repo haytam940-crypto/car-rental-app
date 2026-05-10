@@ -61,7 +61,7 @@ export default function AboutPage() {
       {/* ── Autocollants / Certifications professionnelles ── */}
       <section className="bg-[#0d0d0d] border-b border-white/8 py-8">
         <div className="max-w-5xl mx-auto px-4">
-          <p className="text-center text-[10px] font-bold text-gray-600 uppercase tracking-[0.25em] mb-6">
+          <p className="text-center text-[10px] font-bold text-gray-400 uppercase tracking-[0.25em] mb-6">
             Certifications & Labels professionnels
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
@@ -77,7 +77,7 @@ export default function AboutPage() {
                 <span className="text-2xl">{icon}</span>
                 <div>
                   <p className="text-white font-bold text-xs">{label}</p>
-                  <p className="text-gray-600 text-[10px]">{sub}</p>
+                  <p className="text-gray-400 text-[10px]">{sub}</p>
                 </div>
               </div>
             ))}

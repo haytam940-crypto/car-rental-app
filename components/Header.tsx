@@ -93,7 +93,7 @@ export default function Header() {
 
           {/* ── Nav (centre absolu) ── */}
           <nav className="hidden lg:flex items-center justify-center">
-            <div className="flex items-center gap-0.5 bg-white/[0.04] border border-white/[0.06] rounded-2xl px-2 py-1.5">
+            <div className="flex items-center gap-0.5 bg-white/5 border border-white/10 rounded-2xl px-2 py-1.5">
               {NAV_LINKS.map((link) => {
                 const active = isActive(link.href);
                 return (
@@ -116,7 +116,7 @@ export default function Header() {
           {/* ── Actions (extrême droite) ── */}
           <div className="flex items-center gap-2 flex-1 justify-end">
             {/* Language switcher */}
-            <div className="hidden md:flex items-center gap-0.5 bg-white/[0.04] border border-white/[0.06] rounded-xl p-1">
+            <div className="hidden md:flex items-center gap-0.5 bg-white/5 border border-white/10 rounded-xl p-1">
               {LANGUAGES.map(({ code, flag }) => (
                 <button
                   key={code}
@@ -134,7 +134,7 @@ export default function Header() {
             {/* Phone */}
             <a
               href="tel:+212666890899"
-              className="hidden xl:flex items-center gap-2 bg-white/[0.04] border border-white/[0.06] hover:border-[#D4A96A]/30 rounded-xl px-3 py-2 text-sm text-gray-400 hover:text-white transition-all duration-200"
+              className="hidden xl:flex items-center gap-2 bg-white/5 border border-white/10 hover:border-[#D4A96A]/30 rounded-xl px-3 py-2 text-sm text-gray-400 hover:text-white transition-all duration-200"
             >
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60" />
@@ -184,7 +184,7 @@ export default function Header() {
         style={{ background: isLight ? "#ffffff" : "#0d0d0d", borderLeft: isLight ? "1px solid rgba(0,0,0,0.08)" : "1px solid rgba(255,255,255,0.06)" }}
       >
         {/* Drawer header */}
-        <div className="flex items-center justify-between px-5 py-5 border-b border-white/6">
+        <div className="flex items-center justify-between px-5 py-5 border-b border-white/10">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-[#D4A96A] rounded-lg flex items-center justify-center">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="#0a0a0a">
@@ -217,7 +217,7 @@ export default function Header() {
                     : "text-gray-400 hover:text-white hover:bg-white/5"
                 }`}
               >
-                <Icon size={16} className={active ? "text-[#D4A96A]" : "text-gray-600"} />
+                <Icon size={16} className={active ? "text-[#D4A96A]" : "text-gray-400"} />
                 {link.label}
                 {active && <span className="ml-auto w-1.5 h-1.5 bg-[#D4A96A] rounded-full" />}
               </Link>
@@ -226,9 +226,9 @@ export default function Header() {
         </nav>
 
         {/* Drawer footer */}
-        <div className="px-4 pb-6 pt-3 border-t border-white/6 space-y-3">
+        <div className="px-4 pb-6 pt-3 border-t border-white/10 space-y-3">
           {/* Language */}
-          <div className="flex items-center gap-1 bg-white/4 border border-white/6 rounded-xl p-1.5">
+          <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-xl p-1.5">
             {LANGUAGES.map(({ code, flag, label }) => (
               <button
                 key={code}
@@ -245,7 +245,7 @@ export default function Header() {
           {/* Phone */}
           <a
             href="tel:+212666890899"
-            className="flex items-center gap-3 bg-white/4 border border-white/6 rounded-xl px-4 py-3 text-sm text-gray-300 hover:text-white hover:border-[#D4A96A]/30 transition-all"
+            className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-300 hover:text-white hover:border-[#D4A96A]/30 transition-all"
           >
             <span className="relative flex h-2 w-2 shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60" />

@@ -203,7 +203,7 @@ function ExcursionsContent() {
     setSuccess(true);
   };
 
-  const inp = "w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-[#D4A96A]/60 transition-colors placeholder-gray-600";
+  const inp = "w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-[#D4A96A]/60 transition-colors placeholder-gray-400";
 
   return (
     <main className="bg-[#0a0a0a]">
@@ -384,7 +384,7 @@ function ExcursionsContent() {
                       {excPrice(selected.pricePerPerson).ht} DH HT
                       <span className="text-gray-500 text-xs font-normal">{T.perPerson}</span>
                     </p>
-                    <p className="text-gray-600 text-xs">{excPrice(selected.pricePerPerson).ttc} DH TTC</p>
+                    <p className="text-gray-400 text-xs">{excPrice(selected.pricePerPerson).ttc} DH TTC</p>
                   </div>
                 </div>
 
@@ -423,7 +423,7 @@ function ExcursionsContent() {
                       <input className={inp} type="number" min={1} max={selected.maxParticipants} value={form.participants} onChange={(e) => setForm({ ...form, participants: parseInt(e.target.value) || 1 })} />
                     </div>
                   </div>
-                  <p className="text-xs text-gray-600 mt-1.5">Maximum {selected.maxParticipants} {T.maxPart}</p>
+                  <p className="text-xs text-gray-400 mt-1.5">Maximum {selected.maxParticipants} {T.maxPart}</p>
                 </div>
 
                 <div>
